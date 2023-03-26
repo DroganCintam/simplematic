@@ -10,6 +10,20 @@ class Txt2ImgParameters {
   seed = -1;
   width = 512;
   height = 512;
+
+  restore_faces = false;
+  tiling = false;
+
+  enable_hr = false;
+  denoising_strength = 0.5;
+  hr_scale = 2;
+  hr_upscaler = 'Latent';
+  hr_second_pass_steps = 0;
+  hr_resize_x = 0;
+  hr_resize_y = 0;
+
+  n_iter = 1;
+  batch_size = 1;
 }
 
 export default class Api {
@@ -26,7 +40,11 @@ export default class Api {
   baseUrl = '';
 
   async reloadConfig() {
-    return await this.connect(AppConfig.instance.apiUrl, AppConfig.instance.username, AppConfig.instance.password);
+    return await this.connect(
+      AppConfig.instance.apiUrl,
+      AppConfig.instance.username,
+      AppConfig.instance.password
+    );
   }
 
   /**
@@ -87,7 +105,8 @@ export default class Api {
         'ngrok-skip-browser-warning': 'any',
       };
       if (AppConfig.instance.username != '' && AppConfig.instance.password != '') {
-        headers['Authorization'] = 'Basic ' + btoa(`${AppConfig.instance.username}:${AppConfig.instance.password}`);
+        headers['Authorization'] =
+          'Basic ' + btoa(`${AppConfig.instance.username}:${AppConfig.instance.password}`);
       }
       const options = await (
         await fetch(this.baseUrl + 'sdapi/v1/options', {
@@ -110,7 +129,8 @@ export default class Api {
       'Content-Type': 'application/json',
     };
     if (AppConfig.instance.username != '' && AppConfig.instance.password != '') {
-      headers['Authorization'] = 'Basic ' + btoa(`${AppConfig.instance.username}:${AppConfig.instance.password}`);
+      headers['Authorization'] =
+        'Basic ' + btoa(`${AppConfig.instance.username}:${AppConfig.instance.password}`);
     }
     try {
       const result = await (
@@ -140,7 +160,8 @@ export default class Api {
       'Content-Type': 'application/json',
     };
     if (AppConfig.instance.username != '' && AppConfig.instance.password != '') {
-      headers['Authorization'] = 'Basic ' + btoa(`${AppConfig.instance.username}:${AppConfig.instance.password}`);
+      headers['Authorization'] =
+        'Basic ' + btoa(`${AppConfig.instance.username}:${AppConfig.instance.password}`);
     }
     try {
       const json = await (

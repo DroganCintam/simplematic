@@ -162,7 +162,9 @@ class App {
       this.switchTab(this.resultTab);
     };
 
-    this.txt2imgTab.onSubmit = this.generate.bind(this);
+    this.txt2imgTab.onSubmit = () => {
+      this.generate(this.generationProgress);
+    };
 
     this.galleryTab.onView = (idic) => {
       this.resultTab.displaySaved(idic);

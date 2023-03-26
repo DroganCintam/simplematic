@@ -1,0 +1,85 @@
+#app {
+  margin: 0;
+  padding: 0;
+}
+
+#app #tabs {
+  min-height: calc(100vh - 7rem);
+}
+
+#top-bar {
+  margin: 0;
+  padding: 0 1rem;
+  position: -webkit-sticky;
+  position: sticky;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 4rem;
+  z-index: 999;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: space-between;
+  background-color: hsla(0, 0%, 0%, 0.3);
+}
+
+#top-bar.opaque {
+  background-color: hsla(0, 0%, 0%, 1);
+}
+
+.app-tab {
+  padding: 1rem;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  row-gap: 0.5rem;
+}
+
+.app-tab label {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+footer {
+  height: 3rem;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.75rem;
+  color: hsla(0, 0%, 100%, 0.8);
+  border-top: 1px solid hsla(0, 0%, 100%, 0.25);
+}
+
+#main-view {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow-y: scroll;
+  transition: left 0.2s ease-out;
+  box-shadow: rgb(0, 0, 0) -5px 0px 20px -10px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+#main-view::-webkit-scrollbar {
+  display: none;
+}
+
+#main-curtain {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background-color: #000;
+  opacity: 0;
+  display: none;
+  transition: opacity 0.2s ease-out;
+}

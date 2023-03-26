@@ -1,0 +1,5 @@
+.firebase/
+.firebaserc
+firebase.json
+firebase-debug.log
+_deploy_firebase.bat

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Simplematic</title>
+    <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" />
+    <link rel="manifest" href="/app.webmanifest" />
+    <link rel="stylesheet" href="css/common.css" />
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="menu"></div>
+      <div id="main-view">
+        <div id="top-bar">
+          <div style="display: flex; flex-flow: row nowrap; column-gap: 0.25rem">
+            <button id="menu-button" type="button" class="button-with-icon" title="menu">
+              <img src="img/bars-solid.svg" alt="menu" />
+            </button>
+            <button id="back-button" type="button" class="button-with-icon" style="display: none">
+              <img src="img/angle-left-solid.svg" alt="back" />
+            </button>
+            <button id="result-button" type="button" class="button-with-icon" style="display: none" title="result">
+              <img src="img/image-solid.svg" alt="result" />
+            </button>
+            <button id="png-import-button" type="button" class="button-with-icon" title="import PNG">
+              <img src="img/file-import-solid.svg" alt="import PNG" />
+            </button>
+          </div>
+          <span id="tab-title"></span>
+          <button id="generate-button" type="button">
+            <p></p>
+            <span>GENERATE</span>
+          </button>
+        </div>
+        <div id="tabs"></div>
+        <footer>an app by Cintam</footer>
+        <div id="main-curtain"></div>
+      </div>
+    </div>
+
+    <script src="js/app.mjs" type="module"></script>
+  </body>
+</html>

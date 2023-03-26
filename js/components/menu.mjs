@@ -28,6 +28,7 @@ const html = /*html*/ `
     <div class="bottom-bar">
       <button id="menu-settings" type="button" class="button-with-icon" title="Settings"><img src="/img/gear-solid.svg" title="Settings"/></button>
       <button id="menu-about" type="button" class="button-with-icon" title="About"><img src="/img/circle-info-solid.svg" title="About"/></button>
+      <a href="https://github.com/DroganCintam/simplematic" target="_blank"><img src="/img/github.svg" title="Github repository"/></a>
       <span id="version"></span>
     </div>
   </div>
@@ -150,6 +151,25 @@ const html = /*html*/ `
       column-gap: 0.5rem;
       padding: 1rem;
       background-color: hsla(0, 0%, 0%, 0.1);
+    }
+
+    #menu .bottom-bar a {
+      display: inline-flex;
+      flex-flow: row nowrap;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      padding: 0.5rem;
+    }
+
+    #menu .bottom-bar a:hover {
+      background-color: hsla(0, 0%, 100%, 0.1);
+    }
+
+    #menu .bottom-bar a img {
+      width: 1rem;
+      height: 1rem;
     }
 
     #menu #version {

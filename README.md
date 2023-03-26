@@ -6,6 +6,8 @@ utilizing the API of [AUTOMATIC1111's Stable Diffusion Web UI](https://github.co
 The purpose is to deliver a watered-down feature set, making life easier
 for beginners and anyone who is looking for a cleaner and simpler interface.
 
+The app is served at https://simplematic.web.app
+
 # Setup
 
 This app requires a running instance of AUTOMATIC1111's Web UI.

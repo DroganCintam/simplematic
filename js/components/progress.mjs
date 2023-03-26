@@ -65,6 +65,11 @@ export default class Progress extends Component {
   }
 
   hide() {
+    if (this.intervalId) {
+      window.clearInterval(this.intervalId);
+      this.intervalId = 0;
+    }
+
     this.root.style.display = 'none';
     this.filler.style.transitionDuration = '0s';
     this.filler.style.width = '0';

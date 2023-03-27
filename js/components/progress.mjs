@@ -52,15 +52,19 @@ export default class Progress extends Component {
 
     this.counter = 0;
     window.setTimeout(() => {
-      this.filler.style.width = `${(++this.counter / steps) * 100}%`;
+      let percentage = ++this.counter / steps;
+      if (percentage > 1) percentage = 1;
+      this.filler.style.width = `${percentage * 100}%`;
     }, 1);
 
     this.intervalId = window.setInterval(() => {
-      this.filler.style.width = `${(++this.counter / steps) * 100}%`;
-      if (this.counter == steps) {
+      if (this.counter >= steps) {
         window.clearInterval(this.intervalId);
         this.intervalId = 0;
       }
+      let percentage = ++this.counter / steps;
+      if (percentage > 1) percentage = 1;
+      this.filler.style.width = `${percentage * 100}%`;
     }, interval);
   }
 

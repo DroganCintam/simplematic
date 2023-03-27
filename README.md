@@ -8,6 +8,8 @@ for beginners and anyone who is looking for a cleaner and simpler interface.
 
 The app is served at https://simplematic.web.app
 
+<img src="screenshot.jpeg" width=200>
+
 # Setup
 
 This app requires a running instance of AUTOMATIC1111's Web UI.

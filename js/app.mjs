@@ -70,16 +70,16 @@ class App {
     Api.instance.baseUrl = AppConfig.instance.apiUrl;
 
     this.root = document.querySelector('#app');
-    this.mainView = this.root.querySelector('#main-view');
-    this.mainCurtain = this.root.querySelector('#main-curtain');
+    this.mainView = this.root.querySelector('.main-view');
+    this.mainCurtain = this.root.querySelector('.main-curtain');
 
-    this.menu = new Menu(this.root.querySelector('#menu'));
+    this.menu = new Menu(this.root.querySelector('.menu'));
     this.menu.onHide = this.hideMenu.bind(this);
     this.menu.onOpenGallery = () => this.switchTab(this.galleryTab);
     this.menu.onSettings = () => this.switchTab(this.settingsTab);
     this.menu.onAbout = () => this.switchTab(this.aboutTab);
 
-    const topBar = this.root.querySelector('#top-bar');
+    const topBar = this.root.querySelector('.top-bar');
     this.mainView.addEventListener('scroll', () => {
       if (this.mainView.scrollTop > 16) {
         topBar.classList.add('opaque');
@@ -88,18 +88,18 @@ class App {
       }
     });
 
-    this.menuButton = topBar.querySelector('#menu-button');
+    this.menuButton = topBar.querySelector('.btn-menu');
     this.menuButton.addEventListener('click', () => {
       if (this.showingMenu) this.hideMenu();
       else this.showMenu();
     });
 
-    this.resultButton = topBar.querySelector('#result-button');
+    this.resultButton = topBar.querySelector('.btn-result');
     this.resultButton.addEventListener('click', () => {
       this.switchTab(this.resultTab);
     });
 
-    this.backButton = topBar.querySelector('#back-button');
+    this.backButton = topBar.querySelector('.btn-back');
     this.backButton.addEventListener('click', () => {
       if (this.currentTab == this.aboutTab && !AppConfig.instance.hasUrl) {
         this.switchTab(this.settingsTab);
@@ -110,15 +110,15 @@ class App {
       }
     });
 
-    this.pngImportButton = topBar.querySelector('#png-import-button');
+    this.pngImportButton = topBar.querySelector('.btn-png-import');
     this.pngImportButton.addEventListener('click', () => {
       this.switchTab(this.pngImportTab);
     });
 
-    this.tabTitle = topBar.querySelector('#tab-title');
+    this.tabTitle = topBar.querySelector('.tab-title');
     this.tabTitle.style.display = 'none';
 
-    this.generateButton = topBar.querySelector('#generate-button');
+    this.generateButton = topBar.querySelector('.btn-generate');
     this.generateButton.addEventListener('click', () => {
       this.generate(this.generationProgress);
     });
@@ -126,7 +126,7 @@ class App {
 
     this.generationProgress = new Progress(this.generateButton.querySelector('p'), true);
 
-    const tabs = this.root.querySelector('#tabs');
+    const tabs = this.root.querySelector('.tabs');
 
     this.settingsTab = new Settings(tabs);
     this.aboutTab = new About(tabs);

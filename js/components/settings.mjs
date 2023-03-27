@@ -7,15 +7,15 @@ const html = /*html*/ `
   <div>
     <div>
       <span>Enter your backend URL and press SAVE to start using the app:</span>
-      <input class="w100p" id="url-input" type="url" />
-      <input class="w50p" id="username-input" type="text" placeholder="username" />
-      <input class="w50p" id="password-input" type="password" placeholder="password" />
-      <button class="w100p" id="save-button" type="button">SAVE</button>
-      <span id="instructions-link" class="clickable-text">Instructions</span>
+      <input type="url" class="w100p txt-url" />
+      <input type="text" class="w50p txt-username" placeholder="username" />
+      <input type="password" class="w50p txt-password" placeholder="password" />
+      <button type="button" class="w100p btn-save">SAVE</button>
+      <span class="clickable-text btn-instructions">Instructions</span>
     </div>
     <div>
       <span>Reload the entire app to fetch updates:</span>
-      <button class="w100p" id="reload-button" type="button">RELOAD APP</button>
+      <button type="button" class="w100p btn-reload">RELOAD APP</button>
     </div>
   </div>
 
@@ -52,12 +52,12 @@ const html = /*html*/ `
       resize: none;
     }
 
-    #settings-tab #username-input {
+    #settings-tab .txt-username {
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
     }
 
-    #settings-tab #password-input {
+    #settings-tab .txt-password {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
     }
@@ -94,18 +94,22 @@ export default class Settings extends Tab {
   constructor(/** @type {HTMLElement} */ parent) {
     super(parent, html);
     this.title = 'SETTINGS';
-    this.urlInput = this.root.querySelector('#url-input');
-    this.usernameInput = this.root.querySelector('#username-input');
-    this.passwordInput = this.root.querySelector('#password-input');
+    this.urlInput = this.root.querySelector('.txt-url');
+    this.usernameInput = this.root.querySelector('.txt-username');
+    this.passwordInput = this.root.querySelector('.txt-password');
     this.urlInput.value = AppConfig.instance.apiUrl;
     this.usernameInput.value = AppConfig.instance.username;
     this.passwordInput.value = AppConfig.instance.password;
 
     /** @type {HTMLButtonElement} */
-    this.saveButton = this.root.querySelector('#save-button');
+    this.saveButton = this.root.querySelector('.btn-save');
     this.saveButton.addEventListener('click', async () => {
       this.setLoading(true);
-      const err = await Api.instance.connect(this.urlInput.value, this.usernameInput.value, this.passwordInput.value);
+      const err = await Api.instance.connect(
+        this.urlInput.value,
+        this.usernameInput.value,
+        this.passwordInput.value
+      );
       this.setLoading(false);
       if (err) {
         window.alert('Failed to connect.');
@@ -114,12 +118,12 @@ export default class Settings extends Tab {
       }
     });
 
-    this.root.querySelector('#instructions-link').addEventListener('click', () => {
+    this.root.querySelector('.btn-instructions').addEventListener('click', () => {
       this.onRequestInstructions();
     });
 
     /** @type {HTMLButtonElement} */
-    this.reloadButton = this.root.querySelector('#reload-button');
+    this.reloadButton = this.root.querySelector('.btn-reload');
     this.reloadButton.addEventListener('click', () => {
       window.location.reload();
     });

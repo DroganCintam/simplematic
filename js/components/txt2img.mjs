@@ -17,21 +17,21 @@ const defaultParameters = {
 const html = /*html*/ `
 <div id="txt2img-tab" class="app-tab">
   <div>
-    <label for="prompt">Prompt:</label>
-    <textarea id="prompt"></textarea>
-    <label for="negative-prompt">Negative prompt:</label>
-    <textarea id="negative-prompt"></textarea>
-    <label for="aspectRatio">Aspect ratio:</label>
-    <span id="aspectRatio"></span>
-    <label for="steps">Steps:</label>
-    <span id="steps"></span>
-    <label for="cfg">CFG scale:</label>
-    <span id="cfg"></span>
-    <label for="steps">Seed:</label>
+    <label>Prompt:</label>
+    <textarea class="txt-prompt"></textarea>
+    <label>Negative prompt:</label>
+    <textarea class="txt-negative-prompt"></textarea>
+    <label>Aspect ratio:</label>
+    <span class="sel-aspectRatio"></span>
+    <label>Steps:</label>
+    <span class="sel-steps"></span>
+    <label>CFG scale:</label>
+    <span class="sel-cfg"></span>
+    <label>Seed:</label>
     <div class="flexbox row justify-start align-center w100p" style="column-gap: 0.25rem">
-      <input id="seed" type="number" value="-1"/>
-      <button id="clear-seed-button" class="button-with-icon" type="button">
-        <img src="img/eraser-solid.svg" title="erase seed"/>
+      <input type="number" class="txt-seed" value="-1"/>
+      <button type="button" class="button-with-icon btn-clear-seed">
+        <img src="img/eraser-solid.svg" title="Erase seed"/>
       </button>
     </div>
   </div>
@@ -47,8 +47,8 @@ const html = /*html*/ `
       max-width: 720px;
     }
 
-    #prompt,
-    #negative-prompt {
+    .txt-prompt,
+    .txt-negative-prompt {
       width: 100%;
       min-height: 4rem;
       margin-bottom: 0.5rem;
@@ -62,7 +62,7 @@ const html = /*html*/ `
       resize: none;
     }
 
-    #seed {
+    .txt-seed {
       padding: 0.5rem;
       background-color: rgba(0, 0, 0, 0.5);
       color: hsl(0, 0%, 100%);
@@ -73,9 +73,9 @@ const html = /*html*/ `
       max-width: 16ch;
     }
 
-    #prompt:focus-visible,
-    #negative-prompt:focus-visible,
-    #seed:focus-visible {
+    .txt-prompt:focus-visible,
+    .txt-negative-prompt:focus-visible,
+    .txt-seed:focus-visible {
       outline: none;
     }
   </style>
@@ -106,10 +106,10 @@ export default class Txt2Img extends Tab {
 
   constructor(/** @type {HTMLElement} */ parent, /** @type {Settings} */ settings) {
     super(parent, html);
-    this.prompt = this.root.querySelector('#prompt');
-    this.negativePrompt = this.root.querySelector('#negative-prompt');
-    this.seed = this.root.querySelector('#seed');
-    this.clearSeedButton = this.root.querySelector('#clear-seed-button');
+    this.prompt = this.root.querySelector('.txt-prompt');
+    this.negativePrompt = this.root.querySelector('.txt-negative-prompt');
+    this.seed = this.root.querySelector('.txt-seed');
+    this.clearSeedButton = this.root.querySelector('.btn-clear-seed');
     this.settings = settings;
 
     const resizeOnInput = function () {
@@ -135,7 +135,7 @@ export default class Txt2Img extends Tab {
     autoResize(this.negativePrompt);
 
     this.aspectRatioSelector = new ValueSelector(
-      this.root.querySelector('#aspectRatio'),
+      this.root.querySelector('.sel-aspectRatio'),
       {
         assignedId: 'aspectRatio',
         defaultValue: parseInt(localStorage.getItem('aspectRatio') ?? '1'),
@@ -150,7 +150,7 @@ export default class Txt2Img extends Tab {
     );
 
     this.stepsSelector = new ValueSelector(
-      this.root.querySelector('#steps'),
+      this.root.querySelector('.sel-steps'),
       {
         assignedId: 'steps',
         defaultValue: parseInt(localStorage.getItem('steps') ?? defaultParameters.steps.toString()),
@@ -170,7 +170,7 @@ export default class Txt2Img extends Tab {
     );
 
     this.cfgSelector = new ValueSelector(
-      this.root.querySelector('#cfg'),
+      this.root.querySelector('.sel-cfg'),
       {
         assignedId: 'cfg',
         defaultValue: parseFloat(localStorage.getItem('cfg') ?? defaultParameters.cfg.toString()),

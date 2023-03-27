@@ -73,6 +73,12 @@ class App {
     this.mainView = this.root.querySelector('#main-view');
     this.mainCurtain = this.root.querySelector('#main-curtain');
 
+    this.mainCurtain.addEventListener('click', () => {
+      if (this.showingMenu && !this.menu.hideMenuButton.disabled) {
+        this.hideMenu();
+      }
+    });
+
     this.menu = new Menu(this.root.querySelector('#menu'));
     this.menu.onHide = this.hideMenu.bind(this);
     this.menu.onOpenGallery = () => this.switchTab(this.galleryTab);

@@ -10,55 +10,55 @@ const html = /*html*/ `
 <div id="result-tab" class="app-tab" style="display: none">
   <div>
     <div class="vertical w100p no-gap" style="position: relative">
-      <img id="image"/>
+      <img class="image"/>
       <div class="image-navigation">
-        <button type="button" id="prev-image-button" style="display: none">
+        <button type="button" class="btn-prev" style="display: none">
           <img src="/img/chevron-left-solid.svg" alt="Previous image"/>
           PREV
         </button>
-        <button type="button" id="next-image-button" style="display: none">
+        <button type="button" class="btn-next" style="display: none">
           NEXT
           <img src="/img/chevron-right-solid.svg" alt="Next image"/>
         </button>
       </div>
     </div>
     <div class="horizontal w100p">
-      <button type="button" id="remix-button">REMIX</button>
-      <button type="button" id="rerun-button"><p></p><span>RERUN</span></button>
-      <button type="button" id="save-button"><img src="/img/floppy-disk-solid.svg"></button>
-      <button type="button" id="delete-button"><img src="/img/trash-solid.svg"></button>
+      <button type="button" class="btn-remix">REMIX</button>
+      <button type="button" class="btn-rerun"><p></p><span>RERUN</span></button>
+      <button type="button" class="btn-save"><img src="/img/floppy-disk-solid.svg"></button>
+      <button type="button" class="btn-delete"><img src="/img/trash-solid.svg"></button>
     </div>
     <div class="vertical w100p">
       <label>Prompt:</label>
-      <textarea id="result-prompt" readonly></textarea>
+      <textarea class="result-prompt" readonly></textarea>
     </div>
     <div class="vertical w100p">
       <label>Negative prompt:</label>
-      <textarea id="result-negative-prompt" readonly></textarea>
+      <textarea class="result-negative-prompt" readonly></textarea>
     </div>
     <div class="vertical w50p">
       <label>Steps:</label>
-      <input type="text" id="result-steps" readonly />
+      <input type="text" class="result-steps" readonly />
     </div>
     <div class="vertical w50p">
       <label>CFG:</label>
-      <input type="text" id="result-cfg" readonly />
+      <input type="text" class="result-cfg" readonly />
     </div>
     <div class="vertical w100p">
       <label>Seed:</label>
-      <input type="text" id="result-seed" readonly />
+      <input type="text" class="result-seed" readonly />
     </div>
     <div class="vertical w100p">
       <label>Sampler:</label>
-      <input type="text" id="result-sampler" readonly />
+      <input type="text" class="result-sampler" readonly />
     </div>
     <div class="vertical w100p">
       <label>Model name:</label>
-      <input type="text" id="result-model-name" readonly />
+      <input type="text" class="result-model-name" readonly />
     </div>
     <div class="vertical w100p">
       <label>Model hash:</label>
-      <input type="text" id="result-model-hash" readonly />
+      <input type="text" class="result-model-hash" readonly />
     </div>
   </div>
 
@@ -99,23 +99,23 @@ const html = /*html*/ `
       gap: 0;
     }
 
-    #result-tab #image {
+    #result-tab .image {
       width: 100%;
       border: 1px solid #ffffff;
       border-radius: 0.5rem;
     }
 
-    #result-tab #image.square {
+    #result-tab .image.square {
       max-width: 512px;
       max-height: 512px;
     }
 
-    #result-tab #image.portrait {
+    #result-tab .image.portrait {
       max-width: 512px;
       max-height: 768px;
     }
 
-    #result-tab #image.landscape {
+    #result-tab .image.landscape {
       max-width: 768px;
       max-height: 512px;
     }
@@ -172,8 +172,8 @@ const html = /*html*/ `
       height: 1rem;
     }
 
-    #result-tab #prev-image-button,
-    #result-tab #next-image-button {
+    #result-tab .btn-prev,
+    #result-tab .btn-next {
       flex-grow: 1;
     }
   </style>
@@ -235,38 +235,38 @@ export default class ResultDialog extends Tab {
 
   constructor(/** @type {HTMLElement} */ parent) {
     super(parent, html);
-    this.image = this.root.querySelector('#image');
-    this.prompt = this.root.querySelector('#result-prompt');
-    this.negativePrompt = this.root.querySelector('#result-negative-prompt');
-    this.steps = this.root.querySelector('#result-steps');
-    this.cfg = this.root.querySelector('#result-cfg');
-    this.seed = this.root.querySelector('#result-seed');
-    this.samplerName = this.root.querySelector('#result-sampler');
-    this.modelName = this.root.querySelector('#result-model-name');
-    this.modelHash = this.root.querySelector('#result-model-hash');
+    this.image = this.root.querySelector('.image');
+    this.prompt = this.root.querySelector('.result-prompt');
+    this.negativePrompt = this.root.querySelector('.result-negative-prompt');
+    this.steps = this.root.querySelector('.result-steps');
+    this.cfg = this.root.querySelector('.result-cfg');
+    this.seed = this.root.querySelector('.result-seed');
+    this.samplerName = this.root.querySelector('.result-sampler');
+    this.modelName = this.root.querySelector('.result-model-name');
+    this.modelHash = this.root.querySelector('.result-model-hash');
 
-    this.prevImageButton = this.root.querySelector('#prev-image-button');
+    this.prevImageButton = this.root.querySelector('.btn-prev');
     this.prevImageButton.addEventListener('click', () => {
       if (this.goPrev) this.goPrev();
     });
 
-    this.nextImageButton = this.root.querySelector('#next-image-button');
+    this.nextImageButton = this.root.querySelector('.btn-next');
     this.nextImageButton.addEventListener('click', () => {
       if (this.goNext) this.goNext();
     });
 
-    this.remixButton = this.root.querySelector('#remix-button');
+    this.remixButton = this.root.querySelector('.btn-remix');
     this.remixButton.addEventListener('click', () => {
       this.onRemix(this.imageInfo);
     });
 
-    this.rerunButton = this.root.querySelector('#rerun-button');
+    this.rerunButton = this.root.querySelector('.btn-rerun');
     this.rerunButton.addEventListener('click', () => {
       this.onRerun(this.imageInfo, this.rerunProgress);
     });
     this.rerunProgress = new Progress(this.rerunButton.querySelector('p'), true);
 
-    this.saveButton = this.root.querySelector('#save-button');
+    this.saveButton = this.root.querySelector('.btn-save');
     this.saveButton.addEventListener('click', () => {
       if (ImageDB.instance.has(this.imageInfo.uuid)) return;
       this.setLoading(true);
@@ -287,7 +287,7 @@ export default class ResultDialog extends Tab {
         });
     });
 
-    this.deleteButton = this.root.querySelector('#delete-button');
+    this.deleteButton = this.root.querySelector('.btn-delete');
     this.deleteButton.addEventListener('click', () => {
       if (!ImageDB.instance.has(this.imageInfo.uuid)) return;
       this.setLoading(true);
@@ -323,13 +323,7 @@ export default class ResultDialog extends Tab {
       friendlyModelNames[this.imageInfo.info.modelHash] ?? this.imageInfo.info.modelName;
     this.modelHash.value = this.imageInfo.info.modelHash;
 
-    if (this.imageInfo.info.width == 768) {
-      this.image.className = 'landscape';
-    } else if (this.imageInfo.info.height == 768) {
-      this.image.className = 'portrait';
-    } else {
-      this.image.className = 'square';
-    }
+    this.setImageAspectRatio();
 
     this.title = 'RESULT';
     this.fromGallery = false;
@@ -363,13 +357,7 @@ export default class ResultDialog extends Tab {
       friendlyModelNames[this.imageInfo.info.modelHash] ?? this.imageInfo.info.modelName;
     this.modelHash.value = this.imageInfo.info.modelHash;
 
-    if (this.imageInfo.info.width == 768) {
-      this.image.className = 'landscape';
-    } else if (this.imageInfo.info.height == 768) {
-      this.image.className = 'portrait';
-    } else {
-      this.image.className = 'square';
-    }
+    this.setImageAspectRatio();
 
     this.title = 'IMPORTED RESULT';
     this.fromGallery = false;
@@ -420,13 +408,7 @@ export default class ResultDialog extends Tab {
       friendlyModelNames[this.imageInfo.info.modelHash] ?? this.imageInfo.info.modelName;
     this.modelHash.value = this.imageInfo.info.modelHash;
 
-    if (this.imageInfo.info.width == 768) {
-      this.image.className = 'landscape';
-    } else if (this.imageInfo.info.height == 768) {
-      this.image.className = 'portrait';
-    } else {
-      this.image.className = 'square';
-    }
+    this.setImageAspectRatio();
 
     this.title = 'SAVED IMAGE';
     this.fromGallery = true;
@@ -460,6 +442,22 @@ export default class ResultDialog extends Tab {
   resizePromptBoxes() {
     autoResize(this.prompt);
     autoResize(this.negativePrompt);
+  }
+
+  setImageAspectRatio() {
+    if (this.imageInfo.info.width == 768) {
+      this.image.classList.remove('square');
+      this.image.classList.remove('portrait');
+      this.image.classList.add('landscape');
+    } else if (this.imageInfo.info.height == 768) {
+      this.image.classList.remove('landscape');
+      this.image.classList.remove('square');
+      this.image.classList.add('portrait');
+    } else {
+      this.image.classList.remove('landscape');
+      this.image.classList.remove('portrait');
+      this.image.classList.add('square');
+    }
   }
 
   setLoading(isLoading) {

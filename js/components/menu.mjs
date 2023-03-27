@@ -9,27 +9,27 @@ const html = /*html*/ `
   <div>
     <div class="top">
       <span>SIMPLEMATIC</span>
-      <button id="hide-menu-button" class="button-with-icon" type="button"><img src="/img/xmark-solid.svg" alt="hide menu"></button>
+      <button type="button" class="button-with-icon btn-hide"><img src="/img/xmark-solid.svg" alt="hide menu"></button>
     </div>
     <div class="option with-padding">
-      <label for="menu-samplers"><img src="/img/square-poll-horizontal-solid.svg" title="Settings"/>Sampler:</label>
-      <select id="menu-samplers"></select>
+      <label><img src="/img/square-poll-horizontal-solid.svg" title="Settings"/>Sampler:</label>
+      <select class="sel-samplers"></select>
     </div>
     <div class="option with-padding">
-      <label for="menu-models"><img src="/img/cube-solid.svg" title="Settings"/>Model:</label>
-      <select id="menu-models"></select>
+      <label><img src="/img/cube-solid.svg" title="Settings"/>Model:</label>
+      <select class="sel-model"></select>
     </div>
     <div class="option">
-      <button id="menu-reload-config" type="button"><img src="/img/rotate-solid.svg" alt="Reload config">Reload config</button>
+      <button type="button" class="btn-reload-config"><img src="/img/rotate-solid.svg" alt="Reload config">Reload config</button>
     </div>
     <div class="option">
-      <button id="menu-gallery" type="button"><img src="/img/grip-solid.svg" alt="Open gallery">Gallery</button>
+      <button type="button" class="btn-gallery"><img src="/img/grip-solid.svg" alt="Open gallery">Gallery</button>
     </div>
     <div class="bottom-bar">
-      <button id="menu-settings" type="button" class="button-with-icon" title="Settings"><img src="/img/gear-solid.svg" title="Settings"/></button>
-      <button id="menu-about" type="button" class="button-with-icon" title="About"><img src="/img/circle-info-solid.svg" title="About"/></button>
+      <button type="button" class="button-with-icon btn-settings" title="Settings"><img src="/img/gear-solid.svg" title="Settings"/></button>
+      <button type="button" class="button-with-icon btn-about" title="About"><img src="/img/circle-info-solid.svg" title="About"/></button>
       <a href="https://github.com/DroganCintam/simplematic" target="_blank"><img src="/img/github.svg" title="Github repository"/></a>
-      <span id="version"></span>
+      <span class="version"></span>
     </div>
   </div>
   <div class="loader" style="display:none">
@@ -172,7 +172,7 @@ const html = /*html*/ `
       height: 1rem;
     }
 
-    #menu #version {
+    #menu .version {
       flex-grow: 1;
       text-align: right;
       font-size: 0.75rem;
@@ -244,35 +244,35 @@ export default class Menu extends Component {
   constructor(/** @type {HTMLElement} */ root) {
     super(root, html, true);
 
-    this.hideMenuButton = this.root.querySelector('#hide-menu-button');
+    this.hideMenuButton = this.root.querySelector('.btn-hide');
     this.hideMenuButton.addEventListener('click', () => {
       this.onHide();
     });
 
-    this.galleryButton = this.root.querySelector('#menu-gallery');
+    this.galleryButton = this.root.querySelector('.btn-gallery');
     this.galleryButton.addEventListener('click', () => {
       this.onHide();
       this.onOpenGallery();
     });
 
-    this.settingsButton = this.root.querySelector('#menu-settings');
+    this.settingsButton = this.root.querySelector('.btn-settings');
     this.settingsButton.addEventListener('click', () => {
       this.onHide();
       this.onSettings();
     });
 
-    this.aboutButton = this.root.querySelector('#menu-about');
+    this.aboutButton = this.root.querySelector('.btn-about');
     this.aboutButton.addEventListener('click', () => {
       this.onHide();
       this.onAbout();
     });
 
-    this.samplers = this.root.querySelector('#menu-samplers');
+    this.samplers = this.root.querySelector('.sel-samplers');
     this.samplers.addEventListener('change', () => {
       AppConfig.instance.selectSampler(this.samplers.value);
     });
 
-    this.models = this.root.querySelector('#menu-models');
+    this.models = this.root.querySelector('.sel-model');
     this.models.addEventListener('change', async () => {
       const model = AppConfig.instance.modelDict[this.models.value];
       this.setLoading(true);
@@ -283,7 +283,7 @@ export default class Menu extends Component {
       }
     });
 
-    this.reloadConfigButton = this.root.querySelector('#menu-reload-config');
+    this.reloadConfigButton = this.root.querySelector('.btn-reload-config');
     this.reloadConfigButton.addEventListener('click', async () => {
       this.setLoading(true);
       await Api.instance.reloadConfig();
@@ -303,7 +303,7 @@ export default class Menu extends Component {
       });
     }
 
-    this.root.querySelector('#version').innerText = `v${version.version}`;
+    this.root.querySelector('.version').innerText = `v${version.version}`;
   }
 
   refreshOptions() {

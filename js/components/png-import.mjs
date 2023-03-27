@@ -6,8 +6,8 @@ const html = /*html*/ `
 <div id="png-import-tab" class="app-tab" style="display: none">
   <div>
     <div>
-      <input id="png-file" type="file" accept="image/png">
-      <span id="invalid-png-error" style="display:none">The provided file does not contain parameters data.</span>
+      <input class="file-input" type="file" accept="image/png">
+      <span class="invalid-file-message" style="display:none">The provided file does not contain parameters data.</span>
     </div>
   </div>
 
@@ -32,7 +32,7 @@ const html = /*html*/ `
       row-gap: 0.5rem;
     }
 
-    #png-import-tab input[type=file] {
+    #png-import-tab .file-input {
       color: transparent;
       width: 100%;
       padding: 1rem;
@@ -40,7 +40,7 @@ const html = /*html*/ `
       border-radius: 0.5rem;
     }
 
-    #png-import-tab input[type=file]::before {
+    #png-import-tab .file-input::before {
       display: block;
       width: 100%;
       height: 100%;
@@ -52,7 +52,7 @@ const html = /*html*/ `
       color: #ffffff;
     }
 
-    #png-import-tab input[type=file]::-webkit-file-upload-button {
+    #png-import-tab .file-input::-webkit-file-upload-button {
       visibility: hidden;
     }
   </style>
@@ -72,8 +72,8 @@ export default class PngImport extends Tab {
     super(parent, html);
     this.title = 'IMPORT PNG';
 
-    this.pngFile = this.root.querySelector('#png-file');
-    this.invalidPngError = this.root.querySelector('#invalid-png-error');
+    this.pngFile = this.root.querySelector('.file-input');
+    this.invalidPngError = this.root.querySelector('.invalid-file-message');
 
     this.pngFile.addEventListener('change', (e) => {
       if (this.pngFile.files.length == 0) return;
@@ -92,7 +92,9 @@ export default class PngImport extends Tab {
 
           // 'tEXt'
           if (type === 0x74455874) {
-            const text = new TextDecoder().decode(new Uint8Array(reader.result.slice(offset, offset + length)));
+            const text = new TextDecoder().decode(
+              new Uint8Array(reader.result.slice(offset, offset + length))
+            );
             const chunks = text.split('\0');
             for (let i = 0; i < chunks.length - 1; i += 2) {
               const key = chunks[i];

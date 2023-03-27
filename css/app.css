@@ -3,11 +3,11 @@
   padding: 0;
 }
 
-#app #tabs {
+.tabs {
   min-height: calc(100vh - 7rem);
 }
 
-#top-bar {
+.top-bar {
   margin: 0;
   padding: 0 1rem;
   position: -webkit-sticky;
@@ -24,7 +24,7 @@
   background-color: hsla(0, 0%, 0%, 0.3);
 }
 
-#top-bar.opaque {
+.top-bar.opaque {
   background-color: hsla(0, 0%, 0%, 1);
 }
 
@@ -54,7 +54,7 @@ footer {
   border-top: 1px solid hsla(0, 0%, 100%, 0.25);
 }
 
-#main-view {
+.main-view {
   position: fixed;
   left: 0;
   top: 0;
@@ -67,11 +67,11 @@ footer {
   scrollbar-width: none;
 }
 
-#main-view::-webkit-scrollbar {
+.main-view::-webkit-scrollbar {
   display: none;
 }
 
-#main-curtain {
+.main-curtain {
   position: absolute;
   left: 0;
   top: 0;

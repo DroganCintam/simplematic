@@ -17,9 +17,17 @@ const defaultParameters = {
 const html = /*html*/ `
 <div id="txt2img-tab" class="app-tab">
   <div>
-    <label>Prompt:</label>
+    <label>Prompt:<span class="options">
+      <button class="icon-button btn-clear-prompt">
+        <img src="/img/eraser-solid.svg" title="Clear prompt"/>
+      </button>
+    </span></label>
     <textarea class="txt-prompt"></textarea>
-    <label>Negative prompt:</label>
+    <label>Negative prompt:<span class="options">
+      <button class="icon-button btn-clear-negative-prompt">
+        <img src="/img/eraser-solid.svg" title="Clear prompt"/>
+      </button>
+    </span></label>
     <textarea class="txt-negative-prompt"></textarea>
     <label>Aspect ratio:</label>
     <span class="sel-aspectRatio"></span>
@@ -78,6 +86,21 @@ const html = /*html*/ `
     .txt-seed:focus-visible {
       outline: none;
     }
+
+    label {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      width: 100%;
+    }
+
+    label .options {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: flex-start;
+      align-items: center;
+    }
   </style>
 </div>
 `;
@@ -85,8 +108,12 @@ const html = /*html*/ `
 export default class Txt2Img extends Tab {
   /** @type {HTMLTextAreaElement} */
   prompt;
+  /** @type {HTMLButtonElement} */
+  clearPromptButton;
   /** @type {HTMLTextAreaElement} */
   negativePrompt;
+  /** @type {HTMLButtonElement} */
+  clearNegativePromptButton;
   /** @type {ValueSelector} */
   aspectRatioSelector;
   /** @type {ValueSelector} */
@@ -107,7 +134,9 @@ export default class Txt2Img extends Tab {
   constructor(/** @type {HTMLElement} */ parent, /** @type {Settings} */ settings) {
     super(parent, html);
     this.prompt = this.root.querySelector('.txt-prompt');
+    this.clearPromptButton = this.root.querySelector('.btn-clear-prompt');
     this.negativePrompt = this.root.querySelector('.txt-negative-prompt');
+    this.clearNegativePromptButton = this.root.querySelector('.btn-clear-negative-prompt');
     this.seed = this.root.querySelector('.txt-seed');
     this.clearSeedButton = this.root.querySelector('.btn-clear-seed');
     this.settings = settings;
@@ -187,6 +216,14 @@ export default class Txt2Img extends Tab {
       },
       true
     );
+
+    this.clearPromptButton.addEventListener('click', () => {
+      this.prompt.value = '';
+    });
+
+    this.clearNegativePromptButton.addEventListener('click', () => {
+      this.negativePrompt.value = '';
+    });
 
     this.clearSeedButton.addEventListener('click', () => {
       this.seed.value = '-1';
@@ -282,6 +319,8 @@ export default class Txt2Img extends Tab {
     this.stepsSelector.disabled = isLoading;
     this.cfgSelector.disabled = isLoading;
     this.seed.disabled = isLoading;
+    this.clearPromptButton.disabled = isLoading;
+    this.clearNegativePromptButton.disabled = isLoading;
     this.clearSeedButton.disabled = isLoading;
   }
 }

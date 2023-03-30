@@ -5,6 +5,7 @@ import ValueSelector from './value-selector.mjs';
 import ImageInfo from '../types/image-info.mjs';
 import Api from '../api.mjs';
 import AppConfig from '../types/app-config.mjs';
+import Checkbox from './checkbox.mjs';
 
 const defaultParameters = {
   sampler: 'DPM++ 2M Karras v2',
@@ -17,30 +18,36 @@ const defaultParameters = {
 const html = /*html*/ `
 <div id="txt2img-tab" class="app-tab">
   <div class="parameter-pane">
-    <label>Prompt:<span class="options">
+    <label class="heading">Prompt:<span class="options">
       <button class="icon-button btn-clear-prompt">
         <img src="/img/eraser-solid.svg" title="Clear prompt"/>
       </button>
     </span></label>
     <textarea class="txt-prompt"></textarea>
-    <label>Negative prompt:<span class="options">
+    <label class="heading">Negative prompt:<span class="options">
       <button class="icon-button btn-clear-negative-prompt">
         <img src="/img/eraser-solid.svg" title="Clear prompt"/>
       </button>
     </span></label>
     <textarea class="txt-negative-prompt"></textarea>
-    <label>Aspect ratio:</label>
+    <label class="heading">Aspect ratio:</label>
     <span class="sel-aspectRatio"></span>
-    <label>Steps:</label>
+    <label class="heading">Steps:</label>
     <span class="sel-steps"></span>
-    <label>CFG scale:</label>
+    <label class="heading">CFG scale:</label>
     <span class="sel-cfg"></span>
-    <label>Seed:</label>
+    <label class="heading">Seed:</label>
     <div class="flexbox row justify-start align-center w100p" style="column-gap: 0.25rem">
       <input type="number" class="txt-seed" value="-1"/>
       <button type="button" class="icon-button btn-clear-seed">
         <img src="img/eraser-solid.svg" title="Erase seed"/>
       </button>
+    </div>
+    <label class="heading">Advanced:</label>
+    <div class="advanced-parameters">
+      <span class="chk-restore-faces"></span>
+      <span class="chk-hires"></span>
+      <span class="filler"></span>
     </div>
   </div>
 
@@ -87,7 +94,7 @@ const html = /*html*/ `
       outline: none;
     }
 
-    #txt2img-tab label {
+    #txt2img-tab label.heading {
       display: flex;
       flex-flow: row nowrap;
       justify-content: space-between;
@@ -95,11 +102,28 @@ const html = /*html*/ `
       width: 100%;
     }
 
-    #txt2img-tab label .options {
+    #txt2img-tab label.heading .options {
       display: flex;
       flex-flow: row nowrap;
       justify-content: flex-start;
       align-items: center;
+    }
+
+    #txt2img-tab .advanced-parameters {
+      width: 100%;
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    #txt2img-tab .advanced-parameters > * {
+      flex-grow: 0;
+    }
+
+    #txt2img-tab .advanced-parameters .filler {
+      flex-grow: 999;
     }
   </style>
 </div>
@@ -124,6 +148,11 @@ export default class Txt2Img extends Tab {
   seed;
   /** @type {HTMLButtonElement} */
   clearSeedButton;
+
+  /** @type {Checkbox} */
+  restoreFacesCheckbox;
+  /** @type {Checkbox} */
+  hiresCheckbox;
 
   /** @type {Settings} */
   settings;
@@ -217,6 +246,24 @@ export default class Txt2Img extends Tab {
       true
     );
 
+    this.restoreFacesCheckbox = new Checkbox(
+      this.root.querySelector('.chk-restore-faces'),
+      {
+        assignedId: 'chk-restore-faces',
+        label: 'Restore faces',
+      },
+      true
+    );
+
+    this.hiresCheckbox = new Checkbox(
+      this.root.querySelector('.chk-hires'),
+      {
+        assignedId: 'chk-hires',
+        label: 'HiRes fix',
+      },
+      true
+    );
+
     this.clearPromptButton.addEventListener('click', () => {
       this.prompt.value = '';
     });
@@ -288,6 +335,7 @@ export default class Txt2Img extends Tab {
         seed: this.seed.value,
         width,
         height,
+        restore_faces: this.restoreFacesCheckbox.value,
       })
       .then(onSuccess)
       .catch(onFailure)

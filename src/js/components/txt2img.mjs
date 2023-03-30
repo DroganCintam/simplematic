@@ -16,7 +16,7 @@ const defaultParameters = {
 
 const html = /*html*/ `
 <div id="txt2img-tab" class="app-tab">
-  <div>
+  <div class="parameter-pane">
     <label>Prompt:<span class="options">
       <button class="icon-button btn-clear-prompt">
         <img src="/img/eraser-solid.svg" title="Clear prompt"/>
@@ -45,7 +45,7 @@ const html = /*html*/ `
   </div>
 
   <style>
-    #txt2img-tab > div {
+    #txt2img-tab .parameter-pane {
       width: 100%;
       display: flex;
       flex-flow: column nowrap;
@@ -55,8 +55,8 @@ const html = /*html*/ `
       max-width: 720px;
     }
 
-    .txt-prompt,
-    .txt-negative-prompt {
+    #txt2img-tab .txt-prompt,
+    #txt2img-tab .txt-negative-prompt {
       width: 100%;
       min-height: 4rem;
       margin-bottom: 0.5rem;
@@ -70,7 +70,7 @@ const html = /*html*/ `
       resize: none;
     }
 
-    .txt-seed {
+    #txt2img-tab .txt-seed {
       padding: 0.5rem;
       background-color: rgba(0, 0, 0, 0.5);
       color: hsl(0, 0%, 100%);
@@ -81,13 +81,13 @@ const html = /*html*/ `
       max-width: 16ch;
     }
 
-    .txt-prompt:focus-visible,
-    .txt-negative-prompt:focus-visible,
-    .txt-seed:focus-visible {
+    #txt2img-tab .txt-prompt:focus-visible,
+    #txt2img-tab .txt-negative-prompt:focus-visible,
+    #txt2img-tab .txt-seed:focus-visible {
       outline: none;
     }
 
-    label {
+    #txt2img-tab label {
       display: flex;
       flex-flow: row nowrap;
       justify-content: space-between;
@@ -95,7 +95,7 @@ const html = /*html*/ `
       width: 100%;
     }
 
-    label .options {
+    #txt2img-tab label .options {
       display: flex;
       flex-flow: row nowrap;
       justify-content: flex-start;

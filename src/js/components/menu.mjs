@@ -9,7 +9,7 @@ const html = /*html*/ `
   <div>
     <div class="top">
       <span>SIMPLEMATIC</span>
-      <button type="button" class="button-with-icon btn-hide"><img src="/img/xmark-solid.svg" alt="hide menu"></button>
+      <button type="button" class="icon-button btn-hide"><img src="/img/xmark-solid.svg" alt="hide menu"></button>
     </div>
     <div class="option with-padding">
       <label><img src="/img/square-poll-horizontal-solid.svg" title="Settings"/>Sampler:</label>
@@ -26,8 +26,8 @@ const html = /*html*/ `
       <button type="button" class="btn-gallery"><img src="/img/grip-solid.svg" alt="Open gallery">Gallery</button>
     </div>
     <div class="bottom-bar">
-      <button type="button" class="button-with-icon btn-settings" title="Settings"><img src="/img/gear-solid.svg" title="Settings"/></button>
-      <button type="button" class="button-with-icon btn-about" title="About"><img src="/img/circle-info-solid.svg" title="About"/></button>
+      <button type="button" class="icon-button btn-settings" title="Settings"><img src="/img/gear-solid.svg" title="Settings"/></button>
+      <button type="button" class="icon-button btn-about" title="About"><img src="/img/circle-info-solid.svg" title="About"/></button>
       <a href="https://github.com/DroganCintam/simplematic" target="_blank"><img src="/img/github.svg" title="Github repository"/></a>
       <span class="version"></span>
     </div>

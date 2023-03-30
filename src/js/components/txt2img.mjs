@@ -30,7 +30,7 @@ const html = /*html*/ `
     <label>Seed:</label>
     <div class="flexbox row justify-start align-center w100p" style="column-gap: 0.25rem">
       <input type="number" class="txt-seed" value="-1"/>
-      <button type="button" class="button-with-icon btn-clear-seed">
+      <button type="button" class="icon-button btn-clear-seed">
         <img src="img/eraser-solid.svg" title="Erase seed"/>
       </button>
     </div>

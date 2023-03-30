@@ -67,7 +67,7 @@ button:disabled {
   color: hsl(0, 0%, 40%);
 }
 
-.button-with-icon {
+.icon-button {
   display: inline-flex;
   flex-flow: row nowrap;
   align-items: center;
@@ -75,19 +75,19 @@ button:disabled {
   width: 2.5rem;
 }
 
-.button-with-icon,
-.button-with-icon:hover,
-.button-with-icon:active,
-.button-with-icon:disabled {
+.icon-button,
+.icon-button:hover,
+.icon-button:active,
+.icon-button:disabled {
   background: none;
   border: none;
 }
 
-.button-with-icon:hover {
+.icon-button:hover {
   background-color: hsla(0, 0%, 100%, 0.1);
 }
 
-.button-with-icon:disabled:hover {
+.icon-button:disabled:hover {
   background: none;
 }
 

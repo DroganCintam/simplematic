@@ -15,7 +15,9 @@ export default function readPngText(text) {
 
   if (indexOfNegativePrompt >= 0) {
     result.prompt = text.substring(0, indexOfNegativePrompt).trim();
-    result.negativePrompt = text.substring(indexOfNegativePrompt + negativePromptKey.length, indexOfSteps).trim();
+    result.negativePrompt = text
+      .substring(indexOfNegativePrompt + negativePromptKey.length, indexOfSteps)
+      .trim();
   } else {
     result.prompt = text.substring(0, indexOfSteps).trim();
     result.negativePrompt = '';
@@ -46,6 +48,9 @@ export default function readPngText(text) {
         break;
       case 'Model':
         result.modelName = value;
+        break;
+      case 'Face restoration':
+        result.faceRestoration = value;
         break;
     }
   }

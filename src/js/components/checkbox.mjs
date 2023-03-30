@@ -15,12 +15,12 @@ export default class Checkbox extends Component {
   input;
 
   /** @type {boolean} */
-  get value() {
-    return this.input.value;
+  get checked() {
+    return this.input.checked;
   }
 
-  set value(value) {
-    this.input.value = value;
+  set checked(value) {
+    this.input.checked = value;
   }
 
   /** @type {boolean} */

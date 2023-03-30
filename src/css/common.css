@@ -54,6 +54,11 @@ button {
   cursor: pointer;
   color: hsl(0, 0%, 0%);
   transition: background-color 0.2s, color 0.2s, border 0.2s;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  column-gap: 0.5rem;
 }
 
 button:hover {

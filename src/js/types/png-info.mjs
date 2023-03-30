@@ -9,4 +9,5 @@ export default class PngInfo {
   sampler = '';
   modelHash = '';
   modelName = '';
+  faceRestoration = '';
 }

@@ -5,6 +5,7 @@ import friendlyModelNames from '../types/friendly-model-names.mjs';
 import PngInfo from '../types/png-info.mjs';
 import { ImageDB, ImageDataItemCursor } from '../types/image-db.mjs';
 import Progress from './progress.mjs';
+import extractPngText from '../utils/extractPngText.mjs';
 
 const html = /*html*/ `
 <div id="result-tab" class="app-tab" style="display: none">
@@ -22,43 +23,47 @@ const html = /*html*/ `
         </button>
       </div>
     </div>
-    <div class="horizontal w100p">
-      <button type="button" class="btn-remix">REMIX</button>
-      <button type="button" class="btn-rerun"><p></p><span>RERUN</span></button>
-      <button type="button" class="btn-save"><img src="/img/floppy-disk-solid.svg"></button>
-      <button type="button" class="btn-delete"><img src="/img/trash-solid.svg"></button>
+    <div class="horizontal w100p actions">
+      <button type="button" class="btn-remix"><img src="/img/flask-solid.svg">REMIX</button>
+      <button type="button" class="btn-rerun"><p></p><img src="/img/wand-magic-sparkles-solid.svg"><span>RERUN</span></button>
+      <button type="button" class="btn-save"><img src="/img/floppy-disk-solid.svg">SAVE</button>
+      <button type="button" class="btn-delete"><img src="/img/trash-solid.svg">DELETE</button>
     </div>
     <div class="vertical w100p">
-      <label>Prompt:</label>
+      <label class="heading">Prompt:</label>
       <textarea class="result-prompt" readonly></textarea>
     </div>
     <div class="vertical w100p">
-      <label>Negative prompt:</label>
+      <label class="heading">Negative prompt:</label>
       <textarea class="result-negative-prompt" readonly></textarea>
     </div>
     <div class="vertical w50p">
-      <label>Steps:</label>
+      <label class="heading">Steps:</label>
       <input type="text" class="result-steps" readonly />
     </div>
     <div class="vertical w50p">
-      <label>CFG:</label>
+      <label class="heading">CFG:</label>
       <input type="text" class="result-cfg" readonly />
     </div>
     <div class="vertical w100p">
-      <label>Seed:</label>
+      <label class="heading">Seed:</label>
       <input type="text" class="result-seed" readonly />
     </div>
     <div class="vertical w100p">
-      <label>Sampler:</label>
+      <label class="heading">Sampler:</label>
       <input type="text" class="result-sampler" readonly />
     </div>
     <div class="vertical w100p">
-      <label>Model name:</label>
+      <label class="heading">Model name:</label>
       <input type="text" class="result-model-name" readonly />
     </div>
     <div class="vertical w100p">
-      <label>Model hash:</label>
+      <label class="heading">Model hash:</label>
       <input type="text" class="result-model-hash" readonly />
+    </div>
+    <div class="vertical w100p">
+      <label class="heading">Parameters:</label>
+      <textarea class="result-parameters" readonly></textarea>
     </div>
   </div>
 
@@ -99,6 +104,10 @@ const html = /*html*/ `
       gap: 0;
     }
 
+    #result-tab .actions button {
+      font-size: 0.75rem;
+    }
+
     #result-tab .image {
       width: 100%;
       border: 1px solid #ffffff;
@@ -120,6 +129,10 @@ const html = /*html*/ `
       max-height: 512px;
     }
 
+    #result-tab label.heading {
+      font-size: 1rem;
+    }
+
     #result-tab textarea {
       width: 100%;
       max-width: 512px;
@@ -131,7 +144,7 @@ const html = /*html*/ `
       background-color: rgba(0, 0, 0, 0.5);
       color: hsl(0, 0%, 100%);
       font-family: 'Montserrat';
-      font-size: 1rem;
+      font-size: 0.9rem;
       border: 1px solid rgba(255, 255, 255, 0.5);
       border-radius: 0.5rem;
       resize: none;
@@ -217,6 +230,8 @@ export default class ResultDialog extends Tab {
   modelName;
   /** @type {HTMLInputElement} */
   modelHash;
+  /** @type {HTMLTextAreaElement} */
+  parameters;
 
   /** @type {ImageInfo} */
   imageInfo;
@@ -244,6 +259,7 @@ export default class ResultDialog extends Tab {
     this.samplerName = this.root.querySelector('.result-sampler');
     this.modelName = this.root.querySelector('.result-model-name');
     this.modelHash = this.root.querySelector('.result-model-hash');
+    this.parameters = this.root.querySelector('.result-parameters');
 
     this.prevImageButton = this.root.querySelector('.btn-prev');
     this.prevImageButton.addEventListener('click', () => {
@@ -310,7 +326,8 @@ export default class ResultDialog extends Tab {
   }
 
   display(json) {
-    this.imageInfo = new ImageInfo(json.images[0], JSON.parse(json.info).infotexts[0]);
+    const infoText = JSON.parse(json.info).infotexts[0];
+    this.imageInfo = new ImageInfo(json.images[0], infoText);
     this.image.src = this.imageInfo.imageData;
     this.image.title = this.imageInfo.info.prompt;
     this.prompt.value = this.imageInfo.info.prompt;
@@ -322,6 +339,7 @@ export default class ResultDialog extends Tab {
     this.modelName.value =
       friendlyModelNames[this.imageInfo.info.modelHash] ?? this.imageInfo.info.modelName;
     this.modelHash.value = this.imageInfo.info.modelHash;
+    this.parameters.value = infoText;
 
     this.setImageAspectRatio();
 
@@ -356,6 +374,7 @@ export default class ResultDialog extends Tab {
     this.modelName.value =
       friendlyModelNames[this.imageInfo.info.modelHash] ?? this.imageInfo.info.modelName;
     this.modelHash.value = this.imageInfo.info.modelHash;
+    this.parameters.value = infoText;
 
     this.setImageAspectRatio();
 
@@ -407,6 +426,7 @@ export default class ResultDialog extends Tab {
     this.modelName.value =
       friendlyModelNames[this.imageInfo.info.modelHash] ?? this.imageInfo.info.modelName;
     this.modelHash.value = this.imageInfo.info.modelHash;
+    this.parameters.value = extractPngText(row.data.substring('data:image/png;base64,'.length));
 
     this.setImageAspectRatio();
 
@@ -442,6 +462,7 @@ export default class ResultDialog extends Tab {
   resizePromptBoxes() {
     autoResize(this.prompt);
     autoResize(this.negativePrompt);
+    autoResize(this.parameters);
   }
 
   setImageAspectRatio() {

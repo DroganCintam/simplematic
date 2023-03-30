@@ -291,6 +291,13 @@ export default class Txt2Img extends Tab {
     this.cfgSelector.currentValue = imageInfo.info.cfg;
     if (alsoSeed) {
       this.seed.value = imageInfo.info.seed;
+    } else {
+      this.seed.value = '-1';
+    }
+    if (imageInfo.info.faceRestoration != '') {
+      this.restoreFacesCheckbox.checked = true;
+    } else {
+      this.restoreFacesCheckbox.checked = false;
     }
   }
 
@@ -335,7 +342,7 @@ export default class Txt2Img extends Tab {
         seed: this.seed.value,
         width,
         height,
-        restore_faces: this.restoreFacesCheckbox.value,
+        restore_faces: this.restoreFacesCheckbox.checked,
       })
       .then(onSuccess)
       .catch(onFailure)

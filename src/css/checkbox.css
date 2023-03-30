@@ -45,3 +45,12 @@
 .checkbox input:checked + label .check {
   background-image: url('/img/square-check-solid.svg');
 }
+
+.checkbox input:disabled+label {
+  color: hsla(0, 0%, 100%, 0.5);
+}
+
+.checkbox input:disabled:checked + label {
+  background-color: hsla(45, 100%, 50%, 0.8);
+  color: hsl(0, 0%, 0%);
+}

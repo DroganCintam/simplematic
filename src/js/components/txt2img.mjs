@@ -370,5 +370,7 @@ export default class Txt2Img extends Tab {
     this.clearPromptButton.disabled = isLoading;
     this.clearNegativePromptButton.disabled = isLoading;
     this.clearSeedButton.disabled = isLoading;
+    this.restoreFacesCheckbox.disabled = isLoading;
+    this.hiresCheckbox.disabled = isLoading;
   }
 }

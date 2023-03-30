@@ -19,11 +19,17 @@ export default class Checkbox extends Component {
     return this.input.value;
   }
 
-  /**
-   * @param {boolean} isSet
-   */
-  set value(isSet) {
-    this.input.value = isSet;
+  set value(value) {
+    this.input.value = value;
+  }
+
+  /** @type {boolean} */
+  get disabled() {
+    return this.input.disabled;
+  }
+
+  set disabled(value) {
+    this.input.disabled = value;
   }
 
   /** @type {(target: Checkbox) => void} */

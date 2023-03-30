@@ -9,6 +9,7 @@ import PngImport from './components/png-import.mjs';
 import About from './components/about.mjs';
 import Gallery from './components/gallery.mjs';
 import Progress from './components/progress.mjs';
+import ImageInfo from './types/image-info.mjs';
 
 class App {
   /** @type {HTMLElement} */
@@ -166,6 +167,13 @@ class App {
       this.hasResult = true;
       this.resultTab.displayLoaded(imageData, infoText);
       this.switchTab(this.resultTab);
+    };
+
+    this.pngImportTab.onParameters = (pngInfo) => {
+      const imageInfo = new ImageInfo();
+      imageInfo.info = pngInfo;
+      this.txt2imgTab.retrieveInfo(imageInfo, true);
+      this.switchTab(this.txt2imgTab);
     };
 
     this.txt2imgTab.onSubmit = () => {

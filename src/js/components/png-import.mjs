@@ -1,4 +1,5 @@
 import PngInfo from '../types/png-info.mjs';
+import autoResize from '../utils/autoResize.mjs';
 import readPngText from '../utils/readPngText.mjs';
 import Tab from './tab.mjs';
 
@@ -6,8 +7,17 @@ const html = /*html*/ `
 <div id="png-import-tab" class="app-tab" style="display: none">
   <div>
     <div>
+      <label class="heading">Import as file:</label>
       <input class="file-input" type="file" accept="image/png">
       <span class="invalid-file-message" style="display:none">The provided file does not contain parameters data.</span>
+    </div>
+    <div>
+      <label class="heading">Import as parameters:</label>
+      <textarea class="parameters-input"></textarea>
+      <span class="invalid-parameters-message" style="display:none">The provided parameters are invalid.</span>
+    </div>
+    <div>
+      <button class="btn-import-parameters"><img src="/img/file-import-solid-black.svg">IMPORT PARAMETERS</button>
     </div>
   </div>
 
@@ -55,6 +65,23 @@ const html = /*html*/ `
     #png-import-tab .file-input::-webkit-file-upload-button {
       visibility: hidden;
     }
+
+    #png-import-tab .parameters-input {
+      padding: 0.5rem;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: hsl(0, 0%, 100%);
+      font-family: 'Montserrat';
+      font-size: 0.9rem;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 0.5rem;
+      resize: none;
+      outline: none;
+      width: 100%;
+    }
+
+    #png-import-tab .btn-import-parameters {
+      width: 100%;
+    }
   </style>
 </div>
 `;
@@ -64,9 +91,19 @@ export default class PngImport extends Tab {
   pngFile;
   /** @type {HTMLSpanElement} */
   invalidPngError;
+  /** @type {HTMLTextAreaElement} */
+  parametersInput;
+  /** @type {HTMLSpanElement} */
+  invalidParametersError;
+
+  /** @type {HTMLButtonElement} */
+  importParametersButton;
 
   /** @type {(imageData: string, infoText: string) => void} */
   onLoaded;
+
+  /** @type {(pngInfo: PngInfo) => void} */
+  onParameters;
 
   constructor(/** @type {HTMLElement} */ parent) {
     super(parent, html);
@@ -74,6 +111,9 @@ export default class PngImport extends Tab {
 
     this.pngFile = this.root.querySelector('.file-input');
     this.invalidPngError = this.root.querySelector('.invalid-file-message');
+    this.parametersInput = this.root.querySelector('.parameters-input');
+    this.invalidParametersError = this.root.querySelector('.invalid-parameters-message');
+    this.importParametersButton = this.root.querySelector('.btn-import-parameters');
 
     this.pngFile.addEventListener('change', (e) => {
       if (this.pngFile.files.length == 0) return;
@@ -116,6 +156,27 @@ export default class PngImport extends Tab {
         this.invalidPngError.style.display = hasParameters ? 'none' : '';
       });
       reader.readAsArrayBuffer(file);
+    });
+
+    this.parametersInput.addEventListener('input', function () {
+      autoResize(this);
+    });
+
+    this.importParametersButton.addEventListener('click', () => {
+      const info = readPngText(this.parametersInput.value);
+      if (
+        info.steps > 0 &&
+        info.sampler != '' &&
+        info.width > 0 &&
+        info.height > 0 &&
+        info.modelHash != ''
+      ) {
+        if (info.seed == 0) info.seed = -1;
+        this.invalidParametersError.style.display = 'none';
+        this.onParameters(info);
+      } else {
+        this.invalidParametersError.style.display = '';
+      }
     });
   }
 

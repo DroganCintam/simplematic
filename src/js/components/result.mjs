@@ -25,7 +25,7 @@ const html = /*html*/ `
     </div>
     <div class="horizontal w100p actions">
       <button type="button" class="btn-remix"><img src="/img/flask-solid.svg">REMIX</button>
-      <button type="button" class="btn-rerun"><p></p><img src="/img/wand-magic-sparkles-solid.svg"><span>RERUN</span></button>
+      <button type="button" class="btn-rerun"><p></p><img src="/img/wand-magic-sparkles-solid.svg"><span>NEW SEED</span></button>
       <button type="button" class="btn-save"><img src="/img/floppy-disk-solid.svg">SAVE</button>
       <button type="button" class="btn-delete"><img src="/img/trash-solid.svg">DELETE</button>
     </div>

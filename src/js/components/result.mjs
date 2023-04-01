@@ -9,9 +9,13 @@ import extractPngText from '../utils/extractPngText.mjs';
 
 const html = /*html*/ `
 <div id="result-tab" class="app-tab" style="display: none">
-  <div>
-    <div class="vertical w100p no-gap" style="position: relative">
-      <img class="image"/>
+  <div class="panes">
+    <div class="pane image-pane">
+      <div class="vertical w100p no-gap" style="position: relative">
+        <img class="image"/>
+      </div>
+    </div>
+    <div class="pane info-pane">
       <div class="image-navigation">
         <button type="button" class="btn-prev" style="display: none">
           <img src="/img/chevron-left-solid.svg" alt="Previous image"/>
@@ -22,53 +26,53 @@ const html = /*html*/ `
           <img src="/img/chevron-right-solid.svg" alt="Next image"/>
         </button>
       </div>
-    </div>
-    <div class="horizontal w100p actions">
-      <button type="button" class="btn-remix"><img src="/img/flask-solid.svg">REMIX</button>
-      <button type="button" class="btn-rerun"><p></p><img src="/img/wand-magic-sparkles-solid.svg"><span>NEW SEED</span></button>
-      <button type="button" class="btn-save"><img src="/img/floppy-disk-solid.svg">SAVE</button>
-      <button type="button" class="btn-delete"><img src="/img/trash-solid.svg">DELETE</button>
-    </div>
-    <div class="vertical w100p">
-      <label class="heading">Prompt:</label>
-      <textarea class="result-prompt" readonly></textarea>
-    </div>
-    <div class="vertical w100p">
-      <label class="heading">Negative prompt:</label>
-      <textarea class="result-negative-prompt" readonly></textarea>
-    </div>
-    <div class="vertical w50p">
-      <label class="heading">Steps:</label>
-      <input type="text" class="result-steps" readonly />
-    </div>
-    <div class="vertical w50p">
-      <label class="heading">CFG:</label>
-      <input type="text" class="result-cfg" readonly />
-    </div>
-    <div class="vertical w100p">
-      <label class="heading">Seed:</label>
-      <input type="text" class="result-seed" readonly />
-    </div>
-    <div class="vertical w100p">
-      <label class="heading">Sampler:</label>
-      <input type="text" class="result-sampler" readonly />
-    </div>
-    <div class="vertical w100p">
-      <label class="heading">Model name:</label>
-      <input type="text" class="result-model-name" readonly />
-    </div>
-    <div class="vertical w100p">
-      <label class="heading">Model hash:</label>
-      <input type="text" class="result-model-hash" readonly />
-    </div>
-    <div class="vertical w100p">
-      <label class="heading">Parameters:</label>
-      <textarea class="result-parameters" readonly></textarea>
+      <div class="horizontal w100p actions">
+        <button type="button" class="btn-remix"><img src="/img/flask-solid.svg">REMIX</button>
+        <button type="button" class="btn-rerun"><p></p><img src="/img/wand-magic-sparkles-solid.svg"><span>NEW SEED</span></button>
+        <button type="button" class="btn-save"><img src="/img/floppy-disk-solid.svg">SAVE</button>
+        <button type="button" class="btn-delete"><img src="/img/trash-solid.svg">DELETE</button>
+      </div>
+      <div class="vertical w100p">
+        <label class="heading">Prompt:</label>
+        <textarea class="result-prompt" readonly></textarea>
+      </div>
+      <div class="vertical w100p">
+        <label class="heading">Negative prompt:</label>
+        <textarea class="result-negative-prompt" readonly></textarea>
+      </div>
+      <div class="vertical w50p">
+        <label class="heading">Steps:</label>
+        <input type="text" class="result-steps" readonly />
+      </div>
+      <div class="vertical w50p">
+        <label class="heading">CFG:</label>
+        <input type="text" class="result-cfg" readonly />
+      </div>
+      <div class="vertical w50p">
+        <label class="heading">Seed:</label>
+        <input type="text" class="result-seed" readonly />
+      </div>
+      <div class="vertical w50p">
+        <label class="heading">Sampler:</label>
+        <input type="text" class="result-sampler" readonly />
+      </div>
+      <div class="vertical w50p">
+        <label class="heading">Model name:</label>
+        <input type="text" class="result-model-name" readonly />
+      </div>
+      <div class="vertical w50p">
+        <label class="heading">Model hash:</label>
+        <input type="text" class="result-model-hash" readonly />
+      </div>
+      <div class="vertical w100p">
+        <label class="heading">Parameters:</label>
+        <textarea class="result-parameters" readonly></textarea>
+      </div>
     </div>
   </div>
 
   <style>
-    #result-tab > div {
+    #result-tab .panes {
       display: flex;
       flex-flow: row wrap;
       align-items: flex-start;
@@ -77,30 +81,48 @@ const html = /*html*/ `
       max-width: 512px;
     }
 
-    #result-tab > div > div {
+    @media (min-width: 960px) {
+      #result-tab .panes {
+        max-width: 1024px;
+      }
+      #result-tab .pane {
+        width: 50%;
+        max-width: 50%;
+      }
+    }
+
+    #result-tab .pane {
+      display: flex;
+      flex-flow: row wrap;
+      align-items: flex-start;
+      justify-content: flex-start;
+      width: 100%;
+    }
+
+    #result-tab .pane > div {
       margin: 0;
       padding: 0.5rem;
       display: flex;
       align-items: flex-start;
     }
 
-    #result-tab > div > div.vertical {
+    #result-tab .pane > div.vertical {
       flex-flow: column nowrap;
       justify-content: flex-start;
       row-gap: 0.5rem;
     }
 
-    #result-tab > div > div.horizontal {
+    #result-tab .pane > div.horizontal {
       flex-flow: row nowrap;
       justify-content: stretch;
       column-gap: 0.25rem;
     }
 
-    #result-tab > div > div.horizontal > * {
+    #result-tab .pane > div.horizontal > * {
       flex-grow: 1;
     }
 
-    #result-tab > div > div.no-gap {
+    #result-tab .pane > div.no-gap {
       gap: 0;
     }
 
@@ -129,39 +151,27 @@ const html = /*html*/ `
       max-height: 512px;
     }
 
-    #result-tab label.heading {
-      font-size: 1rem;
-    }
-
     #result-tab textarea {
       width: 100%;
       max-width: 512px;
     }
 
-    #result-tab textarea,
-    #result-tab input {
-      padding: 0.5rem;
-      background-color: rgba(0, 0, 0, 0.5);
-      color: hsl(0, 0%, 100%);
-      font-family: 'Montserrat';
-      font-size: 0.9rem;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 0.5rem;
-      resize: none;
-      outline: none;
+    #result-tab input[type=text],
+    #result-tab input[type=number],
+    #result-tab textarea {
+      width: 100%;
+      color: hsl(0, 0%, 90%);
     }
 
-    #result-tab input[type=text] {
-      width: 100%;
+    #result-tab input[type=text],
+    #result-tab input[type=number],
+    #result-tab textarea {
+      font-size: 0.8rem;
     }
 
     #result-tab .image-navigation {
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: stretch;
       align-items: center;
       width: 100%;
-      height: auto;
     }
 
     #result-tab .image-navigation button {

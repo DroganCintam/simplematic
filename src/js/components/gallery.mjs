@@ -15,8 +15,9 @@ const html = /*html*/ `
       flex-direction: row;
       flex-wrap: wrap;
       gap: 0.5rem;
-      margin: 0;
+      margin: 0 auto;
       padding: 0;
+      max-width: 1024px;
     }
 
     #gallery-tab .grid li {

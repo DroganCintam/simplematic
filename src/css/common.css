@@ -52,6 +52,10 @@ input[type=text], input[type=number], textarea {
   border-radius: 0.5rem;
 }
 
+textarea {
+  resize: none;
+}
+
 input[type=text]:focus-visible,
 input[type=number]:focus-visible,
 textarea:focus-visible {

@@ -81,7 +81,7 @@ const html = /*html*/ `
       max-width: 512px;
     }
 
-    @media (min-width: 960px) {
+    @media (min-width: 720px) {
       #result-tab .panes {
         max-width: 1024px;
       }
@@ -364,6 +364,7 @@ export default class ResultDialog extends Tab {
 
     this.prevImageButton.style.display = 'none';
     this.nextImageButton.style.display = 'none';
+    this.prevImageButton.parentElement.style.display = 'none';
   }
 
   /**
@@ -404,6 +405,7 @@ export default class ResultDialog extends Tab {
 
     this.prevImageButton.style.display = 'none';
     this.nextImageButton.style.display = 'none';
+    this.prevImageButton.parentElement.style.display = 'none';
   }
 
   /**
@@ -467,6 +469,7 @@ export default class ResultDialog extends Tab {
     this.prevImageButton.disabled = !onPrev;
     this.nextImageButton.style.display = '';
     this.nextImageButton.disabled = !onNext;
+    this.prevImageButton.parentElement.style.display = '';
   }
 
   resizePromptBoxes() {

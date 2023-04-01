@@ -114,12 +114,17 @@ export default class AppConfig {
    * @param {number} resolution
    * @returns {number | null}
    */
-  getGenerationSpeed(sampler, resolution) {
-    const key = `${sampler}/${resolution}`;
+  getGenerationSpeed(sampler, resolution, hiResScale, hiResSteps) {
+    let key = `${sampler}/${resolution}`;
+    if (hiResScale > 0) {
+      key += `/hr${hiResScale}:${hiResSteps}`;
+    }
     if (key in this.generationSpeed) {
       return this.generationSpeed[key];
-    } else {
-      return null;
+    } else if (hiResScale > 0) {
+      let simpleSpeed = this.getGenerationSpeed(sampler, resolution, 0);
+      if (simpleSpeed) return simpleSpeed * hiResScale;
+      else return null;
     }
   }
 
@@ -128,8 +133,11 @@ export default class AppConfig {
    * @param {number} resolution
    * @param {number} msPerStep
    */
-  setGenerationSpeed(sampler, resolution, msPerStep) {
-    const key = `${sampler}/${resolution}`;
+  setGenerationSpeed(sampler, resolution, hiResScale, hiResSteps, msPerStep) {
+    let key = `${sampler}/${resolution}`;
+    if (hiResScale > 0) {
+      key += `/hr${hiResScale}:${hiResSteps}`;
+    }
     this.generationSpeed[key] = msPerStep;
     localStorage.setItem('generationSpeed', JSON.stringify(this.generationSpeed));
   }

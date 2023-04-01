@@ -3,7 +3,7 @@ import Settings from './settings.mjs';
 import autoResize from '../utils/autoResize.mjs';
 import ValueSelector from './value-selector.mjs';
 import ImageInfo from '../types/image-info.mjs';
-import Api from '../api.mjs';
+import Api, { Txt2ImgParameters } from '../api.mjs';
 import AppConfig from '../types/app-config.mjs';
 import Checkbox from './checkbox.mjs';
 
@@ -38,7 +38,7 @@ const html = /*html*/ `
     <span class="sel-cfg"></span>
     <label class="heading">Seed:</label>
     <div class="flexbox row justify-start align-center w100p" style="column-gap: 0.25rem">
-      <input type="number" class="txt-seed" value="-1"/>
+      <input type="number" class="txt-seed" value="-1" min="-1" onchange="validateInputRange(this)"/>
       <button type="button" class="icon-button btn-clear-seed">
         <img src="img/eraser-solid.svg" title="Erase seed"/>
       </button>
@@ -47,7 +47,23 @@ const html = /*html*/ `
     <div class="advanced-parameters">
       <span class="chk-restore-faces"></span>
       <span class="chk-hires"></span>
-      <span class="filler"></span>
+    </div>
+    <div class="hires" style="display: none">
+      <div class="title">HiRes options</div>
+      <div class="options">
+        <div class="option">
+          <label>Denoising strength:</label>
+          <input type="number" class="txt-hires-denoising-strength" value="0.5" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
+        </div>
+        <div class="option">
+          <label>Scale:</label>
+          <input type="number" class="txt-hires-scale" value="2" min="1" max="4" step="0.5" onchange="validateInputRange(this)">
+        </div>
+        <div class="option">
+          <label>Custom steps:</label>
+          <input type="number" class="txt-hires-steps" value="0" min="0" max="150" onchange="validateInputRange(this)">
+        </div>
+      </div>
     </div>
   </div>
 
@@ -67,31 +83,11 @@ const html = /*html*/ `
       width: 100%;
       min-height: 4rem;
       margin-bottom: 0.5rem;
-      padding: 0.5rem;
-      background-color: rgba(0, 0, 0, 0.5);
-      color: hsl(0, 0%, 100%);
-      font-family: 'Montserrat';
-      font-size: 1rem;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 0.5rem;
       resize: none;
     }
 
     #txt2img-tab .txt-seed {
-      padding: 0.5rem;
-      background-color: rgba(0, 0, 0, 0.5);
-      color: hsl(0, 0%, 100%);
-      font-family: 'Montserrat';
-      font-size: 1rem;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 0.5rem;
       max-width: 16ch;
-    }
-
-    #txt2img-tab .txt-prompt:focus-visible,
-    #txt2img-tab .txt-negative-prompt:focus-visible,
-    #txt2img-tab .txt-seed:focus-visible {
-      outline: none;
     }
 
     #txt2img-tab label.heading {
@@ -115,15 +111,53 @@ const html = /*html*/ `
       flex-flow: row wrap;
       justify-content: flex-start;
       align-items: center;
-      gap: 1rem;
+      gap: 0.5rem;
     }
 
     #txt2img-tab .advanced-parameters > * {
-      flex-grow: 0;
+      flex-grow: 1;
     }
 
-    #txt2img-tab .advanced-parameters .filler {
-      flex-grow: 999;
+    #txt2img-tab .hires {
+      width: 100%;
+      padding: 0;
+      border: 1px solid hsla(0, 0%, 100%, 0.5);
+      border-radius: 0.5rem;
+    }
+
+    #txt2img-tab .hires .title {
+      padding: 0.5rem;
+      border-radius: 0.5rem 0.5rem 0 0;
+      border-bottom: 1px solid hsla(0, 0%, 100%, 0.5);
+      background-color: hsla(0, 0%, 0%, 0.5);
+      text-align: center;
+    }
+
+    #txt2img-tab .hires .options {
+      padding: 0.5rem;
+      width: 100%;
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: stretch;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    #txt2img-tab .hires .options .option {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 0.5rem;
+      flex-grow: 1;
+    }
+
+    #txt2img-tab .hires .options .option label {
+      font-size: 1rem;
+    }
+
+    #txt2img-tab .hires .options .option input {
+      flex-grow: 1;
     }
   </style>
 </div>
@@ -153,14 +187,49 @@ export default class Txt2Img extends Tab {
   restoreFacesCheckbox;
   /** @type {Checkbox} */
   hiresCheckbox;
-
-  /** @type {Settings} */
-  settings;
+  /** @type {HTMLElement} */
+  hiresOptions;
+  /** @type {HTMLInputElement} */
+  hiresDenoisingStrength;
+  /** @type {HTMLInputElement} */
+  hiresScale;
+  /** @type {HTMLInputElement} */
+  hiresSteps;
 
   /** @type {()=>void} */
   onSubmit;
 
-  constructor(/** @type {HTMLElement} */ parent, /** @type {Settings} */ settings) {
+  isHiRes() {
+    return this.hiresCheckbox.checked;
+  }
+
+  getSteps() {
+    return this.stepsSelector.currentValue;
+  }
+
+  getResolution() {
+    let width = 512;
+    let height = 512;
+    switch (this.aspectRatioSelector.currentValue) {
+      case 2:
+        height = 768;
+        break;
+      case 3:
+        width = 768;
+        break;
+    }
+    return width * height;
+  }
+
+  getHiResScale() {
+    return this.hiresScale.valueAsNumber;
+  }
+
+  getHiResSteps() {
+    return this.hiresSteps.valueAsNumber;
+  }
+
+  constructor(/** @type {HTMLElement} */ parent) {
     super(parent, html);
     this.prompt = this.root.querySelector('.txt-prompt');
     this.clearPromptButton = this.root.querySelector('.btn-clear-prompt');
@@ -168,7 +237,6 @@ export default class Txt2Img extends Tab {
     this.clearNegativePromptButton = this.root.querySelector('.btn-clear-negative-prompt');
     this.seed = this.root.querySelector('.txt-seed');
     this.clearSeedButton = this.root.querySelector('.btn-clear-seed');
-    this.settings = settings;
 
     const resizeOnInput = function () {
       autoResize(this);
@@ -213,7 +281,7 @@ export default class Txt2Img extends Tab {
         assignedId: 'steps',
         defaultValue: parseInt(localStorage.getItem('steps') ?? defaultParameters.steps.toString()),
         minValue: 1,
-        maxValue: 100,
+        maxValue: 150,
         isInteger: true,
         hasCustom: true,
         values: [
@@ -259,10 +327,19 @@ export default class Txt2Img extends Tab {
       this.root.querySelector('.chk-hires'),
       {
         assignedId: 'chk-hires',
-        label: 'HiRes fix',
+        label: 'HiRes',
       },
       true
     );
+
+    this.hiresCheckbox.onChange = (chk) => {
+      this.hiresOptions.style.display = chk.checked ? '' : 'none';
+    };
+
+    this.hiresOptions = this.root.querySelector('.hires');
+    this.hiresDenoisingStrength = this.hiresOptions.querySelector('.txt-hires-denoising-strength');
+    this.hiresScale = this.hiresOptions.querySelector('.txt-hires-scale');
+    this.hiresSteps = this.hiresOptions.querySelector('.txt-hires-steps');
 
     this.clearPromptButton.addEventListener('click', () => {
       this.prompt.value = '';
@@ -299,6 +376,16 @@ export default class Txt2Img extends Tab {
     } else {
       this.restoreFacesCheckbox.checked = false;
     }
+    if (imageInfo.info.hiResScale > 0) {
+      this.hiresCheckbox.checked = true;
+      this.hiresDenoisingStrength.value = imageInfo.info.denoisingStrength;
+      this.hiresScale.value = imageInfo.info.hiResScale;
+      this.hiresSteps.value = imageInfo.info.hiResSteps;
+      this.hiresOptions.style.display = '';
+    } else {
+      this.hiresCheckbox.checked = false;
+      this.hiresOptions.style.display = 'none';
+    }
   }
 
   resizePromptBoxes() {
@@ -332,39 +419,25 @@ export default class Txt2Img extends Tab {
         break;
     }
 
-    Api.instance
-      .txt2img({
-        prompt: this.prompt.value,
-        negative_prompt: this.negativePrompt.value,
-        sampler_name: AppConfig.instance.selectedSampler ?? defaultParameters.sampler,
-        steps: this.stepsSelector.currentValue,
-        cfg_scale: this.cfgSelector.currentValue,
-        seed: this.seed.value,
-        width,
-        height,
-        restore_faces: this.restoreFacesCheckbox.checked,
-      })
-      .then(onSuccess)
-      .catch(onFailure)
-      .finally(onEnd);
-  }
-
-  getSteps() {
-    return this.stepsSelector.currentValue;
-  }
-
-  getResolution() {
-    let width = 512;
-    let height = 512;
-    switch (this.aspectRatioSelector.currentValue) {
-      case 2:
-        height = 768;
-        break;
-      case 3:
-        width = 768;
-        break;
+    /** @type {Txt2ImgParameters} */
+    const parameters = {
+      prompt: this.prompt.value,
+      negative_prompt: this.negativePrompt.value,
+      sampler_name: AppConfig.instance.selectedSampler ?? defaultParameters.sampler,
+      steps: this.stepsSelector.currentValue,
+      cfg_scale: this.cfgSelector.currentValue,
+      seed: this.seed.value,
+      width,
+      height,
+      restore_faces: this.restoreFacesCheckbox.checked,
+    };
+    if (this.hiresCheckbox.checked) {
+      parameters.enable_hr = true;
+      parameters.denoising_strength = this.hiresDenoisingStrength.valueAsNumber;
+      parameters.hr_scale = this.hiresScale.valueAsNumber;
+      parameters.hr_second_pass_steps = this.hiresSteps.valueAsNumber;
     }
-    return width * height;
+    Api.instance.txt2img(parameters).then(onSuccess).catch(onFailure).finally(onEnd);
   }
 
   setLoading(isLoading) {
@@ -379,5 +452,8 @@ export default class Txt2Img extends Tab {
     this.clearSeedButton.disabled = isLoading;
     this.restoreFacesCheckbox.disabled = isLoading;
     this.hiresCheckbox.disabled = isLoading;
+    this.hiresDenoisingStrength.disabled = isLoading;
+    this.hiresScale.disabled = isLoading;
+    this.hiresSteps.disabled = isLoading;
   }
 }

@@ -139,7 +139,7 @@ class App {
     this.aboutTab = new About(tabs);
     this.resultTab = new Result(tabs);
     this.pngImportTab = new PngImport(tabs);
-    this.txt2imgTab = new Txt2Img(tabs, this.settingsTab);
+    this.txt2imgTab = new Txt2Img(tabs);
     this.galleryTab = new Gallery(tabs);
 
     this.currentTab = this.txt2imgTab;
@@ -205,7 +205,15 @@ class App {
     const sampler = AppConfig.instance.selectedSampler;
     const resolution = this.txt2imgTab.getResolution();
     const steps = this.txt2imgTab.getSteps();
-    let generationSpeed = AppConfig.instance.getGenerationSpeed(sampler, resolution);
+    const isHiRes = this.txt2imgTab.isHiRes();
+    const hiResScale = this.txt2imgTab.getHiResScale();
+    const hiResSteps = this.txt2imgTab.getHiResSteps();
+    let generationSpeed = AppConfig.instance.getGenerationSpeed(
+      sampler,
+      resolution,
+      isHiRes ? hiResScale : 0,
+      hiResSteps
+    );
 
     this.txt2imgTab.generate(
       () => {
@@ -228,7 +236,13 @@ class App {
 
         const endTime = new Date();
         const milliseconds = endTime - startTime;
-        AppConfig.instance.setGenerationSpeed(sampler, resolution, milliseconds / steps);
+        AppConfig.instance.setGenerationSpeed(
+          sampler,
+          resolution,
+          isHiRes ? hiResScale : 0,
+          hiResSteps,
+          milliseconds / steps
+        );
       },
       (err) => {
         console.error(err);

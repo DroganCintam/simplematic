@@ -1,7 +1,7 @@
 import AppConfig from './types/app-config.mjs';
 import Model from './types/model.mjs';
 
-class Txt2ImgParameters {
+export class Txt2ImgParameters {
   prompt = '';
   negative_prompt = '';
   sampler_name = '';

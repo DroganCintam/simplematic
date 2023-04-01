@@ -52,6 +52,15 @@ export default function readPngText(text) {
       case 'Face restoration':
         result.faceRestoration = value;
         break;
+      case 'Denoising strength':
+        result.denoisingStrength = parseFloat(value);
+        break;
+      case 'Hires upscale':
+        result.hiResScale = parseFloat(value);
+        break;
+      case 'Hires steps':
+        result.hiResSteps = parseInt(value);
+        break;
     }
   }
 

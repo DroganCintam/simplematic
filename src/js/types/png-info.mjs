@@ -10,4 +10,7 @@ export default class PngInfo {
   modelHash = '';
   modelName = '';
   faceRestoration = '';
+  denoisingStrength = 0;
+  hiResScale = 0;
+  hiResSteps = 0;
 }

@@ -3,7 +3,6 @@
   flex-flow: row nowrap;
   justify-content: flex-start;
   align-items: flex-start;
-  min-width: 16ch;
 }
 
 .checkbox input {

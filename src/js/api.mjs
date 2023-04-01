@@ -68,7 +68,6 @@ export default class Api {
       const options = await (
         await fetch(url + 'options', {
           method: 'GET',
-          mode: 'cors',
           headers,
         })
       ).json();
@@ -76,7 +75,6 @@ export default class Api {
       const samplers = await (
         await fetch(url + 'samplers', {
           method: 'GET',
-          mode: 'cors',
           headers,
         })
       ).json();
@@ -84,7 +82,6 @@ export default class Api {
       const models = await (
         await fetch(url + 'sd-models', {
           method: 'GET',
-          mode: 'cors',
           headers,
         })
       ).json();
@@ -100,18 +97,10 @@ export default class Api {
 
   async getSelectedModel() {
     try {
-      const headers = {
-        accept: 'application/json',
-        'ngrok-skip-browser-warning': 'any',
-      };
-      if (AppConfig.instance.username != '' && AppConfig.instance.password != '') {
-        headers['Authorization'] =
-          'Basic ' + btoa(`${AppConfig.instance.username}:${AppConfig.instance.password}`);
-      }
+      const headers = this.prepareHeaders(true);
       const options = await (
         await fetch(this.baseUrl + 'sdapi/v1/options', {
           method: 'GET',
-          mode: 'cors',
           headers,
         })
       ).json();
@@ -125,13 +114,7 @@ export default class Api {
 
   async selectModel(/** @type {Model} */ model) {
     const url = this.baseUrl + 'sdapi/v1/options';
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-    if (AppConfig.instance.username != '' && AppConfig.instance.password != '') {
-      headers['Authorization'] =
-        'Basic ' + btoa(`${AppConfig.instance.username}:${AppConfig.instance.password}`);
-    }
+    const headers = this.prepareHeaders(false);
     try {
       const result = await (
         await fetch(url, {
@@ -156,13 +139,7 @@ export default class Api {
 
   async txt2img(/** @type {Txt2ImgParameters} */ parameters) {
     const url = this.baseUrl + 'sdapi/v1/txt2img';
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-    if (AppConfig.instance.username != '' && AppConfig.instance.password != '') {
-      headers['Authorization'] =
-        'Basic ' + btoa(`${AppConfig.instance.username}:${AppConfig.instance.password}`);
-    }
+    const headers = this.prepareHeaders(false);
     try {
       const json = await (
         await fetch(url, {
@@ -180,5 +157,41 @@ export default class Api {
     } catch (err) {
       console.error(err);
     }
+  }
+
+  async getProgress() {
+    try {
+      const headers = this.prepareHeaders(true);
+      const response = await (
+        await fetch(this.baseUrl + 'sdapi/v1/progress?skip_current_image=true', {
+          method: 'GET',
+          headers,
+        })
+      ).json();
+      if (response.state.job_count > 0) {
+        return response.progress;
+      } else {
+        return null;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  prepareHeaders(isGet) {
+    const headers = isGet
+      ? {
+          accept: 'application/json',
+          'ngrok-skip-browser-warning': 'any',
+        }
+      : {
+          'Content-Type': 'application/json',
+        };
+
+    if (AppConfig.instance.username != '' && AppConfig.instance.password != '') {
+      headers['Authorization'] =
+        'Basic ' + btoa(`${AppConfig.instance.username}:${AppConfig.instance.password}`);
+    }
+    return headers;
   }
 }

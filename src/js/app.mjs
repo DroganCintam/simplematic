@@ -201,29 +201,13 @@ class App {
   }
 
   generate(/** @type {Progress} */ progress) {
-    const startTime = new Date();
-    const sampler = AppConfig.instance.selectedSampler;
-    const resolution = this.txt2imgTab.getResolution();
-    const steps = this.txt2imgTab.getSteps();
-    const isHiRes = this.txt2imgTab.isHiRes();
-    const hiResScale = this.txt2imgTab.getHiResScale();
-    const hiResSteps = this.txt2imgTab.getHiResSteps();
-    let generationSpeed = AppConfig.instance.getGenerationSpeed(
-      sampler,
-      resolution,
-      isHiRes ? hiResScale : 0,
-      hiResSteps
-    );
-
     this.txt2imgTab.generate(
       () => {
         this.setLoading(true);
         if (this.showingMenu) {
           this.hideMenu();
         }
-        if (generationSpeed) {
-          progress.run(steps, generationSpeed);
-        }
+        progress.runWithApi();
       },
       () => {
         this.setLoading(false);
@@ -233,16 +217,6 @@ class App {
         this.hasResult = true;
         this.resultTab.display(json);
         this.switchTab(this.resultTab);
-
-        const endTime = new Date();
-        const milliseconds = endTime - startTime;
-        AppConfig.instance.setGenerationSpeed(
-          sampler,
-          resolution,
-          isHiRes ? hiResScale : 0,
-          hiResSteps,
-          milliseconds / steps
-        );
       },
       (err) => {
         console.error(err);

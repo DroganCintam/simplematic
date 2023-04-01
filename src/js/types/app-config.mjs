@@ -26,8 +26,6 @@ export default class AppConfig {
   selectedSampler = '';
   selectedModel = '';
 
-  generationSpeed = {};
-
   get hasUrl() {
     return this.apiUrl && this.apiUrl != '';
   }
@@ -40,7 +38,6 @@ export default class AppConfig {
     this.modelDict = JSON.parse(localStorage.getItem('modelDict') ?? '{}');
     this.modelList = JSON.parse(localStorage.getItem('modelList') ?? '[]');
     this.selectedSampler = localStorage.getItem('selectedSampler') ?? '';
-    this.generationSpeed = JSON.parse(localStorage.getItem('generationSpeed') ?? '{}');
   }
 
   setApiUrl(url, username, password) {
@@ -107,38 +104,5 @@ export default class AppConfig {
 
   selectModel(/** @type {Model} */ model) {
     this.selectedModel = model.hash;
-  }
-
-  /**
-   * @param {string} sampler
-   * @param {number} resolution
-   * @returns {number | null}
-   */
-  getGenerationSpeed(sampler, resolution, hiResScale, hiResSteps) {
-    let key = `${sampler}/${resolution}`;
-    if (hiResScale > 0) {
-      key += `/hr${hiResScale}:${hiResSteps}`;
-    }
-    if (key in this.generationSpeed) {
-      return this.generationSpeed[key];
-    } else if (hiResScale > 0) {
-      let simpleSpeed = this.getGenerationSpeed(sampler, resolution, 0);
-      if (simpleSpeed) return simpleSpeed * hiResScale;
-      else return null;
-    }
-  }
-
-  /**
-   * @param {string} sampler
-   * @param {number} resolution
-   * @param {number} msPerStep
-   */
-  setGenerationSpeed(sampler, resolution, hiResScale, hiResSteps, msPerStep) {
-    let key = `${sampler}/${resolution}`;
-    if (hiResScale > 0) {
-      key += `/hr${hiResScale}:${hiResSteps}`;
-    }
-    this.generationSpeed[key] = msPerStep;
-    localStorage.setItem('generationSpeed', JSON.stringify(this.generationSpeed));
   }
 }

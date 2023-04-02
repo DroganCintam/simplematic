@@ -116,9 +116,6 @@ export default class Gallery extends Tab {
 
   hasLoaded = false;
 
-  itemList = [];
-  itemDict = {};
-
   /** @type {Object<string, HTMLElement>} */
   tagElements = {};
   /** @type {string} */
@@ -214,9 +211,6 @@ export default class Gallery extends Tab {
     const allTag = tag === '<all>';
     const list = ImageDB.instance.imageList;
 
-    this.itemList = [];
-    this.itemDict = {};
-
     const existingViewers = [];
     for (let i = 0; i < this.grid.children.length; ++i) {
       existingViewers.push(this.grid.children.item(i));
@@ -248,12 +242,6 @@ export default class Gallery extends Tab {
         this.updateViewer(viewer, row);
       }
       ++visibleViewers;
-
-      this.itemList.push({
-        viewer,
-        row,
-      });
-      this.itemDict[row.uuid] = viewer;
 
       await waitPromise(1);
 

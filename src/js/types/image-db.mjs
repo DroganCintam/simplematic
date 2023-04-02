@@ -2,7 +2,7 @@ import ImageInfo from './image-info.mjs';
 
 const dbName = 'imagedb';
 const dbVersion = 1;
-const storeName = 'images';
+const imageStoreName = 'images';
 
 export class ImageDataItem {
   /** @type {string} */
@@ -13,7 +13,7 @@ export class ImageDataItem {
   timestamp;
   /** @type {boolean} */
   imported;
-  /** @type {string[]} */
+  /** @type {Array<string>} */
   tags;
 
   prompt = '';
@@ -51,10 +51,109 @@ export class ImageDB {
 
   /** @type {Array<ImageDataItemCursor>} */
   imageList = [];
-  /** @type {Object.<string, ImageDataItemCursor>} */
+  /** @type {Object<string, ImageDataItemCursor>} */
   imageDict = {};
 
+  /** @type {Array<string>} */
+  tags = [];
+  /** @type {Object<string, number>} */
+  imageCountByTag = {};
+
   constructor() {}
+
+  hasTag(uuid, tag) {
+    const idic = this.get(uuid);
+    if (idic) {
+      return idic.value.tags.includes(tag);
+    }
+  }
+
+  /**
+   * @returns {Promise<bool>}
+   */
+  addTag(uuid, tag) {
+    const idic = this.get(uuid);
+    if (idic) {
+      if (idic.value.tags && idic.value.tags.includes(tag)) {
+        return new Promise((resolve, reject) => {
+          resolve(false);
+        });
+      }
+
+      const newRow = Object.assign(new ImageInfo(), idic.value);
+      if (!newRow.tags) newRow.tags = [];
+      newRow.tags.push(tag);
+
+      return new Promise(async (resolve, reject) => {
+        const db = await this.openDB();
+        const req = db
+          .transaction([imageStoreName], 'readwrite')
+          .objectStore(imageStoreName)
+          .put(newRow);
+        req.onerror = (event) => {
+          reject(event.target.errorCode);
+        };
+        req.onsuccess = (event) => {
+          if (!idic.value.tags) idic.value.tags = [];
+          idic.value.tags.push(tag);
+          if (!this.tags.includes(tag)) {
+            this.tags.push(tag);
+          }
+          if (this.imageCountByTag[tag]) this.imageCountByTag[tag] += 1;
+          else this.imageCountByTag[tag] = 1;
+          resolve(true);
+        };
+      });
+    } else {
+      return new Promise((resolve, reject) => {
+        resolve(false);
+      });
+    }
+  }
+
+  /**
+   * @returns {Promise<bool>}
+   */
+  removeTag(uuid, tag) {
+    const idic = this.get(uuid);
+    if (idic) {
+      if (!idic.value.tags || !idic.value.tags.includes(tag)) {
+        return new Promise((resolve, reject) => {
+          resolve(false);
+        });
+      }
+
+      const newRow = Object.assign(new ImageInfo(), idic.value);
+      const idx = newRow.tags.indexOf(tag);
+      newRow.tags.splice(idx, 1);
+
+      return new Promise(async (resolve, reject) => {
+        const db = await this.openDB();
+        const req = db
+          .transaction([imageStoreName], 'readwrite')
+          .objectStore(imageStoreName)
+          .put(newRow);
+        req.onerror = (event) => {
+          reject(event.target.errorCode);
+        };
+        req.onsuccess = (event) => {
+          const idx = idic.value.tags.indexOf(tag);
+          idic.value.tags.splice(idx, 1);
+          this.imageCountByTag[tag] -= 1;
+          if (this.imageCountByTag[tag] == 0) {
+            delete this.imageCountByTag[tag];
+            const gidx = this.tags.indexOf(tag);
+            this.tags.splice(gidx, 1);
+          }
+          resolve(true);
+        };
+      });
+    } else {
+      return new Promise((resolve, reject) => {
+        resolve(false);
+      });
+    }
+  }
 
   has(uuid) {
     return uuid in this.imageDict;
@@ -71,15 +170,21 @@ export class ImageDB {
     return new Promise(async (resolve, reject) => {
       const db = await this.openDB();
       const index = db
-        .transaction([storeName], 'readonly')
-        .objectStore(storeName)
+        .transaction([imageStoreName], 'readonly')
+        .objectStore(imageStoreName)
         .index('timestamp');
       const cursor = index.openCursor(null, 'prev');
 
+      /** @type {Array<ImageDataItem>} */
       const list = [];
-      this.imageList = [];
+      /** @type {Object<string, ImageDataItem>} */
       const dict = {};
+      /** @type {Set<string>} */
+      const tagSet = new Set();
+
+      this.imageList = [];
       this.imageDict = {};
+      this.imageCountByTag = {};
 
       cursor.onerror = (event) => {
         reject(event.target.errorCode);
@@ -97,6 +202,13 @@ export class ImageDB {
             idic.value = row;
             this.imageList.push(idic);
             this.imageDict[idic.value.uuid] = idic;
+            if (row.tags) {
+              row.tags.forEach((tag) => {
+                tagSet.add(tag);
+                if (this.imageCountByTag[tag]) this.imageCountByTag[tag] += 1;
+                else this.imageCountByTag[tag] = 1;
+              });
+            }
           });
           this.imageList.forEach((idic, index) => {
             if (index > 0) {
@@ -106,6 +218,7 @@ export class ImageDB {
               idic.next = this.imageList[index + 1];
             }
           });
+          this.tags = new Array(...tagSet.values());
           resolve(this.imageList);
         }
       };
@@ -122,7 +235,10 @@ export class ImageDB {
         ...img.info,
       });
       const db = await this.openDB();
-      const req = db.transaction([storeName], 'readwrite').objectStore(storeName).add(row);
+      const req = db
+        .transaction([imageStoreName], 'readwrite')
+        .objectStore(imageStoreName)
+        .add(row);
       req.onerror = (event) => {
         reject(event.target.errorCode);
       };
@@ -143,7 +259,10 @@ export class ImageDB {
   remove(uuid) {
     return new Promise(async (resolve, reject) => {
       const db = await this.openDB();
-      const req = db.transaction([storeName], 'readwrite').objectStore(storeName).delete(uuid);
+      const req = db
+        .transaction([imageStoreName], 'readwrite')
+        .objectStore(imageStoreName)
+        .delete(uuid);
       req.onerror = (event) => {
         reject(event.target.errorCode);
       };
@@ -184,8 +303,8 @@ export class ImageDB {
   }
 
   initDB(/** @type {IDBDatabase} */ db) {
-    const objectStore = db.createObjectStore('images', { keyPath: 'uuid' });
-    objectStore.createIndex('modelHash', 'modelHash', { unique: false });
-    objectStore.createIndex('timestamp', 'timestamp', { unique: false });
+    const imageStore = db.createObjectStore(imageStoreName, { keyPath: 'uuid' });
+    imageStore.createIndex('modelHash', 'modelHash', { unique: false });
+    imageStore.createIndex('timestamp', 'timestamp', { unique: false });
   }
 }

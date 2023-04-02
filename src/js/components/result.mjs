@@ -32,6 +32,19 @@ const html = /*html*/ `
         <button type="button" class="btn-save"><img src="/img/floppy-disk-solid.svg">SAVE</button>
         <button type="button" class="btn-delete"><img src="/img/trash-solid.svg">DELETE</button>
       </div>
+      <div class="tagging">
+        <label class="heading">Tags:</label>
+        <div class="tags">
+          <div class="tag"><span>#general</span><span class="btn-remove-tag"></span></div>
+          <div class="tag"><span>#nature</span><span class="btn-remove-tag"></span></div>
+          <div class="tag"><span>#test</span><span class="btn-remove-tag"></span></div>
+          <div class="add-tag">
+            <span class="hash">#</span>
+            <input type="text" class="txt-tag">
+            <button type="button" class="btn-add-tag" title="Add tag"><img src="/img/plus-solid.svg"></button>
+          </div>
+        </div>
+      </div>
       <div class="vertical w100p">
         <label class="heading">Prompt:</label>
         <textarea class="result-prompt" readonly></textarea>
@@ -199,6 +212,90 @@ const html = /*html*/ `
     #result-tab .btn-next {
       flex-grow: 1;
     }
+
+    #result-tab .tagging {
+      width: 100%;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    #result-tab .tagging .tags {
+      width: 100%;
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    #result-tab .tagging .tags .tag {
+      padding: 0.5rem;
+      background-color: hsla(0, 0%, 0%, 0.5);
+      color: hsla(0, 0%, 100%, 1);
+      border-radius: 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    #result-tab .tagging .tags .tag .btn-remove-tag {
+      content: 'x';
+      width: 1rem;
+      height: 1rem;
+      margin-left: 0.5rem;
+      display: inline-block;
+      vertical-align: middle;
+      background-image: url('/img/xmark-solid.svg');
+      background-position: center;
+      background-repeat: no-repeat;
+      cursor: pointer;
+      opacity: 0.5;
+    }
+
+    #result-tab .tagging .tags .tag .btn-remove-tag:hover {
+      opacity: 1;
+    }
+
+    #result-tab .tagging .tags .add-tag {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    #result-tab .tagging .tags .add-tag .hash {
+      border: 1px solid hsla(0, 0%, 100%, 0.25);
+      border-right: none;
+      border-radius: 0.25rem 0 0 0.25rem;
+      height: 2rem;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      padding-left: 0.5rem;
+      font-size: 0.8rem;
+      color: hsla(0, 0%, 100%, 0.75);
+    }
+
+    #result-tab .tagging .tags .add-tag input {
+      border: 1px solid hsla(0, 0%, 100%, 0.25);
+      border-left: none;
+      padding-left: 0.25rem;
+      max-width: 12ch;
+      border-radius: 0;
+      height: 2rem;
+    }
+    
+    #result-tab .tagging .tags .add-tag button {
+      border: 1px solid hsla(0, 0%, 100%, 0.25);
+      border-radius: 0 0.5rem 0.5rem 0;
+      background-color: hsla(0, 0%, 0%, 1);
+      height: 2rem;
+    }
+
+    #result-tab .tagging .tags .add-tag button:hover {
+      background-color: hsla(0, 0%, 30%, 1);
+    }
   </style>
 
 </div>
@@ -218,6 +315,17 @@ export default class ResultDialog extends Tab {
   rerunButton;
   /** @type {Progress} */
   rerunProgress;
+
+  /** @type {HTMLElement} */
+  tagging;
+  /** @type {HTMLElement} */
+  tags;
+  /** @type {Array<HTMLElement>} */
+  tagElements;
+  /** @type {HTMLInputElement} */
+  tagToAdd;
+  /** @type {HTMLButtonElement} */
+  addTagButton;
 
   /** @type {HTMLButtonElement} */
   saveButton;
@@ -300,6 +408,8 @@ export default class ResultDialog extends Tab {
         .add(this.imageInfo)
         .then((result) => {
           this.imageInfo.saved = true;
+          const tags = ImageDB.instance.get(this.imageInfo.uuid).value.tags;
+          this.populateTags(tags ?? []);
         })
         .catch((err) => {
           console.error(err);
@@ -321,6 +431,7 @@ export default class ResultDialog extends Tab {
         .remove(this.imageInfo.uuid)
         .then((result) => {
           this.imageInfo.saved = false;
+          this.populateTags();
         })
         .catch((err) => {
           console.error(err);
@@ -332,6 +443,25 @@ export default class ResultDialog extends Tab {
             this.deleteButton.style.display = 'none';
           }
         });
+    });
+
+    this.tagging = this.root.querySelector('.tagging');
+    this.tags = this.tagging.querySelector('.tags');
+    this.tagElements = [];
+
+    this.tagToAdd = this.tagging.querySelector('.txt-tag');
+    this.tagToAdd.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ',' || e.key === ' ') {
+        e.preventDefault();
+        this.addTagButton.click();
+      } else if (/[0-9A-Za-z_-]/.test(e.key) == false) {
+        e.preventDefault();
+      }
+    });
+
+    this.addTagButton = this.tagging.querySelector('.btn-add-tag');
+    this.addTagButton.addEventListener('click', () => {
+      this.addTag();
     });
   }
 
@@ -365,6 +495,8 @@ export default class ResultDialog extends Tab {
     this.prevImageButton.style.display = 'none';
     this.nextImageButton.style.display = 'none';
     this.prevImageButton.parentElement.style.display = 'none';
+
+    this.populateTags();
   }
 
   /**
@@ -406,6 +538,8 @@ export default class ResultDialog extends Tab {
     this.prevImageButton.style.display = 'none';
     this.nextImageButton.style.display = 'none';
     this.prevImageButton.parentElement.style.display = 'none';
+
+    this.populateTags();
   }
 
   /**
@@ -470,6 +604,8 @@ export default class ResultDialog extends Tab {
     this.nextImageButton.style.display = '';
     this.nextImageButton.disabled = !onNext;
     this.prevImageButton.parentElement.style.display = '';
+
+    this.populateTags(row.tags ?? []);
   }
 
   resizePromptBoxes() {
@@ -494,10 +630,73 @@ export default class ResultDialog extends Tab {
     }
   }
 
+  /**
+   * @param {Array<string> | undefined} tags
+   */
+  populateTags(tags) {
+    while (true) {
+      const el = this.tags.querySelector('.tag');
+      if (el) {
+        this.tags.removeChild(el);
+      } else {
+        break;
+      }
+    }
+    this.tagElements = [];
+    if (!tags) {
+      this.tagging.style.display = 'none';
+    } else {
+      this.tagging.style.display = '';
+      tags.forEach(this.appendTag.bind(this));
+    }
+  }
+
+  appendTag(tag) {
+    const el = Object.assign(document.createElement('div'), {
+      className: 'tag',
+    });
+    const name = Object.assign(document.createElement('span'), {
+      innerText: '#' + tag,
+    });
+    const button = Object.assign(document.createElement('span'), {
+      className: 'btn-remove-tag',
+    });
+    button.addEventListener('click', () => {
+      this.removeTag(el, tag);
+    });
+    el.appendChild(name);
+    el.appendChild(button);
+    this.tags.insertBefore(el, this.tags.querySelector('.add-tag'));
+  }
+
+  addTag() {
+    const tag = this.tagToAdd.value.trim();
+    if (tag != '') {
+      ImageDB.instance.addTag(this.imageInfo.uuid, tag).then((isAdded) => {
+        if (isAdded) {
+          this.appendTag(tag);
+          this.tagToAdd.value = '';
+          this.tagToAdd.focus();
+        }
+      });
+    }
+  }
+
+  /**
+   * @param {HTMLElement} element
+   * @param {string} tag
+   */
+  removeTag(element, tag) {
+    ImageDB.instance.removeTag(this.imageInfo.uuid, tag).then((isRemoved) => {
+      this.tags.removeChild(element);
+    });
+  }
+
   setLoading(isLoading) {
     this.remixButton.disabled = isLoading;
     this.rerunButton.disabled = isLoading;
     this.saveButton.disabled = isLoading;
     this.deleteButton.disabled = isLoading;
+    this.addTagButton.disabled = isLoading;
   }
 }

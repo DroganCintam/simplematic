@@ -1,14 +1,66 @@
 import { ImageDB, ImageDataItemCursor } from '../types/image-db.mjs';
 import Tab from './tab.mjs';
 import waitPromise from '../utils/waitPromise.mjs';
+import ImageInfo from '../types/image-info.mjs';
+import CancelToken from '../types/cancel-token.mjs';
 
 const html = /*html*/ `
 <div id="gallery-tab" class="app-tab" style="display: none">
-  <div class="w100p">
+  <div>
+    <div class="options">
+      <div class="tags">
+      </div>
+    </div>
     <ul class="grid">
     </ul>
   </div>
   <style>
+    #gallery-tab > div {
+      width: 100%;
+      max-width: 1024px;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: flex-start;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    #gallery-tab .options {
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: flex-start;
+      align-items: flex-start;
+    }
+
+    #gallery-tab .tags {
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    #gallery-tab .tags .tag {
+      padding: 0.5rem;
+      border: 1px solid hsla(0, 0%, 100%, 0.5);
+      border-radius: 0.25rem;
+      color: hsla(0, 0%, 100%, 0.8);
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    #gallery-tab .tags .tag:hover {
+      border-color: hsl(0, 0%, 100%);
+      color: hsl(0, 0%, 100%);
+    }
+
+    #gallery-tab .tags .tag.selected,
+    #gallery-tab .tags .tag.selected:hover {
+      border: none;
+      background-color: hsl(45, 100%, 50%);
+      color: hsl(0, 0%, 0%);
+    }
+
     #gallery-tab .grid {
       list-style: none;
       display: flex;
@@ -57,6 +109,8 @@ const html = /*html*/ `
 `;
 
 export default class Gallery extends Tab {
+  /** @type {HTMLElement} */
+  tags;
   /** @type {HTMLUListElement} */
   grid;
 
@@ -65,12 +119,25 @@ export default class Gallery extends Tab {
   itemList = [];
   itemDict = {};
 
+  /** @type {Object<string, HTMLElement>} */
+  tagElements = {};
+  /** @type {string} */
+  selectedTag;
+  /** @type {HTMLElement} */
+  selectedTagElement;
+
+  /** @type {Array<HTMLElement>} */
+  viewerPool = [];
+
+  cancelToken = new CancelToken();
+
   /** @type {(cursor: ImageDataItemCursor) => void} */
   onView;
 
   constructor(/** @type {HTMLElement} */ parent) {
     super(parent, html);
     this.title = 'GALLERY';
+    this.tags = this.root.querySelector('.tags');
     this.grid = this.root.querySelector('.grid');
   }
 
@@ -81,80 +148,231 @@ export default class Gallery extends Tab {
         .getAll()
         .then(async (result) => {
           this.hasLoaded = true;
-          this.grid.innerHTML = '';
-          for (let i = 0; i < result.length; ++i) {
-            const idic = result[i];
-            const row = idic.value;
-            const item = document.createElement('li');
-            if (row.width == 768) {
-              item.className = 'landscape';
-            } else if (row.height == 768) {
-              item.className = 'portrait';
-            } else {
-              item.className = 'square';
-            }
-            const img = document.createElement('img');
-            img.src = row.data;
-            item.appendChild(img);
-            this.grid.appendChild(item);
 
-            this.itemList.push({
-              item,
-              row,
-            });
-            this.itemDict[row.uuid] = item;
-
-            img.addEventListener('click', () => {
-              this.onView(idic);
-            });
-
-            await waitPromise(1);
-          }
+          this.populateTagList();
+          this.filterByTag('<none>');
         })
         .catch((err) => {
           console.error(err);
         });
     } else {
-      const list = ImageDB.instance.imageList;
-      const dict = ImageDB.instance.imageDict;
-      for (let i = 0; i < this.itemList.length; ++i) {
-        const image = this.itemList[i];
-        if (!(image.row.uuid in dict)) {
-          this.grid.removeChild(image.item);
-          this.itemList.splice(i, 1);
-          delete this.itemDict[image.row.uuid];
-          await waitPromise(1);
+      this.populateTagList();
+      this.filterByTag(this.selectedTag ?? '<none>');
+      // const list = ImageDB.instance.imageList;
+      // const dict = ImageDB.instance.imageDict;
+
+      // this.cancelToken.cancel();
+      // const jobId = this.cancelToken.register();
+
+      // for (let i = 0; i < this.itemList.length; ++i) {
+      //   const image = this.itemList[i];
+      //   if (!(image.row.uuid in dict)) {
+      //     this.recycleViewer(image.viewer);
+      //     this.itemList.splice(i, 1);
+      //     delete this.itemDict[image.row.uuid];
+      //     await waitPromise(1);
+
+      //     if (this.cancelToken.isCanceled(jobId)) break;
+      //   }
+      // }
+      // const tag = this.selectedTag ?? '<none>';
+      // const noneTag = tag === '<none>';
+      // const allTag = tag === '<all>';
+      // for (let i = list.length - 1; i >= 0; --i) {
+      //   const idic = list[i];
+      //   const row = idic.value;
+      //   if (row.uuid in this.itemDict) continue;
+      //   if (!allTag) {
+      //     if (
+      //       (noneTag && idic.value.tags && idic.value.tags.length > 0) ||
+      //       (!noneTag && (!idic.value.tags || !idic.value.tags.includes(tag)))
+      //     ) {
+      //       continue;
+      //     }
+      //   }
+      //   const viewer = this.spawnViewer(row);
+      //   this.grid.insertBefore(viewer, this.grid.firstChild);
+
+      //   this.itemList.unshift({
+      //     viewer,
+      //     row,
+      //   });
+      //   this.itemDict[row.uuid] = viewer;
+
+      //   await waitPromise(1);
+
+      //   if (this.cancelToken.isCanceled(jobId)) break;
+      // }
+    }
+  }
+
+  populateTagList() {
+    this.tags.innerHTML = '';
+
+    ImageDB.instance.tags.forEach((tag) => {
+      const el = document.createElement('span');
+      el.className = 'tag';
+      el.innerText = '#' + tag;
+      el.addEventListener('click', () => {
+        this.filterByTag(tag);
+      });
+      this.tags.appendChild(el);
+      this.tagElements[tag] = el;
+
+      if (this.selectedTag && tag == this.selectedTag) {
+        el.classList.add('selected');
+        this.selectedTagElement = el;
+      }
+    });
+
+    const noneTagEl = document.createElement('span');
+    noneTagEl.classList.add('tag', 'none');
+    noneTagEl.innerText = '<none>';
+    noneTagEl.addEventListener('click', () => {
+      this.filterByTag('<none>');
+    });
+    this.tags.appendChild(noneTagEl);
+    this.tagElements['<none>'] = noneTagEl;
+
+    const allTagEl = document.createElement('span');
+    allTagEl.classList.add('tag', 'all');
+    allTagEl.innerText = '<all>';
+    allTagEl.addEventListener('click', () => {
+      this.filterByTag('<all>');
+    });
+    this.tags.appendChild(allTagEl);
+    this.tagElements['<all>'] = allTagEl;
+  }
+
+  async filterByTag(tag) {
+    if (this.selectedTag && this.selectedTag != tag && this.selectedTagElement) {
+      this.selectedTagElement.classList.remove('selected');
+    }
+
+    this.selectedTagElement = this.tagElements[tag];
+    if (this.selectedTagElement) {
+      this.selectedTagElement.classList.add('selected');
+    }
+    this.selectedTag = tag;
+
+    const noneTag = tag === '<none>';
+    const allTag = tag === '<all>';
+    const list = ImageDB.instance.imageList;
+
+    // while (this.grid.childElementCount > 0) {
+    //   this.recycleViewer(this.grid.firstElementChild);
+    // }
+
+    this.itemList = [];
+    this.itemDict = {};
+
+    const existingViewers = [];
+    for (let i = 0; i < this.grid.children.length; ++i) {
+      existingViewers.push(this.grid.children.item(i));
+    }
+
+    let visibleViewers = 0;
+
+    this.cancelToken.cancel();
+    const jobId = this.cancelToken.register();
+
+    for (let i = 0; i < list.length; ++i) {
+      const idic = list[i];
+      if (!allTag) {
+        if (
+          (noneTag && idic.value.tags && idic.value.tags.length > 0) ||
+          (!noneTag && (!idic.value.tags || !idic.value.tags.includes(tag)))
+        ) {
+          continue;
         }
       }
-      for (let i = list.length - 1; i >= 0; --i) {
-        const idic = list[i];
-        const row = idic.value;
-        if (row.uuid in this.itemDict) continue;
-        const item = document.createElement('li');
-        if (row.width == 768) {
-          item.className = 'landscape';
-        } else if (row.height == 768) {
-          item.className = 'portrait';
-        } else {
-          item.className = 'square';
-        }
-        const img = document.createElement('img');
-        img.src = row.data;
-        item.appendChild(img);
-        this.grid.insertBefore(item, this.grid.firstChild);
 
-        this.itemList.unshift({
-          item,
-          row,
-        });
-        this.itemDict[row.uuid] = item;
+      const row = idic.value;
+      let viewer;
+      if (existingViewers.length - visibleViewers <= 0) {
+        viewer = this.spawnViewer(row);
+        this.grid.appendChild(viewer);
+      } else {
+        viewer = existingViewers[visibleViewers];
+        this.updateViewer(viewer, row);
+      }
+      ++visibleViewers;
 
-        img.addEventListener('click', () => {
-          this.onView(idic);
-        });
+      this.itemList.push({
+        viewer,
+        row,
+      });
+      this.itemDict[row.uuid] = viewer;
 
+      await waitPromise(1);
+
+      if (this.cancelToken.isCanceled(jobId)) break;
+    }
+
+    if (!this.cancelToken.isCanceled(jobId)) {
+      while (this.grid.children.length > visibleViewers) {
+        this.recycleViewer(this.grid.lastElementChild);
         await waitPromise(1);
+        if (this.cancelToken.isCanceled(jobId)) break;
       }
     }
+  }
+
+  /**
+   * @param {ImageInfo} row
+   * @returns {HTMLElement}
+   */
+  spawnViewer(row) {
+    /** @type {HTMLElement} */
+    let viewer;
+    /** @type {HTMLImageElement} */
+    let img;
+    if (this.viewerPool.length > 0) {
+      viewer = this.viewerPool.pop();
+      img = viewer.querySelector('img');
+    } else {
+      viewer = document.createElement('li');
+      img = document.createElement('img');
+      img.addEventListener('click', () => {
+        const uuid = img.getAttribute('data-uuid');
+        this.onView(ImageDB.instance.get(uuid));
+      });
+      viewer.appendChild(img);
+    }
+
+    if (row.width == 768) {
+      viewer.className = 'landscape';
+    } else if (row.height == 768) {
+      viewer.className = 'portrait';
+    } else {
+      viewer.className = 'square';
+    }
+    img.src = row.data;
+    img.setAttribute('data-uuid', row.uuid);
+    return viewer;
+  }
+
+  /**
+   * @param {ImageInfo} row
+   */
+  updateViewer(viewer, row) {
+    const img = viewer.querySelector('img');
+    if (row.width == 768) {
+      viewer.className = 'landscape';
+    } else if (row.height == 768) {
+      viewer.className = 'portrait';
+    } else {
+      viewer.className = 'square';
+    }
+    img.src = row.data;
+    img.setAttribute('data-uuid', row.uuid);
+  }
+
+  /**
+   * @param {HTMLElement} viewer
+   */
+  recycleViewer(viewer) {
+    viewer.parentElement.removeChild(viewer);
+    this.viewerPool.push(viewer);
   }
 }

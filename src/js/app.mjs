@@ -198,6 +198,10 @@ class App {
         }
       }
     });
+
+    if (window.location.hash === '#/gallery') {
+      this.switchTab(this.galleryTab);
+    }
   }
 
   generate(/** @type {Progress} */ progress) {

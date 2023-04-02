@@ -19,14 +19,14 @@ const html = /*html*/ `
 <div id="txt2img-tab" class="app-tab">
   <div class="parameter-pane">
     <label class="heading">Prompt:<span class="options">
-      <button class="icon-button btn-clear-prompt">
-        <img src="/img/eraser-solid.svg" title="Clear prompt"/>
+      <button class="icon-button btn-clear-prompt" title="Erase">
+        <img src="/img/eraser-solid.svg"/>
       </button>
     </span></label>
     <textarea class="txt-prompt"></textarea>
     <label class="heading">Negative prompt:<span class="options">
-      <button class="icon-button btn-clear-negative-prompt">
-        <img src="/img/eraser-solid.svg" title="Clear prompt"/>
+      <button class="icon-button btn-clear-negative-prompt" title="Erase">
+        <img src="/img/eraser-solid.svg"/>
       </button>
     </span></label>
     <textarea class="txt-negative-prompt"></textarea>
@@ -39,8 +39,8 @@ const html = /*html*/ `
     <label class="heading">Seed:</label>
     <div class="flexbox row justify-start align-center w100p" style="column-gap: 0.25rem">
       <input type="number" class="txt-seed" value="-1" min="-1" onchange="validateInputRange(this)"/>
-      <button type="button" class="icon-button btn-clear-seed">
-        <img src="img/eraser-solid.svg" title="Erase seed"/>
+      <button type="button" class="icon-button btn-clear-seed" title="Erase">
+        <img src="img/eraser-solid.svg"/>
       </button>
     </div>
     <label class="heading">Advanced:</label>

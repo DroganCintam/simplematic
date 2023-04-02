@@ -662,7 +662,9 @@ export default class ResultDialog extends Tab {
       className: 'btn-remove-tag',
     });
     button.addEventListener('click', () => {
-      this.removeTag(el, tag);
+      if (this.addTagButton.disabled == false) {
+        this.removeTag(el, tag);
+      }
     });
     el.appendChild(name);
     el.appendChild(button);

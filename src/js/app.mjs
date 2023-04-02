@@ -30,6 +30,8 @@ class App {
   backButton;
   /** @type {HTMLButtonElement} */
   pngImportButton;
+  /** @type {HTMLButtonElement} */
+  galleryButton;
 
   /** @type {HTMLSpanElement} */
   tabTitle;
@@ -120,6 +122,11 @@ class App {
     this.pngImportButton = topBar.querySelector('.btn-png-import');
     this.pngImportButton.addEventListener('click', () => {
       this.switchTab(this.pngImportTab);
+    });
+
+    this.galleryButton = topBar.querySelector('.btn-gallery');
+    this.galleryButton.addEventListener('click', () => {
+      this.switchTab(this.galleryTab);
     });
 
     this.tabTitle = topBar.querySelector('.tab-title');
@@ -232,6 +239,7 @@ class App {
     this.menuButton.disabled = isLoading;
     this.resultButton.disabled = isLoading;
     this.pngImportButton.disabled = isLoading;
+    this.galleryButton.disabled = isLoading;
     this.backButton.disabled = isLoading;
     this.generateButton.disabled = isLoading;
 
@@ -248,10 +256,11 @@ class App {
 
     this.menuButton.style.display = this.currentTab == this.txt2imgTab ? '' : 'none';
     this.resultButton.style.display =
-      this.currentTab == this.txt2imgTab && this.hasResult ? '' : 'none';
+      this.currentTab != this.resultTab && this.hasResult ? '' : 'none';
     this.backButton.style.display = this.currentTab != this.txt2imgTab ? '' : 'none';
     this.pngImportButton.style.display = this.currentTab == this.txt2imgTab ? '' : 'none';
     this.generateButton.style.display = this.currentTab == this.txt2imgTab ? '' : 'none';
+    this.galleryButton.style.display = this.currentTab == this.resultTab ? '' : 'none';
 
     if (this.currentTab == this.settingsTab && !AppConfig.instance.hasUrl) {
       this.backButton.style.display = 'none';

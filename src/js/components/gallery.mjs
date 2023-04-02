@@ -158,51 +158,6 @@ export default class Gallery extends Tab {
     } else {
       this.populateTagList();
       this.filterByTag(this.selectedTag ?? '<none>');
-      // const list = ImageDB.instance.imageList;
-      // const dict = ImageDB.instance.imageDict;
-
-      // this.cancelToken.cancel();
-      // const jobId = this.cancelToken.register();
-
-      // for (let i = 0; i < this.itemList.length; ++i) {
-      //   const image = this.itemList[i];
-      //   if (!(image.row.uuid in dict)) {
-      //     this.recycleViewer(image.viewer);
-      //     this.itemList.splice(i, 1);
-      //     delete this.itemDict[image.row.uuid];
-      //     await waitPromise(1);
-
-      //     if (this.cancelToken.isCanceled(jobId)) break;
-      //   }
-      // }
-      // const tag = this.selectedTag ?? '<none>';
-      // const noneTag = tag === '<none>';
-      // const allTag = tag === '<all>';
-      // for (let i = list.length - 1; i >= 0; --i) {
-      //   const idic = list[i];
-      //   const row = idic.value;
-      //   if (row.uuid in this.itemDict) continue;
-      //   if (!allTag) {
-      //     if (
-      //       (noneTag && idic.value.tags && idic.value.tags.length > 0) ||
-      //       (!noneTag && (!idic.value.tags || !idic.value.tags.includes(tag)))
-      //     ) {
-      //       continue;
-      //     }
-      //   }
-      //   const viewer = this.spawnViewer(row);
-      //   this.grid.insertBefore(viewer, this.grid.firstChild);
-
-      //   this.itemList.unshift({
-      //     viewer,
-      //     row,
-      //   });
-      //   this.itemDict[row.uuid] = viewer;
-
-      //   await waitPromise(1);
-
-      //   if (this.cancelToken.isCanceled(jobId)) break;
-      // }
     }
   }
 
@@ -258,10 +213,6 @@ export default class Gallery extends Tab {
     const noneTag = tag === '<none>';
     const allTag = tag === '<all>';
     const list = ImageDB.instance.imageList;
-
-    // while (this.grid.childElementCount > 0) {
-    //   this.recycleViewer(this.grid.firstElementChild);
-    // }
 
     this.itemList = [];
     this.itemDict = {};

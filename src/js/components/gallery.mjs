@@ -216,6 +216,8 @@ export default class Gallery extends Tab {
       existingViewers.push(this.grid.children.item(i));
     }
 
+    /** @type {ImageDataItemCursor | null} */
+    let prev = null;
     let visibleViewers = 0;
 
     this.cancelToken.cancel();
@@ -243,9 +245,21 @@ export default class Gallery extends Tab {
       }
       ++visibleViewers;
 
+      if (prev != null) {
+        idic.prev = prev;
+        prev.next = idic;
+      } else {
+        idic.prev = null;
+      }
+      prev = idic;
+
       await waitPromise(1);
 
       if (this.cancelToken.isCanceled(jobId)) break;
+    }
+
+    if (prev != null) {
+      prev.next = null;
     }
 
     if (!this.cancelToken.isCanceled(jobId)) {

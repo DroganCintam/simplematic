@@ -8,7 +8,46 @@ for beginners and anyone who is looking for a cleaner and simpler interface.
 
 The app is served at https://simplematic.web.app
 
-<img src="screenshot.jpeg" width=200>
+# Features
+
+- Text-to-Image
+  - Basic sizes.
+  - Prompt, negative prompt, steps, CFG scale, seed, sampler (in side menu).
+  - Face restoration.
+  - HiRes upscaling (Latent).
+- Gallery
+  - Save images along with parameters.
+  - Hashtags filtering.
+- Import PNG & parameters.
+
+## Screenshots
+
+Main interface
+
+<img src="screenshots/txt2img-landscape.jpeg" width="400"/>
+
+Result screens
+
+<img src="screenshots/result-landscape-1.jpeg" width="200"/>
+<img src="screenshots/result-landscape-2.jpeg" width="200"/>
+
+Gallery
+
+<img src="screenshots/gallery.jpeg" width="400"/>
+
+Settings screen
+
+<img src="screenshots/settings.jpeg" width="400"/>
+
+PNG/parameters import screen
+
+<img src="screenshots/import.jpeg" width="400"/>
+
+In portrait mode
+
+<img src="screenshots/txt2img-portrait.jpeg" width="200"/>
+<img src="screenshots/result-portrait-1.jpeg" width="200"/>
+<img src="screenshots/result-portrait-2.jpeg" width="200"/>
 
 # Setup
 

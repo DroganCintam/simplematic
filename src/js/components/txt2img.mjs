@@ -18,13 +18,13 @@ const defaultParameters = {
 const html = /*html*/ `
 <div id="txt2img-tab" class="app-tab">
   <div class="parameter-pane">
-    <label class="heading">Prompt:<span class="options">
+    <label class="heading" for="">Prompt:<span class="options">
       <button class="icon-button btn-clear-prompt" title="Erase">
         <img src="/img/eraser-solid.svg"/>
       </button>
     </span></label>
     <textarea class="txt-prompt"></textarea>
-    <label class="heading">Negative prompt:<span class="options">
+    <label class="heading" for="">Negative prompt:<span class="options">
       <button class="icon-button btn-clear-negative-prompt" title="Erase">
         <img src="/img/eraser-solid.svg"/>
       </button>

@@ -267,7 +267,7 @@ const html = /*html*/ `
     #result-tab .tagging .tags .add-tag .hash {
       border: 1px solid hsla(0, 0%, 100%, 0.25);
       border-right: none;
-      border-radius: 0.25rem 0 0 0.25rem;
+      border-radius: 0.5rem 0 0 0.5rem;
       height: 2rem;
       background-color: rgba(0, 0, 0, 0.5);
       display: flex;

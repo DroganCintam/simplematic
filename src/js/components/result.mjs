@@ -40,7 +40,7 @@ const html = /*html*/ `
           <div class="tag"><span>#test</span><span class="btn-remove-tag"></span></div>
           <div class="add-tag">
             <span class="hash">#</span>
-            <input type="text" class="txt-tag">
+            <input type="text" class="txt-tag" autocorrect="off" autocapitalize="off">
             <button type="button" class="btn-add-tag" title="Add tag"><img src="/img/plus-solid.svg"></button>
           </div>
         </div>

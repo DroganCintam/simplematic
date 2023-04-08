@@ -12,7 +12,11 @@ const html = /*html*/ `
       <span class="invalid-file-message" style="display:none">The provided file does not contain parameters data.</span>
     </div>
     <div>
-      <label class="heading">Import as parameters:</label>
+      <label class="heading">Import as parameters:<span class="options">
+      <button class="icon-button btn-clear-parameters" title="Erase">
+        <img src="/img/eraser-solid.svg"/>
+      </button>
+    </span></label>
       <textarea class="parameters-input"></textarea>
       <span class="invalid-parameters-message" style="display:none">The provided parameters are invalid.</span>
     </div>
@@ -82,6 +86,21 @@ const html = /*html*/ `
     #png-import-tab .btn-import-parameters {
       width: 100%;
     }
+    
+    #png-import-tab label.heading {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      width: 100%;
+    }
+
+    #png-import-tab label.heading .options {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: flex-start;
+      align-items: center;
+    }
   </style>
 </div>
 `;
@@ -93,6 +112,8 @@ export default class PngImport extends Tab {
   invalidPngError;
   /** @type {HTMLTextAreaElement} */
   parametersInput;
+  /** @type {HTMLButtonElement} */
+  clearParametersButton;
   /** @type {HTMLSpanElement} */
   invalidParametersError;
 
@@ -112,6 +133,7 @@ export default class PngImport extends Tab {
     this.pngFile = this.root.querySelector('.file-input');
     this.invalidPngError = this.root.querySelector('.invalid-file-message');
     this.parametersInput = this.root.querySelector('.parameters-input');
+    this.clearParametersButton = this.root.querySelector('.btn-clear-parameters');
     this.invalidParametersError = this.root.querySelector('.invalid-parameters-message');
     this.importParametersButton = this.root.querySelector('.btn-import-parameters');
 
@@ -160,6 +182,10 @@ export default class PngImport extends Tab {
 
     this.parametersInput.addEventListener('input', function () {
       autoResize(this);
+    });
+
+    this.clearParametersButton.addEventListener('click', () => {
+      this.parametersInput.value = '';
     });
 
     this.importParametersButton.addEventListener('click', () => {

@@ -23,13 +23,13 @@ const html = /*html*/ `
         <img src="/img/eraser-solid.svg"/>
       </button>
     </span></label>
-    <textarea class="txt-prompt" autocorrect="off" autocapitalize="off"></textarea>
+    <textarea class="txt-prompt" autocapitalize="off"></textarea>
     <label class="heading" for="">Negative prompt:<span class="options">
       <button class="icon-button btn-clear-negative-prompt" title="Erase">
         <img src="/img/eraser-solid.svg"/>
       </button>
     </span></label>
-    <textarea class="txt-negative-prompt" autocorrect="off" autocapitalize="off"></textarea>
+    <textarea class="txt-negative-prompt" autocapitalize="off"></textarea>
     <label class="heading">Aspect ratio:</label>
     <span class="sel-aspectRatio"></span>
     <label class="heading">Steps:</label>

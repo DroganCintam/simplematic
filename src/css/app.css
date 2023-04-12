@@ -70,7 +70,7 @@ footer {
   background-position: center top;
   background-size: cover;
   background-repeat: no-repeat;
-  background-attachment: local;
+  background-attachment: scroll;
   background-color: #303030;
 }
 

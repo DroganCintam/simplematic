@@ -127,13 +127,6 @@ const html = /*html*/ `
     }
 
     #menu select {
-      padding: 0.5rem;
-      background-color: rgba(0, 0, 0, 0.5);
-      color: hsl(0, 0%, 100%);
-      font-family: 'Montserrat';
-      font-size: 1rem;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 0.5rem;
       width: 100%;
     }
 

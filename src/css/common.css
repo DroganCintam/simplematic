@@ -17,11 +17,6 @@ body {
   font-family: 'Montserrat', sans-serif;
   font-size: 16px;
   text-align: justify;
-  background: linear-gradient(to bottom, #00000040, #00000040), url('/img/bg.png');
-  background-position: center top;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
   background-color: #303030;
   color: #ffffff;
 }
@@ -42,7 +37,9 @@ a {
   text-decoration: none;
 }
 
-input[type=text], input[type=number], textarea {
+input[type='text'],
+input[type='number'],
+textarea {
   padding: 0.5rem;
   background-color: rgba(0, 0, 0, 0.5);
   color: hsl(0, 0%, 100%);
@@ -56,10 +53,20 @@ textarea {
   resize: none;
 }
 
-input[type=text]:focus-visible,
-input[type=number]:focus-visible,
+input[type='text']:focus-visible,
+input[type='number']:focus-visible,
 textarea:focus-visible {
   outline: none;
+}
+
+select {
+  padding: 0.5rem;
+  background-color: hsla(0, 0%, 0%, 0.5);
+  color: hsl(0, 0%, 100%);
+  font-family: 'Montserrat';
+  font-size: 1rem;
+  border: 1px solid hsla(0, 0%, 100%, 0.5);
+  border-radius: 0.5rem;
 }
 
 button {

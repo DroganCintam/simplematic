@@ -40,7 +40,7 @@
 .app-tab label {
   font-size: 1rem;
   font-weight: bold;
-  color:hsla(0, 0%, 100%, 0.75);
+  color: hsla(0, 0%, 100%, 0.75);
 }
 
 footer {
@@ -66,6 +66,12 @@ footer {
   box-shadow: rgb(0, 0, 0) -5px 0px 20px -10px;
   -ms-overflow-style: none;
   scrollbar-width: none;
+  background: linear-gradient(to bottom, #00000040, #00000040), url('/img/bg.png');
+  background-position: center top;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: local;
+  background-color: #303030;
 }
 
 .main-view::-webkit-scrollbar {

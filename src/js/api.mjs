@@ -26,6 +26,23 @@ export class Txt2ImgParameters {
   batch_size = 1;
 }
 
+export class UpscaleParameters {
+  resize_mode = 0;
+  show_extras_results = true;
+  gfpgan_visibility = 0;
+  codeformer_visibility = 0;
+  codeformer_weight = 0;
+  upscaling_resize = 2;
+  upscaling_resize_w = 512;
+  upscaling_resize_h = 512;
+  upscaling_crop = true;
+  upscaler_1 = 'None';
+  upscaler_2 = 'None';
+  extras_upscaler_2_visibility = 0;
+  upscale_first = false;
+  image = '';
+}
+
 export default class Api {
   static _inst;
 
@@ -79,6 +96,13 @@ export default class Api {
         })
       ).json();
 
+      const upscalers = await (
+        await fetch(url + 'upscalers', {
+          method: 'GET',
+          headers,
+        })
+      ).json();
+
       const models = await (
         await fetch(url + 'sd-models', {
           method: 'GET',
@@ -87,7 +111,7 @@ export default class Api {
       ).json();
 
       AppConfig.instance.setApiUrl(apiUrl, username, password);
-      AppConfig.instance.readOptions(options, samplers, models);
+      AppConfig.instance.readOptions(options, samplers, upscalers, models);
       this.baseUrl = apiUrl;
       return null;
     } catch (err) {
@@ -150,6 +174,29 @@ export default class Api {
         })
       ).json();
       if (Array.isArray(json.images) && json.images.length > 0) {
+        return json;
+      } else {
+        throw json;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async upscale(/** @type {UpscaleParameters} */ parameters) {
+    const url = this.baseUrl + 'sdapi/v1/extra-single-image';
+    const headers = this.prepareHeaders(false);
+    try {
+      const json = await (
+        await fetch(url, {
+          method: 'POST',
+          mode: 'cors',
+          headers,
+          body: JSON.stringify(parameters),
+        })
+      ).json();
+      console.log(json);
+      if (typeof json.image === 'string') {
         return json;
       } else {
         throw json;

@@ -47,7 +47,6 @@ const html = /*html*/ `
     #upscale-tab .input-image-file {
       color: transparent;
       width: 100%;
-      height: 0;
       padding: 1rem;
       border: 1px solid #ffffff;
       border-radius: 0.5rem;
@@ -56,7 +55,7 @@ const html = /*html*/ `
     #upscale-tab .input-image-file::before {
       display: block;
       width: 100%;
-      height: 4rem;
+      height: 0;
       content: 'Select or drag PNG';
       font-family: 'Montserrat', sans-serif;
       font-size: 1rem;
@@ -69,6 +68,12 @@ const html = /*html*/ `
       visibility: hidden;
     }
 
+    #upscale-tab .input-image {
+      width: 100%;
+      border-radius: 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
     #upscale-tab .option {
       display: flex;
       flex-flow: row nowrap;
@@ -78,10 +83,15 @@ const html = /*html*/ `
       padding: 0.5rem;
     }
 
+    #upscale-tab .heading {
+      font-size: 0.9rem;
+    }
+
     #upscale-tab input[type=text],
     #upscale-tab input[type=number],
     #upscale-tab select {
       flex-grow: 1;
+      min-width: 0;
     }
 
     #upscale-tab input[type=text]:disabled,
@@ -112,6 +122,16 @@ export default class Upscale extends Tab {
     this.title = 'UPSCALE';
 
     this.inputImageFile = this.root.querySelector('.input-image-file');
+    this.inputImageFile.addEventListener('change', () => {
+      if (this.inputImageFile.files.length == 0) return;
+      const file = this.inputImageFile.files[0];
+      const reader = new FileReader();
+      reader.addEventListener('load', () => {
+        this.inputImage.src = reader.result;
+        this.inputImage.style.display = '';
+      });
+      reader.readAsDataURL(file);
+    });
     this.inputImage = this.root.querySelector('.input-image');
     this.scaleByCheckbox = new Checkbox(
       this.root.querySelector('.chk-scale-by'),

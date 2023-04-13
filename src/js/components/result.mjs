@@ -35,9 +35,6 @@ const html = /*html*/ `
       <div class="tagging">
         <label class="heading">Tags:</label>
         <div class="tags">
-          <div class="tag"><span>#general</span><span class="btn-remove-tag"></span></div>
-          <div class="tag"><span>#nature</span><span class="btn-remove-tag"></span></div>
-          <div class="tag"><span>#test</span><span class="btn-remove-tag"></span></div>
           <div class="add-tag">
             <span class="hash">#</span>
             <input type="text" class="txt-tag" autocapitalize="off">
@@ -690,7 +687,9 @@ export default class ResultDialog extends Tab {
    */
   removeTag(element, tag) {
     ImageDB.instance.removeTag(this.imageInfo.uuid, tag).then((isRemoved) => {
-      this.tags.removeChild(element);
+      if (isRemoved) {
+        this.tags.removeChild(element);
+      }
     });
   }
 

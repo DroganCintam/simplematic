@@ -80,8 +80,8 @@ export class ImageDB {
         });
       }
 
-      const newRow = Object.assign(new ImageInfo(), idic.value);
-      if (!newRow.tags) newRow.tags = [];
+      const newRow = Object.assign(new ImageDataItem(), idic.value);
+      newRow.tags = idic.value.tags ? Array.from(idic.value.tags) : [];
       newRow.tags.push(tag);
 
       return new Promise(async (resolve, reject) => {
@@ -123,7 +123,8 @@ export class ImageDB {
         });
       }
 
-      const newRow = Object.assign(new ImageInfo(), idic.value);
+      const newRow = Object.assign(new ImageDataItem(), idic.value);
+      newRow.tags = idic.value.tags ? Array.from(idic.value.tags) : [];
       const idx = newRow.tags.indexOf(tag);
       newRow.tags.splice(idx, 1);
 

@@ -17,8 +17,14 @@ body {
   font-family: 'Montserrat', sans-serif;
   font-size: 16px;
   text-align: justify;
+  background: linear-gradient(to bottom, #00000040, #00000040), url('/img/bg.png');
+  background-position: center top;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   background-color: #303030;
   color: #ffffff;
+  overflow-x: hidden;
 }
 
 body::-webkit-scrollbar {

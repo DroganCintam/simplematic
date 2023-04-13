@@ -16,7 +16,7 @@
   top: 0;
   width: 100%;
   height: 4rem;
-  z-index: 999;
+  z-index: 888;
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
@@ -56,22 +56,16 @@ footer {
 }
 
 .main-view {
-  position: fixed;
+  /* position: fixed;
   left: 0;
   top: 0;
   width: 100vw;
   height: 100vh;
-  overflow-y: scroll;
-  transition: left 0.2s ease-out;
+  overflow-y: scroll; */
+  transition: margin 0.2s ease-out;
   box-shadow: rgb(0, 0, 0) -5px 0px 20px -10px;
   -ms-overflow-style: none;
   scrollbar-width: none;
-  background: linear-gradient(to bottom, #00000040, #00000040), url('/img/bg.png');
-  background-position: center top;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: scroll;
-  background-color: #303030;
 }
 
 .main-view::-webkit-scrollbar {
@@ -84,7 +78,7 @@ footer {
   top: 0;
   width: 100%;
   height: 100%;
-  z-index: 9999;
+  z-index: 999;
   background-color: #000;
   opacity: 0;
   display: none;

@@ -22,6 +22,9 @@ class App {
   /** @type {HTMLElement} */
   mainCurtain;
 
+  /** @type {HTMLElement} */
+  menuWidthElement;
+
   /** @type {HTMLButtonElement} */
   menuButton;
   /** @type {HTMLButtonElement} */
@@ -88,9 +91,14 @@ class App {
     this.menu.onSettings = () => this.switchTab(this.settingsTab);
     this.menu.onAbout = () => this.switchTab(this.aboutTab);
 
+    this.menuWidthElement = document.createElement('div');
+    this.menuWidthElement.style.width = this.menuWidth;
+    this.menuWidthElement.style.display = 'none';
+    this.root.appendChild(this.menuWidthElement);
+
     const topBar = this.root.querySelector('.top-bar');
-    this.mainView.addEventListener('scroll', () => {
-      if (this.mainView.scrollTop > 16) {
+    document.addEventListener('scroll', () => {
+      if (document.documentElement.scrollTop > 16) {
         topBar.classList.add('opaque');
       } else {
         topBar.classList.remove('opaque');
@@ -285,7 +293,10 @@ class App {
     this.showingMenu = true;
 
     this.menu.root.style.width = this.menuWidth;
-    this.mainView.style.left = this.menuWidth;
+    // this.mainView.style.left = this.menuWidth;
+    this.mainView.style.marginLeft = this.menuWidth;
+    const w = getComputedStyle(this.menuWidthElement).width;
+    this.mainView.style.marginRight = '-' + w;
 
     this.setLoading(true);
     this.mainCurtain.style.display = 'block';
@@ -296,7 +307,9 @@ class App {
     if (!this.showingMenu) return;
     this.showingMenu = false;
     this.menu.root.style.width = '0';
-    this.mainView.style.left = '0';
+    // this.mainView.style.left = '0';
+    this.mainView.style.marginLeft = '0';
+    this.mainView.style.marginRight = '0';
 
     this.setLoading(false);
     this.mainCurtain.style.opacity = '0';

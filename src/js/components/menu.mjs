@@ -49,6 +49,7 @@ const html = /*html*/ `
       transition: width 0.2s ease-out;
       -ms-overflow-style: none;
       scrollbar-width: none;
+      z-index: 9999;
     }
 
     #menu::-webkit-scrollbar {

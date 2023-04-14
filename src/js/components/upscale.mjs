@@ -1,3 +1,5 @@
+import Api from '../api.mjs';
+import AppConfig from '../types/app-config.mjs';
 import Checkbox from './checkbox.mjs';
 import Tab from './tab.mjs';
 
@@ -13,15 +15,54 @@ const html = /*html*/ `
     </div>
     <div class="option w50p">
       <label class="heading">Scale by</label>
-      <input type="number" class="txt-scale-by" value="4" min="1" max="8" onchange="validateInputRange(this)">
+      <input type="number" class="txt-scale-by" value="4" min="1" max="8" step="0.5" onchange="validateInputRange(this)">
     </div>
     <div class="option w50p">
       <label class="heading">Width</label>
-      <input type="number" class="txt-scale-width" value="512" min="1" onchange="validateInputRange(this)">
+      <input type="number" class="txt-scale-width" value="512" min="1" step="32" onchange="validateInputRange(this)">
     </div>
     <div class="option w50p">
       <label class="heading">Height</label>
-      <input type="number" class="txt-scale-height" value="512" min="1" onchange="validateInputRange(this)">
+      <input type="number" class="txt-scale-height" value="512" min="1" step="32" onchange="validateInputRange(this)">
+    </div>
+    <div class="option w100p">
+      <label class="heading">Upscaler</label>
+      <select class="sel-upscaler"></select>
+    </div>
+    <div class="option w50p">
+      <span class="chk-upscaler-2"></span>
+    </div>
+    <div class="option w50p">
+      <label class="heading">Visibility</label>
+      <input type="number" class="txt-upscaler-2-visibility" value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
+    </div>
+    <div class="option w100p">
+      <label class="heading">Upscaler 2</label>
+      <select class="sel-upscaler-2"></select>
+    </div>
+    <div class="option w50p">
+      <label class="heading">CodeFormer Visibility</label>
+      <input type="number" class="txt-codeformer-visibility" value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
+    </div>
+    <div class="option w50p">
+      <label class="heading">CodeFormer Weight</label>
+      <input type="number" class="txt-codeformer-weight" value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
+    </div>
+    <div class="option w50p">
+      <span class="chk-upscale-first"></span>
+    </div>
+    <div class="option w50p">
+      <label class="heading">GFPGAN Visibility</label>
+      <input type="number" class="txt-gfpgan-visibility" value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
+    </div>
+    <div class="option w100p">
+      <button class="btn-upscale" title="Upscale the input image">
+        <img src="/img/up-right-and-down-left-from-center-solid.svg">
+        UPSCALE
+      </button>
+    </div>
+    <div class="output-wrapper w100p">
+      <img class="output-image" alt="Upscaled image" style="display: none">
     </div>
   </div>
 
@@ -35,7 +76,8 @@ const html = /*html*/ `
       align-items: center;
     }
 
-    #upscale-tab .input-wrapper {
+    #upscale-tab .input-wrapper,
+    #upscale-tab .output-wrapper {
       display: flex;
       flex-flow: column nowrap;
       justify-content: flex-start;
@@ -68,7 +110,8 @@ const html = /*html*/ `
       visibility: hidden;
     }
 
-    #upscale-tab .input-image {
+    #upscale-tab .input-image,
+    #upscale-tab .output-image {
       width: 100%;
       border-radius: 0.5rem;
       border: 1px solid rgba(255, 255, 255, 0.5);
@@ -85,6 +128,10 @@ const html = /*html*/ `
 
     #upscale-tab .heading {
       font-size: 0.9rem;
+    }
+
+    #upscale-tab .btn-upscale {
+      width: 100%;
     }
 
     #upscale-tab input[type=text],
@@ -116,6 +163,28 @@ export default class Upscale extends Tab {
   scaleWidth;
   /** @type {HTMLInputElement} */
   scaleHeight;
+  /** @type {HTMLSelectElement} */
+  upscaler;
+  /** @type {Checkbox} */
+  upscaler2Checkbox;
+  /** @type {HTMLInputElement} */
+  upscaler2Visibility;
+  /** @type {HTMLSelectElement} */
+  upscaler2;
+  /** @type {HTMLInputElement} */
+  codeFormerVisibility;
+  /** @type {HTMLInputElement} */
+  codeFormerWeight;
+  /** @type {Checkbox} */
+  upscaleFirst;
+  /** @type {HTMLInputElement} */
+  gfpganVisibility;
+
+  /** @type {HTMLButtonElement} */
+  upscaleButton;
+
+  /** @type {HTMLImageElement} */
+  outputImage;
 
   constructor(/** @type {HTMLElement} */ parent) {
     super(parent, html);
@@ -151,5 +220,85 @@ export default class Upscale extends Tab {
     this.scaleBy.disabled = false;
     this.scaleWidth.disabled = true;
     this.scaleHeight.disabled = true;
+
+    this.upscaler = this.root.querySelector('.sel-upscaler');
+    this.upscaler2Checkbox = new Checkbox(
+      this.root.querySelector('.chk-upscaler-2'),
+      { assignedId: 'chk-upscaler-2', label: 'Upscaler 2', extraClasses: ['w100p'] },
+      true
+    );
+    this.upscaler2Visibility = this.root.querySelector('.txt-upscaler-2-visibility');
+    this.upscaler2 = this.root.querySelector('.sel-upscaler-2');
+
+    this.upscaler2Checkbox.onChange = (chk) => {
+      this.upscaler2Visibility.disabled = !chk.checked;
+      this.upscaler2.disabled = !chk.checked;
+    };
+    this.upscaler2Checkbox.checked = false;
+    this.upscaler2Visibility.disabled = true;
+    this.upscaler2.disabled = true;
+
+    this.codeFormerVisibility = this.root.querySelector('.txt-codeformer-visibility');
+    this.codeFormerWeight = this.root.querySelector('.txt-codeformer-weight');
+    this.upscaleFirst = new Checkbox(
+      this.root.querySelector('.chk-upscale-first'),
+      { assignedId: 'chk-upscale-first', label: 'Upscale First', extraClasses: ['w100p'] },
+      true
+    );
+    this.gfpganVisibility = this.root.querySelector('.txt-gfpgan-visibility');
+
+    this.upscaleButton = this.root.querySelector('.btn-upscale');
+    this.outputImage = this.root.querySelector('.output-image');
+
+    this.upscaleButton.addEventListener('click', () => {
+      this.upscale();
+    });
+
+    AppConfig.instance.upscalerList.forEach((s) => {
+      this.upscaler.appendChild(
+        Object.assign(document.createElement('option'), {
+          value: s,
+          innerText: s,
+        })
+      );
+      this.upscaler2.appendChild(
+        Object.assign(document.createElement('option'), {
+          value: s,
+          innerText: s,
+        })
+      );
+    });
+  }
+
+  async upscale() {
+    if (this.inputImage.src == '') return;
+    const inputImageData = this.inputImage.src;
+    this.upscaleButton.disabled = true;
+    Api.instance
+      .upscale({
+        resize_mode: this.scaleByCheckbox.checked ? 0 : 1,
+        gfpgan_visibility: this.gfpganVisibility.valueAsNumber,
+        codeformer_visibility: this.codeFormerVisibility.valueAsNumber,
+        codeformer_weight: this.codeFormerWeight.valueAsNumber,
+        upscaling_resize: this.scaleBy.valueAsNumber,
+        upscaling_resize_w: this.scaleWidth.valueAsNumber,
+        upscaling_resize_h: this.scaleHeight.valueAsNumber,
+        upscaler_1: this.upscaler.value,
+        upscaler_2: this.upscaler2.value,
+        extras_upscaler_2_visibility: this.upscaler2Visibility.valueAsNumber,
+        upscaleFirst: this.upscaleFirst.checked,
+        image: inputImageData,
+      })
+      .then((json) => {
+        const imageData = json.image;
+        this.outputImage.src = 'data:image/png;base64,' + imageData;
+        this.outputImage.style.display = '';
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => {
+        this.upscaleButton.disabled = false;
+      });
   }
 }

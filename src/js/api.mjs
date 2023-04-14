@@ -195,7 +195,6 @@ export default class Api {
           body: JSON.stringify(parameters),
         })
       ).json();
-      console.log(json);
       if (typeof json.image === 'string') {
         return json;
       } else {

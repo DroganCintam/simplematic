@@ -1,11 +1,11 @@
 import Tab from './tab.mjs';
-import Settings from './settings.mjs';
 import autoResize from '../utils/autoResize.mjs';
 import ValueSelector from './value-selector.mjs';
 import ImageInfo from '../types/image-info.mjs';
-import Api, { Txt2ImgParameters } from '../api.mjs';
+import Api, { Img2ImgParameters, Txt2ImgParameters } from '../api.mjs';
 import AppConfig from '../types/app-config.mjs';
 import Checkbox from './checkbox.mjs';
+import ImageUpload from './image-upload.mjs';
 
 const defaultParameters = {
   sampler: 'DPM++ 2M Karras v2',
@@ -47,6 +47,7 @@ const html = /*html*/ `
     <div class="advanced-parameters">
       <span class="chk-restore-faces"></span>
       <span class="chk-hires"></span>
+      <span class="chk-img2img"></span>
     </div>
     <div class="hires" style="display: none">
       <div class="title">HiRes options</div>
@@ -63,6 +64,17 @@ const html = /*html*/ `
           <label>Custom steps:</label>
           <input type="number" class="txt-hires-steps" value="0" min="0" max="150" onchange="validateInputRange(this)">
         </div>
+      </div>
+    </div>
+    <div class="img2img" style="display: none">
+      <div class="title">Image-to-Image</div>
+      <div class="options">
+        <label class="heading">Denoising strength:</label>
+        <input type="number" class="txt-denoising-strength" value="0.5" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
+        <label class="heading">Resize mode:</label>
+        <span class="sel-resize-mode"></span>
+        <label class="heading">Input image:</label>
+        <div class="img2img-input-image"></div>
       </div>
     </div>
   </div>
@@ -159,6 +171,43 @@ const html = /*html*/ `
     #txt2img-tab .hires .options .option input {
       flex-grow: 1;
     }
+
+    #txt2img-tab .img2img {
+      width: 100%;
+      padding: 0;
+      border: 1px solid hsla(0, 0%, 100%, 0.5);
+      border-radius: 0.5rem;
+    }
+
+    #txt2img-tab .img2img .title {
+      padding: 0.5rem;
+      border-radius: 0.5rem 0.5rem 0 0;
+      border-bottom: 1px solid hsla(0, 0%, 100%, 0.5);
+      background-color: hsla(0, 0%, 0%, 0.5);
+      text-align: center;
+    }
+
+    #txt2img-tab .img2img .options {
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: flex-start;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.5rem;
+    }
+
+    #txt2img-tab .img2img .options .txt-denoising-strength {
+      min-width: 16ch;
+    }
+
+    #txt2img-tab .img2img .options .image-upload {
+      width: 100%;
+      max-height: 512px;
+    }
+
+    #txt2img-tab .img2img .options .image-upload img {
+      object-fit: contain;
+    }
   </style>
 </div>
 `;
@@ -187,6 +236,9 @@ export default class Txt2Img extends Tab {
   restoreFacesCheckbox;
   /** @type {Checkbox} */
   hiresCheckbox;
+  /** @type {Checkbox} */
+  img2imgCheckbox;
+
   /** @type {HTMLElement} */
   hiresOptions;
   /** @type {HTMLInputElement} */
@@ -195,6 +247,15 @@ export default class Txt2Img extends Tab {
   hiresScale;
   /** @type {HTMLInputElement} */
   hiresSteps;
+
+  /** @type {HTMLElement} */
+  img2img;
+  /** @type {HTMLInputElement} */
+  denoisingStrength;
+  /** @type {ValueSelector} */
+  resizeModeSelector;
+  /** @type {ImageUpload} */
+  img2imgInputImage;
 
   /** @type {()=>void} */
   onSubmit;
@@ -314,6 +375,20 @@ export default class Txt2Img extends Tab {
       true
     );
 
+    this.resizeModeSelector = new ValueSelector(this.root.querySelector('.sel-resize-mode'), {
+      assignedId: 'resizeMode',
+      defaultValue: 0,
+      minValue: 0,
+      maxValue: 2,
+      isInteger: true,
+      hasCustom: false,
+      values: [
+        { name: 'Just resize', value: 0 },
+        { name: 'Crop and resize', value: 1 },
+        { name: 'Resize and fill', value: 2 },
+      ],
+    });
+
     this.restoreFacesCheckbox = new Checkbox(
       this.root.querySelector('.chk-restore-faces'),
       {
@@ -332,14 +407,40 @@ export default class Txt2Img extends Tab {
       true
     );
 
+    this.img2imgCheckbox = new Checkbox(
+      this.root.querySelector('.chk-img2img'),
+      {
+        assignedId: 'chk-img2img',
+        label: 'Img2Img',
+      },
+      true
+    );
+
     this.hiresCheckbox.onChange = (chk) => {
       this.hiresOptions.style.display = chk.checked ? '' : 'none';
+    };
+
+    this.img2imgCheckbox.onChange = (chk) => {
+      this.img2img.style.display = chk.checked ? '' : 'none';
+      this.hiresCheckbox.disabled = chk.checked;
+      if (chk.checked) {
+        this.hiresCheckbox.checked = false;
+        this.hiresOptions.style.display = 'none';
+      }
     };
 
     this.hiresOptions = this.root.querySelector('.hires');
     this.hiresDenoisingStrength = this.hiresOptions.querySelector('.txt-hires-denoising-strength');
     this.hiresScale = this.hiresOptions.querySelector('.txt-hires-scale');
     this.hiresSteps = this.hiresOptions.querySelector('.txt-hires-steps');
+
+    this.img2img = this.root.querySelector('.img2img');
+    this.denoisingStrength = this.img2img.querySelector('.txt-denoising-strength');
+    this.img2imgInputImage = new ImageUpload(
+      this.img2img.querySelector('.img2img-input-image'),
+      {},
+      true
+    );
 
     this.clearPromptButton.addEventListener('click', () => {
       this.prompt.value = '';
@@ -419,25 +520,44 @@ export default class Txt2Img extends Tab {
         break;
     }
 
-    /** @type {Txt2ImgParameters} */
-    const parameters = {
-      prompt: this.prompt.value,
-      negative_prompt: this.negativePrompt.value,
-      sampler_name: AppConfig.instance.selectedSampler ?? defaultParameters.sampler,
-      steps: this.stepsSelector.currentValue,
-      cfg_scale: this.cfgSelector.currentValue,
-      seed: this.seed.value,
-      width,
-      height,
-      restore_faces: this.restoreFacesCheckbox.checked,
-    };
-    if (this.hiresCheckbox.checked) {
-      parameters.enable_hr = true;
-      parameters.denoising_strength = this.hiresDenoisingStrength.valueAsNumber;
-      parameters.hr_scale = this.hiresScale.valueAsNumber;
-      parameters.hr_second_pass_steps = this.hiresSteps.valueAsNumber;
+    if (this.img2imgCheckbox.checked && this.img2imgInputImage.hasImage) {
+      /** @type {Img2ImgParameters} */
+      const parameters = {
+        prompt: this.prompt.value,
+        negative_prompt: this.negativePrompt.value,
+        sampler_name: AppConfig.instance.selectedSampler ?? defaultParameters.sampler,
+        steps: this.stepsSelector.currentValue,
+        cfg_scale: this.cfgSelector.currentValue,
+        seed: this.seed.value,
+        width,
+        height,
+        restore_faces: this.restoreFacesCheckbox.checked,
+        init_images: [this.img2imgInputImage.imageData],
+        denoising_strength: this.denoisingStrength.valueAsNumber,
+        resize_mode: this.resizeModeSelector.currentValue,
+      };
+      Api.instance.img2img(parameters).then(onSuccess).catch(onFailure).finally(onEnd);
+    } else {
+      /** @type {Txt2ImgParameters} */
+      const parameters = {
+        prompt: this.prompt.value,
+        negative_prompt: this.negativePrompt.value,
+        sampler_name: AppConfig.instance.selectedSampler ?? defaultParameters.sampler,
+        steps: this.stepsSelector.currentValue,
+        cfg_scale: this.cfgSelector.currentValue,
+        seed: this.seed.value,
+        width,
+        height,
+        restore_faces: this.restoreFacesCheckbox.checked,
+      };
+      if (this.hiresCheckbox.checked) {
+        parameters.enable_hr = true;
+        parameters.denoising_strength = this.hiresDenoisingStrength.valueAsNumber;
+        parameters.hr_scale = this.hiresScale.valueAsNumber;
+        parameters.hr_second_pass_steps = this.hiresSteps.valueAsNumber;
+      }
+      Api.instance.txt2img(parameters).then(onSuccess).catch(onFailure).finally(onEnd);
     }
-    Api.instance.txt2img(parameters).then(onSuccess).catch(onFailure).finally(onEnd);
   }
 
   setLoading(isLoading) {

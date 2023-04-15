@@ -37,7 +37,7 @@ export default class Checkbox extends Component {
 
   /**
    * @param {HTMLElement} parent
-   * @param {string} assignedId
+   * @param {{ assignedId: string, label: string, extraClasses: string[] | undefined }} options
    * @param {boolean} replacing
    */
   constructor(parent, options, replacing = true) {

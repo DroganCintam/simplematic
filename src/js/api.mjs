@@ -26,6 +26,29 @@ export class Txt2ImgParameters {
   batch_size = 1;
 }
 
+export class Img2ImgParameters {
+  prompt = '';
+  negative_prompt = '';
+  sampler_name = '';
+  steps = 20;
+  cfg_scale = 7.0;
+  seed = -1;
+  width = 512;
+  height = 512;
+
+  restore_faces = false;
+  tiling = false;
+
+  /** @type {string[]} */
+  init_images = [];
+  resize_mode = 0;
+  denoising_strength = 0.75;
+  image_cfg_scale = 0;
+
+  n_iter = 1;
+  batch_size = 1;
+}
+
 export class UpscaleParameters {
   resize_mode = 0;
   show_extras_results = true;
@@ -163,6 +186,28 @@ export default class Api {
 
   async txt2img(/** @type {Txt2ImgParameters} */ parameters) {
     const url = this.baseUrl + 'sdapi/v1/txt2img';
+    const headers = this.prepareHeaders(false);
+    try {
+      const json = await (
+        await fetch(url, {
+          method: 'POST',
+          mode: 'cors',
+          headers,
+          body: JSON.stringify(parameters),
+        })
+      ).json();
+      if (Array.isArray(json.images) && json.images.length > 0) {
+        return json;
+      } else {
+        throw json;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async img2img(/** @type {Img2ImgParameters} */ parameters) {
+    const url = this.baseUrl + 'sdapi/v1/img2img';
     const headers = this.prepareHeaders(false);
     try {
       const json = await (

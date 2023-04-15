@@ -246,6 +246,7 @@ class App {
         progress.hide();
       },
       (json) => {
+        console.log(json.info);
         this.hasResult = true;
         this.resultTab.display(json);
         this.switchTab(this.resultTab);

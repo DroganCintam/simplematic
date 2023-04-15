@@ -3,4 +3,5 @@
 firebase.json
 firebase-debug.log
 *.bat
+*.sh
 /dist/

@@ -88,6 +88,7 @@ class App {
 
     this.menu = new Menu(this.root.querySelector('.menu'));
     this.menu.onHide = this.hideMenu.bind(this);
+    this.menu.onOpenUpscaler = () => this.switchTab(this.upscaleTab);
     this.menu.onOpenGallery = () => this.switchTab(this.galleryTab);
     this.menu.onSettings = () => this.switchTab(this.settingsTab);
     this.menu.onAbout = () => this.switchTab(this.aboutTab);
@@ -173,6 +174,11 @@ class App {
     this.resultTab.onRemix = (imageInfo) => {
       this.txt2imgTab.retrieveInfo(imageInfo, true);
       this.switchTab(this.txt2imgTab);
+    };
+
+    this.resultTab.onUpscale = (imageInfo) => {
+      this.upscaleTab.retrieveImage(imageInfo.imageData);
+      this.switchTab(this.upscaleTab);
     };
 
     this.pngImportTab.onLoaded = (imageData, infoText) => {

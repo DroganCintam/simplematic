@@ -31,6 +31,7 @@ const html = /*html*/ `
         <button type="button" class="btn-rerun"><p></p><img src="/img/wand-magic-sparkles-solid.svg"><span>NEW SEED</span></button>
         <button type="button" class="btn-save"><img src="/img/floppy-disk-solid.svg">SAVE</button>
         <button type="button" class="btn-delete"><img src="/img/trash-solid.svg">DELETE</button>
+        <button type="button" class="btn-upscale"><img src="/img/up-right-and-down-left-from-center-solid-black.svg">UPSCALE</button>
       </div>
       <div class="tagging">
         <label class="heading">Tags:</label>
@@ -137,6 +138,11 @@ const html = /*html*/ `
 
     #result-tab .pane > div.no-gap {
       gap: 0;
+    }
+
+    #result-tab .actions {
+      flex-flow: row wrap;
+      gap: 0.25rem;
     }
 
     #result-tab .actions button {
@@ -316,6 +322,9 @@ export default class ResultDialog extends Tab {
   /** @type {Progress} */
   rerunProgress;
 
+  /** @type {HTMLButtonElement} */
+  upscaleButton;
+
   /** @type {HTMLElement} */
   tagging;
   /** @type {HTMLElement} */
@@ -360,6 +369,8 @@ export default class ResultDialog extends Tab {
   onRerun;
   /** @type {(info: ImageInfo) => void} */
   onRemix;
+  /** @type {(info: ImageInfo) => void} */
+  onUpscale;
 
   /** @type {() => void} */
   goPrev;
@@ -399,6 +410,11 @@ export default class ResultDialog extends Tab {
       this.onRerun(this.imageInfo, this.rerunProgress);
     });
     this.rerunProgress = new Progress(this.rerunButton.querySelector('p'), true);
+
+    this.upscaleButton = this.root.querySelector('.btn-upscale');
+    this.upscaleButton.addEventListener('click', () => {
+      this.onUpscale(this.imageInfo);
+    });
 
     this.saveButton = this.root.querySelector('.btn-save');
     this.saveButton.addEventListener('click', () => {
@@ -699,6 +715,7 @@ export default class ResultDialog extends Tab {
     this.rerunButton.disabled = isLoading;
     this.saveButton.disabled = isLoading;
     this.deleteButton.disabled = isLoading;
+    this.upscaleButton.disabled = isLoading;
     this.addTagButton.disabled = isLoading;
   }
 }

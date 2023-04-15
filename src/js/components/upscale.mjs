@@ -5,79 +5,107 @@ import Tab from './tab.mjs';
 
 const html = /*html*/ `
 <div id="upscale-tab" class="app-tab" style="display:none">
-  <div>
-    <div class="input-wrapper w100p">
-      <input class="input-image-file" type="file" accept="image/png">
-      <img class="input-image" alt="Input image" style="display: none">
+  <div class="panes">
+    <div class="pane input-pane">
+      <div class="input-wrapper w100p">
+        <input class="input-image-file" type="file" accept="image/png">
+        <img class="input-image" alt="Input image" style="display: none">
+      </div>
     </div>
-    <div class="option w50p">
-      <span class="chk-scale-by"></span>
+    <div class="pane config-pane">
+      <div class="option w100p">
+        <button type="button" class="btn-upscale" title="Upscale the input image">
+          <img src="/img/up-right-and-down-left-from-center-solid-black.svg">
+          UPSCALE
+        </button>
+      </div>
+      <div class="option w50p">
+        <span class="chk-scale-by"></span>
+      </div>
+      <div class="option w50p">
+        <label class="heading">Scale by</label>
+        <input type="number" class="txt-scale-by" value="4" min="1" max="8" step="0.5" onchange="validateInputRange(this)">
+      </div>
+      <div class="option w50p">
+        <label class="heading">Width</label>
+        <input type="number" class="txt-scale-width" value="512" min="1" step="32" onchange="validateInputRange(this)">
+      </div>
+      <div class="option w50p">
+        <label class="heading">Height</label>
+        <input type="number" class="txt-scale-height" value="512" min="1" step="32" onchange="validateInputRange(this)">
+      </div>
+      <div class="option w100p">
+        <label class="heading">Upscaler</label>
+        <select class="sel-upscaler"></select>
+      </div>
+      <div class="option w50p">
+        <span class="chk-upscaler-2"></span>
+      </div>
+      <div class="option w50p">
+        <label class="heading">Visibility</label>
+        <input type="number" class="txt-upscaler-2-visibility" value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
+      </div>
+      <div class="option w100p">
+        <label class="heading">Upscaler 2</label>
+        <select class="sel-upscaler-2"></select>
+      </div>
+      <div class="option w50p">
+        <label class="heading">CodeFormer Visibility</label>
+        <input type="number" class="txt-codeformer-visibility" value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
+      </div>
+      <div class="option w50p">
+        <label class="heading">CodeFormer Weight</label>
+        <input type="number" class="txt-codeformer-weight" value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
+      </div>
+      <div class="option w50p">
+        <span class="chk-upscale-first"></span>
+      </div>
+      <div class="option w50p">
+        <label class="heading">GFPGAN Visibility</label>
+        <input type="number" class="txt-gfpgan-visibility" value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
+      </div>
+      <div class="option w100p">
+        <button type="button" class="btn-show-result" title="Show result image"><span>SHOW RESULT</span></button>
+      </div>
     </div>
-    <div class="option w50p">
-      <label class="heading">Scale by</label>
-      <input type="number" class="txt-scale-by" value="4" min="1" max="8" step="0.5" onchange="validateInputRange(this)">
-    </div>
-    <div class="option w50p">
-      <label class="heading">Width</label>
-      <input type="number" class="txt-scale-width" value="512" min="1" step="32" onchange="validateInputRange(this)">
-    </div>
-    <div class="option w50p">
-      <label class="heading">Height</label>
-      <input type="number" class="txt-scale-height" value="512" min="1" step="32" onchange="validateInputRange(this)">
-    </div>
-    <div class="option w100p">
-      <label class="heading">Upscaler</label>
-      <select class="sel-upscaler"></select>
-    </div>
-    <div class="option w50p">
-      <span class="chk-upscaler-2"></span>
-    </div>
-    <div class="option w50p">
-      <label class="heading">Visibility</label>
-      <input type="number" class="txt-upscaler-2-visibility" value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
-    </div>
-    <div class="option w100p">
-      <label class="heading">Upscaler 2</label>
-      <select class="sel-upscaler-2"></select>
-    </div>
-    <div class="option w50p">
-      <label class="heading">CodeFormer Visibility</label>
-      <input type="number" class="txt-codeformer-visibility" value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
-    </div>
-    <div class="option w50p">
-      <label class="heading">CodeFormer Weight</label>
-      <input type="number" class="txt-codeformer-weight" value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
-    </div>
-    <div class="option w50p">
-      <span class="chk-upscale-first"></span>
-    </div>
-    <div class="option w50p">
-      <label class="heading">GFPGAN Visibility</label>
-      <input type="number" class="txt-gfpgan-visibility" value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
-    </div>
-    <div class="option w100p">
-      <button class="btn-upscale" title="Upscale the input image">
-        <img src="/img/up-right-and-down-left-from-center-solid.svg">
-        UPSCALE
-      </button>
-    </div>
-    <div class="output-wrapper w100p">
-      <img class="output-image" alt="Upscaled image" style="display: none">
-    </div>
+  </div>
+  <div class="output-wrapper w100p" style="display: none">
+    <img class="output-image" alt="Upscaled image">
   </div>
 
   <style>
-    #upscale-tab > div {
-      width: 100%;
-      max-width: 1024px;
-      display: flex;
-      flex-flow: row wrap;
-      justify-content: flex-start;
-      align-items: center;
+    #upscale-tab {
+      position: relative;
     }
 
-    #upscale-tab .input-wrapper,
-    #upscale-tab .output-wrapper {
+    #upscale-tab .panes {
+      display: flex;
+      flex-flow: row wrap;
+      align-items: flex-start;
+      justify-content: flex-start;
+      width: 100%;
+      max-width: 512px;
+    }
+
+    @media (min-width: 720px) {
+      #upscale-tab .panes {
+        max-width: 1024px;
+      }
+      #upscale-tab .pane {
+        width: 50%;
+        max-width: 50%;
+      }
+    }
+
+    #upscale-tab .pane {
+      display: flex;
+      flex-flow: row wrap;
+      align-items: flex-start;
+      justify-content: flex-start;
+      width: 100%;
+    }
+
+    #upscale-tab .input-wrapper {
       display: flex;
       flex-flow: column nowrap;
       justify-content: flex-start;
@@ -110,8 +138,7 @@ const html = /*html*/ `
       visibility: hidden;
     }
 
-    #upscale-tab .input-image,
-    #upscale-tab .output-image {
+    #upscale-tab .input-image {
       width: 100%;
       border-radius: 0.5rem;
       border: 1px solid rgba(255, 255, 255, 0.5);
@@ -130,7 +157,8 @@ const html = /*html*/ `
       font-size: 0.9rem;
     }
 
-    #upscale-tab .btn-upscale {
+    #upscale-tab .btn-upscale,
+    #upscale-tab .btn-show-result {
       width: 100%;
     }
 
@@ -145,6 +173,26 @@ const html = /*html*/ `
     #upscale-tab input[type=number]:disabled,
     #upscale-tab select:disabled {
       color: hsla(0, 0%, 100%, 0.3);
+    }
+
+    #upscale-tab .output-wrapper {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: hsla(0, 0%, 0%, 0.5);
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #upscale-tab .output-image {
+      max-width: min(512px, calc(100vw - 3rem));
+      max-height: min(512px, 80vh);
+      border-radius: 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.5);
     }
   </style>
 </div>
@@ -182,7 +230,11 @@ export default class Upscale extends Tab {
 
   /** @type {HTMLButtonElement} */
   upscaleButton;
+  /** @type {HTMLButtonElement} */
+  showResultButton;
 
+  /** @type {HTMLElement} */
+  outputWrapper;
   /** @type {HTMLImageElement} */
   outputImage;
 
@@ -198,6 +250,9 @@ export default class Upscale extends Tab {
       reader.addEventListener('load', () => {
         this.inputImage.src = reader.result;
         this.inputImage.style.display = '';
+        if (this.showResultButton.style.display == '') {
+          this.showResultButton.querySelector('span').innerText = 'SHOW OLD RESULT';
+        }
       });
       reader.readAsDataURL(file);
     });
@@ -248,10 +303,25 @@ export default class Upscale extends Tab {
     this.gfpganVisibility = this.root.querySelector('.txt-gfpgan-visibility');
 
     this.upscaleButton = this.root.querySelector('.btn-upscale');
+
+    this.outputWrapper = this.root.querySelector('.output-wrapper');
     this.outputImage = this.root.querySelector('.output-image');
 
     this.upscaleButton.addEventListener('click', () => {
       this.upscale();
+    });
+
+    this.showResultButton = this.root.querySelector('.btn-show-result');
+    this.showResultButton.parentElement.style.display = 'none';
+    this.showResultButton.addEventListener('click', () => {
+      this.outputWrapper.style.display = '';
+    });
+
+    this.outputWrapper.addEventListener('click', (e) => {
+      if (e.target == this.outputWrapper) {
+        this.outputWrapper.style.display = 'none';
+        e.stopPropagation();
+      }
     });
 
     AppConfig.instance.upscalerList.forEach((s) => {
@@ -273,7 +343,7 @@ export default class Upscale extends Tab {
   async upscale() {
     if (this.inputImage.src == '') return;
     const inputImageData = this.inputImage.src;
-    this.upscaleButton.disabled = true;
+    this.setLoading(true);
     Api.instance
       .upscale({
         resize_mode: this.scaleByCheckbox.checked ? 0 : 1,
@@ -292,13 +362,41 @@ export default class Upscale extends Tab {
       .then((json) => {
         const imageData = json.image;
         this.outputImage.src = 'data:image/png;base64,' + imageData;
-        this.outputImage.style.display = '';
+        this.outputWrapper.style.display = '';
+        this.showResultButton.parentElement.style.display = '';
+        this.showResultButton.querySelector('span').innerText = 'SHOW RESULT';
       })
       .catch((err) => {
         console.error(err);
       })
       .finally(() => {
-        this.upscaleButton.disabled = false;
+        this.setLoading(false);
       });
+  }
+
+  retrieveImage(imageData) {
+    this.inputImage.src = imageData;
+    this.inputImage.style.display = '';
+    if (this.showResultButton.style.display == '') {
+      this.showResultButton.querySelector('span').innerText = 'SHOW OLD RESULT';
+    }
+  }
+
+  setLoading(isLoading) {
+    this.inputImageFile.disabled = isLoading;
+    this.scaleByCheckbox.disabled = isLoading;
+    this.scaleBy.disabled = isLoading || !this.scaleByCheckbox.checked;
+    this.scaleWidth.disabled = isLoading || this.scaleByCheckbox.checked;
+    this.scaleHeight.disabled = isLoading || this.scaleByCheckbox.checked;
+    this.upscaler.disabled = isLoading;
+    this.upscaler2Checkbox.disabled = isLoading;
+    this.upscaler2Visibility.disabled = isLoading || !this.upscaler2Checkbox.checked;
+    this.upscaler2.disabled = isLoading || !this.upscaler2Checkbox.checked;
+    this.codeFormerVisibility.disabled = isLoading;
+    this.codeFormerWeight.disabled = isLoading;
+    this.upscaleFirst.disabled = isLoading;
+    this.gfpganVisibility.disabled = isLoading;
+    this.upscaleButton.disabled = isLoading;
+    this.showResultButton.disabled = isLoading;
   }
 }

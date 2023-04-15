@@ -18,6 +18,9 @@ export default class AppConfig {
   /** @type {string[]} */
   samplerList = [];
 
+  /** @type {string[]} */
+  upscalerList = [];
+
   /** @type {Map<string, Model>} */
   modelDict = {};
   /** @type {Model[]} */
@@ -35,6 +38,7 @@ export default class AppConfig {
     this.username = localStorage.getItem('username') ?? '';
     this.password = localStorage.getItem('password') ?? '';
     this.samplerList = JSON.parse(localStorage.getItem('samplers') ?? '[]');
+    this.upscalerList = JSON.parse(localStorage.getItem('upscalers') ?? '[]');
     this.modelDict = JSON.parse(localStorage.getItem('modelDict') ?? '{}');
     this.modelList = JSON.parse(localStorage.getItem('modelList') ?? '[]');
     this.selectedSampler = localStorage.getItem('selectedSampler') ?? '';
@@ -52,12 +56,14 @@ export default class AppConfig {
   /**
    * @param {{ hide_samplers: string[], sd_model_checkpoint: string }} options
    * @param {Array<{ name: string }>} samplers
+   * @param {Array<{ name: string }>} upscalers
    * @param {Array<{ title: string, model_name: string, hash: string }>} models
    */
-  readOptions(options, samplers, models) {
+  readOptions(options, samplers, upscalers, models) {
     this.samplerList = samplers
       .map((s) => s.name)
       .filter((s) => options.hide_samplers.indexOf(s) < 0);
+    this.upscalerList = upscalers.map((us) => us.name);
     this.modelDict = {};
     this.modelList = [];
     models.forEach((m) => {
@@ -81,6 +87,7 @@ export default class AppConfig {
     this.trySelectModel(sdModelCheckpoint);
 
     localStorage.setItem('samplers', JSON.stringify(this.samplerList));
+    localStorage.setItem('upscalers', JSON.stringify(this.upscalerList));
     localStorage.setItem('modelDict', JSON.stringify(this.modelDict));
     localStorage.setItem('modelList', JSON.stringify(this.modelList));
     localStorage.setItem('selectedSampler', this.selectedSampler);

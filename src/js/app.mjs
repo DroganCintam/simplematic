@@ -8,6 +8,7 @@ import AppConfig from './types/app-config.mjs';
 import PngImport from './components/png-import.mjs';
 import About from './components/about.mjs';
 import Gallery from './components/gallery.mjs';
+import Upscale from './components/upscale.mjs';
 import Progress from './components/progress.mjs';
 import ImageInfo from './types/image-info.mjs';
 
@@ -64,6 +65,9 @@ class App {
   /** @type {Gallery} */
   galleryTab;
 
+  /** @type {Upscale} */
+  upscaleTab;
+
   /** @type {Tab} */
   currentTab;
 
@@ -87,6 +91,7 @@ class App {
 
     this.menu = new Menu(this.root.querySelector('.menu'));
     this.menu.onHide = this.hideMenu.bind(this);
+    this.menu.onOpenUpscaler = () => this.switchTab(this.upscaleTab);
     this.menu.onOpenGallery = () => this.switchTab(this.galleryTab);
     this.menu.onSettings = () => this.switchTab(this.settingsTab);
     this.menu.onAbout = () => this.switchTab(this.aboutTab);
@@ -156,6 +161,7 @@ class App {
     this.pngImportTab = new PngImport(tabs);
     this.txt2imgTab = new Txt2Img(tabs);
     this.galleryTab = new Gallery(tabs);
+    this.upscaleTab = new Upscale(tabs);
 
     this.currentTab = this.txt2imgTab;
 
@@ -176,6 +182,11 @@ class App {
     this.resultTab.onRemix = (imageInfo) => {
       this.txt2imgTab.retrieveInfo(imageInfo, true);
       this.switchTab(this.txt2imgTab);
+    };
+
+    this.resultTab.onUpscale = (imageInfo) => {
+      this.upscaleTab.retrieveImage(imageInfo.imageData);
+      this.switchTab(this.upscaleTab);
     };
 
     this.pngImportTab.onLoaded = (imageData, infoText) => {
@@ -216,6 +227,8 @@ class App {
 
     if (window.location.hash === '#/gallery') {
       this.switchTab(this.galleryTab);
+    } else if (window.location.hash === '#/upscale') {
+      this.switchTab(this.upscaleTab);
     }
   }
 

@@ -22,6 +22,10 @@ const html = /*html*/ `
     <div class="option">
       <button type="button" class="btn-reload-config"><img src="/img/rotate-solid.svg" alt="Reload config">Reload config</button>
     </div>
+    <div class="divider"></div>
+    <div class="option">
+      <button type="button" class="btn-upscale"><img src="/img/up-right-and-down-left-from-center-solid.svg" alt="Upscale image">Upscale</button>
+    </div>
     <div class="option">
       <button type="button" class="btn-gallery"><img src="/img/grip-solid.svg" alt="Open gallery">Gallery</button>
     </div>
@@ -74,6 +78,12 @@ const html = /*html*/ `
       padding: 0 1rem;
       border-bottom: 1px solid hsla(0, 0%, 100%, 0.2);
       font-weight: bold;
+    }
+
+    #menu .divider {
+      width: 100%;
+      height: 1px;
+      background-color: hsla(0, 0%, 100%, 0.15);
     }
     
     #menu .option {
@@ -214,6 +224,8 @@ export default class Menu extends Component {
   /** @type {HTMLButtonElement} */
   reloadConfigButton;
   /** @type {HTMLButtonElement} */
+  upscaleButton;
+  /** @type {HTMLButtonElement} */
   galleryButton;
   /** @type {HTMLButtonElement} */
   settingsButton;
@@ -225,6 +237,9 @@ export default class Menu extends Component {
 
   /** @type {() => void} */
   onHide;
+
+  /** @type {() => void} */
+  onOpenUpscaler;
 
   /** @type {() => void} */
   onOpenGallery;
@@ -241,6 +256,12 @@ export default class Menu extends Component {
     this.hideMenuButton = this.root.querySelector('.btn-hide');
     this.hideMenuButton.addEventListener('click', () => {
       this.onHide();
+    });
+
+    this.upscaleButton = this.root.querySelector('.btn-upscale');
+    this.upscaleButton.addEventListener('click', () => {
+      this.onHide();
+      this.onOpenUpscaler();
     });
 
     this.galleryButton = this.root.querySelector('.btn-gallery');
@@ -329,6 +350,7 @@ export default class Menu extends Component {
     this.samplers.disabled = isLoading;
     this.models.disabled = isLoading;
     this.reloadConfigButton.disabled = isLoading;
+    this.upscaleButton.disabled = isLoading;
     this.galleryButton.disabled = isLoading;
     this.settingsButton.disabled = isLoading;
     this.aboutButton.disabled = isLoading;

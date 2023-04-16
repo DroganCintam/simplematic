@@ -13,6 +13,16 @@ export default class ImageUpload extends Component {
   /** @type {HTMLImageElement} */
   image;
 
+  _disabled = false;
+
+  get disabled() {
+    return this._disabled;
+  }
+
+  set disabled(value) {
+    this.fileInput.disabled = value;
+  }
+
   /**
    * @param {HTMLElement} parent
    * @param {{ extraClasses: string[] | undefined }}} options
@@ -37,6 +47,7 @@ export default class ImageUpload extends Component {
     });
 
     this.image.addEventListener('click', () => {
+      if (this._disabled) return;
       this.fileInput.click();
     });
   }

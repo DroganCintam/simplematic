@@ -485,9 +485,16 @@ export default class Txt2Img extends Tab {
 
     if (imageInfo.inputImage && imageInfo.inputImage !== '') {
       this.img2imgCheckbox.checked = true;
+      this.resizeModeSelector.currentValue = imageInfo.inputResizeMode;
       this.img2imgInputImage.imageData = imageInfo.inputImage;
       this.toggleImg2Img();
     }
+  }
+
+  retrieveImg2Img(imageData) {
+    this.img2imgCheckbox.checked = true;
+    this.img2imgInputImage.imageData = imageData;
+    this.toggleImg2Img();
   }
 
   resizePromptBoxes() {
@@ -582,8 +589,12 @@ export default class Txt2Img extends Tab {
     this.clearSeedButton.disabled = isLoading;
     this.restoreFacesCheckbox.disabled = isLoading;
     this.hiresCheckbox.disabled = isLoading;
+    this.img2imgCheckbox.disabled = isLoading;
     this.hiresDenoisingStrength.disabled = isLoading;
     this.hiresScale.disabled = isLoading;
     this.hiresSteps.disabled = isLoading;
+    this.denoisingStrength.disabled = isLoading;
+    this.resizeModeSelector.disabled = isLoading;
+    this.img2imgInputImage.disabled = isLoading;
   }
 }

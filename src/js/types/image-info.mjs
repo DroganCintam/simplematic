@@ -13,6 +13,8 @@ export default class ImageInfo {
 
   /** @type {string} */
   inputImage;
+  /** @type {number} */
+  inputResizeMode;
 
   /**
    * @param {string} imageData

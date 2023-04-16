@@ -29,6 +29,7 @@ export class ImageDataItem {
   denoisingStrength = 0;
 
   inputImage = '';
+  inputResizeMode = 0;
 }
 
 export class ImageDataItemCursor {
@@ -237,6 +238,7 @@ export class ImageDB {
         timestamp: img.timestamp,
         imported: img.imported,
         inputImage: img.inputImage,
+        inputResizeMode: img.inputResizeMode,
         ...img.info,
       });
       const db = await this.openDB();

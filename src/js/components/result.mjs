@@ -34,11 +34,12 @@ const html = /*html*/ `
         </button>
       </div>
       <div class="horizontal w100p actions">
-        <button type="button" class="btn-remix"><img src="/img/flask-solid.svg">REMIX</button>
-        <button type="button" class="btn-rerun"><p></p><img src="/img/wand-magic-sparkles-solid.svg"><span>NEW SEED</span></button>
-        <button type="button" class="btn-save"><img src="/img/floppy-disk-solid.svg">SAVE</button>
-        <button type="button" class="btn-delete"><img src="/img/trash-solid.svg">DELETE</button>
-        <button type="button" class="btn-upscale"><img src="/img/up-right-and-down-left-from-center-solid-black.svg">UPSCALE</button>
+        <button type="button" class="btn-remix" title="Copy all parameters"><img src="/img/flask-solid.svg">REMIX</button>
+        <button type="button" class="btn-rerun" title="Re-generate with a new seed"><p></p><img src="/img/wand-magic-sparkles-solid.svg"><span>NEW SEED</span></button>
+        <button type="button" class="btn-save" title="Save to gallery"><img src="/img/floppy-disk-solid.svg">SAVE</button>
+        <button type="button" class="btn-delete" title="Delete from gallery"><img src="/img/trash-solid.svg">DELETE</button>
+        <button type="button" class="btn-upscale" title="Upscale this"><img src="/img/up-right-and-down-left-from-center-solid-black.svg">UPSCALE</button>
+        <button type="button" class="btn-img2img" title="Use this as img2img input"><img src="/img/images-solid.svg">IMG2IMG</button>
       </div>
       <div class="tagging">
         <label class="heading">Tags:</label>
@@ -381,6 +382,8 @@ export default class ResultDialog extends Tab {
 
   /** @type {HTMLButtonElement} */
   upscaleButton;
+  /** @type {HTMLButtonElement} */
+  img2imgButton;
 
   /** @type {HTMLElement} */
   tagging;
@@ -428,6 +431,8 @@ export default class ResultDialog extends Tab {
   onRemix;
   /** @type {(info: ImageInfo) => void} */
   onUpscale;
+  /** @type {(info: ImageInfo) => void} */
+  onImg2Img;
 
   /** @type {() => void} */
   goPrev;
@@ -478,6 +483,11 @@ export default class ResultDialog extends Tab {
     this.upscaleButton = this.root.querySelector('.btn-upscale');
     this.upscaleButton.addEventListener('click', () => {
       this.onUpscale(this.imageInfo);
+    });
+
+    this.img2imgButton = this.root.querySelector('.btn-img2img');
+    this.img2imgButton.addEventListener('click', () => {
+      this.onImg2Img(this.imageInfo);
     });
 
     this.saveButton = this.root.querySelector('.btn-save');
@@ -545,7 +555,7 @@ export default class ResultDialog extends Tab {
     });
   }
 
-  display(json, inputImage) {
+  display(json, inputImage, inputResizeMode) {
     const infoText = JSON.parse(json.info).infotexts[0];
     this.imageInfo = new ImageInfo(json.images[0], infoText);
     this.image.src = this.imageInfo.imageData;
@@ -574,14 +584,15 @@ export default class ResultDialog extends Tab {
 
     this.prevImageButton.style.display = 'none';
     this.nextImageButton.style.display = 'none';
-    // this.prevImageButton.parentElement.style.display = 'none';
 
     this.populateTags();
 
     if (inputImage && inputImage !== '') {
       this.imageInfo.inputImage = inputImage;
+      this.imageInfo.inputResizeMode = inputResizeMode;
       this.inputImage.src = inputImage;
       this.inputImageButton.style.display = '';
+      this.updateInputResizeMode();
     } else {
       this.inputImageButton.style.display = 'none';
     }
@@ -626,7 +637,6 @@ export default class ResultDialog extends Tab {
 
     this.prevImageButton.style.display = 'none';
     this.nextImageButton.style.display = 'none';
-    // this.prevImageButton.parentElement.style.display = 'none';
 
     this.populateTags();
 
@@ -695,14 +705,15 @@ export default class ResultDialog extends Tab {
     this.prevImageButton.disabled = !onPrev;
     this.nextImageButton.style.display = '';
     this.nextImageButton.disabled = !onNext;
-    // this.prevImageButton.parentElement.style.display = '';
 
     this.populateTags(row.tags ?? []);
 
     if (row.inputImage && row.inputImage !== '') {
       this.imageInfo.inputImage = row.inputImage;
+      this.imageInfo.inputResizeMode = row.inputResizeMode;
       this.inputImage.src = idic.value.inputImage;
       this.inputImageButton.style.display = '';
+      this.updateInputResizeMode();
     } else {
       this.inputImageButton.style.display = 'none';
     }
@@ -740,6 +751,20 @@ export default class ResultDialog extends Tab {
       this.inputImageWrapper.style.display = 'none';
       this.inputImageButton.classList.remove('showing');
       this.image.style.visibility = '';
+    }
+  }
+
+  updateInputResizeMode() {
+    switch (this.imageInfo.inputResizeMode) {
+      case 0:
+        this.inputImage.style.objectFit = 'fill';
+        break;
+      case 1:
+        this.inputImage.style.objectFit = 'cover';
+        break;
+      case 2:
+        this.inputImage.style.objectFit = 'contain';
+        break;
     }
   }
 
@@ -818,6 +843,7 @@ export default class ResultDialog extends Tab {
     this.saveButton.disabled = isLoading;
     this.deleteButton.disabled = isLoading;
     this.upscaleButton.disabled = isLoading;
+    this.img2imgButton.disabled = isLoading;
     this.addTagButton.disabled = isLoading;
   }
 }

@@ -189,6 +189,11 @@ class App {
       this.switchTab(this.upscaleTab);
     };
 
+    this.resultTab.onImg2Img = (imageInfo) => {
+      this.txt2imgTab.retrieveImg2Img(imageInfo.imageData);
+      this.switchTab(this.txt2imgTab);
+    };
+
     this.pngImportTab.onLoaded = (imageData, infoText) => {
       this.hasResult = true;
       this.resultTab.displayLoaded(imageData, infoText);
@@ -249,7 +254,10 @@ class App {
         this.hasResult = true;
         this.resultTab.display(
           json,
-          this.txt2imgTab.img2imgCheckbox.checked ? this.txt2imgTab.img2imgInputImage.imageData : ''
+          this.txt2imgTab.img2imgCheckbox.checked
+            ? this.txt2imgTab.img2imgInputImage.imageData
+            : '',
+          this.txt2imgTab.resizeModeSelector.currentValue
         );
         this.switchTab(this.resultTab);
       },

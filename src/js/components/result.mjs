@@ -13,17 +13,24 @@ const html = /*html*/ `
     <div class="pane image-pane">
       <div class="vertical w100p no-gap" style="position: relative">
         <img class="image"/>
+        <div class="input-image-wrapper" style="display: none">
+          <img class="input-image"/>
+          <span>INPUT IMAGE</span>
+        </div>
       </div>
     </div>
     <div class="pane info-pane">
       <div class="image-navigation">
-        <button type="button" class="btn-prev" style="display: none">
-          <img src="/img/chevron-left-solid.svg" alt="Previous image"/>
+        <button type="button" class="btn-prev" style="display: none" title="Previous image">
+          <img src="/img/chevron-left-solid.svg"/>
           PREV
         </button>
-        <button type="button" class="btn-next" style="display: none">
+        <button type="button" class="btn-input-image" style="display: none" title="Show/hide input image">
+          <img src="/img/images-regular.svg"/>
+        </button>
+        <button type="button" class="btn-next" style="display: none" title="Next image">
           NEXT
-          <img src="/img/chevron-right-solid.svg" alt="Next image"/>
+          <img src="/img/chevron-right-solid.svg"/>
         </button>
       </div>
       <div class="horizontal w100p actions">
@@ -138,7 +145,7 @@ const html = /*html*/ `
     }
 
     #result-tab .actions {
-      flex-flow: row wrap;
+      flex-flow: row wrap !important;
       gap: 0.25rem;
     }
 
@@ -148,7 +155,7 @@ const html = /*html*/ `
 
     #result-tab .image {
       width: 100%;
-      border: 1px solid #ffffff;
+      border: 1px solid hsla(0, 0%, 100%, 0.5);
       border-radius: 0.5rem;
     }
 
@@ -165,6 +172,43 @@ const html = /*html*/ `
     #result-tab .image.landscape {
       max-width: 768px;
       max-height: 512px;
+    }
+
+    #result-tab .input-image-wrapper {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      padding: 0.5rem;
+    }
+
+    #result-tab .input-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border: 1px solid hsla(0, 0%, 100%, 0.5);
+      border-radius: 0.5rem;
+    }
+
+    #result-tab .input-image-wrapper span {
+      position: absolute;
+      left: 0.5rem;
+      right: 0.5rem;
+      bottom: 0.5rem;
+      border-radius: 0 0 0.5rem 0.5rem;
+      text-align: center;
+      background-color: hsla(0, 0%, 0%, 0.5);
+      color: hsl(0, 0%, 100%);
+      padding: 0.5rem;
+    }
+
+    #result-tab .btn-input-image::after {
+      content: 'SHOW INPUT';
+    }
+
+    #result-tab .btn-input-image.showing::after {
+      content: 'HIDE INPUT';
     }
 
     #result-tab textarea {
@@ -202,8 +246,16 @@ const html = /*html*/ `
       color: hsla(0, 0%, 100%, 1);
     }
 
+    #result-tab .image-navigation button:hover {
+      background-color: hsla(0, 0%, 100%, 0.5);
+    }
+
     #result-tab .image-navigation button:disabled {
       color: hsla(0, 0%, 100%, 0.5);
+    }
+
+    #result-tab .image-navigation button:disabled:hover {
+      background: none;
     }
 
     #result-tab .image-navigation button img {
@@ -212,7 +264,8 @@ const html = /*html*/ `
     }
 
     #result-tab .btn-prev,
-    #result-tab .btn-next {
+    #result-tab .btn-next,
+    #result-tab .btn-input-image {
       flex-grow: 1;
     }
 
@@ -312,6 +365,13 @@ export default class ResultDialog extends Tab {
   /** @type {HTMLButtonElement} */
   nextImageButton;
 
+  /** @type {HTMLElement} */
+  inputImageWrapper;
+  /** @type {HTMLImageElement} */
+  inputImage;
+  /** @type {HTMLButtonElement} */
+  inputImageButton;
+
   /** @type {HTMLButtonElement} */
   remixButton;
   /** @type {HTMLButtonElement} */
@@ -397,6 +457,13 @@ export default class ResultDialog extends Tab {
       if (this.goNext) this.goNext();
     });
 
+    this.inputImageWrapper = this.root.querySelector('.input-image-wrapper');
+    this.inputImage = this.root.querySelector('.input-image');
+    this.inputImageButton = this.root.querySelector('.btn-input-image');
+    this.inputImageButton.addEventListener('click', () => {
+      this.toggleInputImage(this.inputImageWrapper.style.display === 'none');
+    });
+
     this.remixButton = this.root.querySelector('.btn-remix');
     this.remixButton.addEventListener('click', () => {
       this.onRemix(this.imageInfo);
@@ -478,7 +545,7 @@ export default class ResultDialog extends Tab {
     });
   }
 
-  display(json) {
+  display(json, inputImage) {
     const infoText = JSON.parse(json.info).infotexts[0];
     this.imageInfo = new ImageInfo(json.images[0], infoText);
     this.image.src = this.imageInfo.imageData;
@@ -507,9 +574,18 @@ export default class ResultDialog extends Tab {
 
     this.prevImageButton.style.display = 'none';
     this.nextImageButton.style.display = 'none';
-    this.prevImageButton.parentElement.style.display = 'none';
+    // this.prevImageButton.parentElement.style.display = 'none';
 
     this.populateTags();
+
+    if (inputImage && inputImage !== '') {
+      this.imageInfo.inputImage = inputImage;
+      this.inputImage.src = inputImage;
+      this.inputImageButton.style.display = '';
+    } else {
+      this.inputImageButton.style.display = 'none';
+    }
+    this.toggleInputImage(false);
   }
 
   /**
@@ -550,9 +626,12 @@ export default class ResultDialog extends Tab {
 
     this.prevImageButton.style.display = 'none';
     this.nextImageButton.style.display = 'none';
-    this.prevImageButton.parentElement.style.display = 'none';
+    // this.prevImageButton.parentElement.style.display = 'none';
 
     this.populateTags();
+
+    this.inputImageButton.style.display = 'none';
+    this.toggleInputImage(false);
   }
 
   /**
@@ -616,9 +695,18 @@ export default class ResultDialog extends Tab {
     this.prevImageButton.disabled = !onPrev;
     this.nextImageButton.style.display = '';
     this.nextImageButton.disabled = !onNext;
-    this.prevImageButton.parentElement.style.display = '';
+    // this.prevImageButton.parentElement.style.display = '';
 
     this.populateTags(row.tags ?? []);
+
+    if (row.inputImage && row.inputImage !== '') {
+      this.imageInfo.inputImage = row.inputImage;
+      this.inputImage.src = idic.value.inputImage;
+      this.inputImageButton.style.display = '';
+    } else {
+      this.inputImageButton.style.display = 'none';
+    }
+    this.toggleInputImage(false);
   }
 
   resizePromptBoxes() {
@@ -640,6 +728,18 @@ export default class ResultDialog extends Tab {
       this.image.classList.remove('landscape');
       this.image.classList.remove('portrait');
       this.image.classList.add('square');
+    }
+  }
+
+  toggleInputImage(isShowing) {
+    if (isShowing) {
+      this.inputImageWrapper.style.display = '';
+      this.inputImageButton.classList.add('showing');
+      this.image.style.visibility = 'hidden';
+    } else {
+      this.inputImageWrapper.style.display = 'none';
+      this.inputImageButton.classList.remove('showing');
+      this.image.style.visibility = '';
     }
   }
 
@@ -710,6 +810,9 @@ export default class ResultDialog extends Tab {
   }
 
   setLoading(isLoading) {
+    this.prevImageButton.disabled = isLoading || !this.onPrev;
+    this.nextImageButton.disabled = isLoading || !this.onNext;
+    this.inputImageButton.disabled = isLoading;
     this.remixButton.disabled = isLoading;
     this.rerunButton.disabled = isLoading;
     this.saveButton.disabled = isLoading;

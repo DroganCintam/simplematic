@@ -246,9 +246,11 @@ class App {
         progress.hide();
       },
       (json) => {
-        console.log(json.info);
         this.hasResult = true;
-        this.resultTab.display(json);
+        this.resultTab.display(
+          json,
+          this.txt2imgTab.img2imgCheckbox.checked ? this.txt2imgTab.img2imgInputImage.imageData : ''
+        );
         this.switchTab(this.resultTab);
       },
       (err) => {

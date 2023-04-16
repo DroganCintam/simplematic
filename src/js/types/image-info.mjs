@@ -3,13 +3,16 @@ import PngInfo from './png-info.mjs';
 
 export default class ImageInfo {
   uuid = '';
-  /** @type {String} */
+  /** @type {string} */
   imageData;
   /** @type {PngInfo} */
   info;
   timestamp = 0;
   imported = false;
   saved = false;
+
+  /** @type {string} */
+  inputImage;
 
   /**
    * @param {string} imageData

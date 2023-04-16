@@ -421,12 +421,7 @@ export default class Txt2Img extends Tab {
     };
 
     this.img2imgCheckbox.onChange = (chk) => {
-      this.img2img.style.display = chk.checked ? '' : 'none';
-      this.hiresCheckbox.disabled = chk.checked;
-      if (chk.checked) {
-        this.hiresCheckbox.checked = false;
-        this.hiresOptions.style.display = 'none';
-      }
+      this.toggleImg2Img();
     };
 
     this.hiresOptions = this.root.querySelector('.hires');
@@ -487,11 +482,26 @@ export default class Txt2Img extends Tab {
       this.hiresCheckbox.checked = false;
       this.hiresOptions.style.display = 'none';
     }
+
+    if (imageInfo.inputImage && imageInfo.inputImage !== '') {
+      this.img2imgCheckbox.checked = true;
+      this.img2imgInputImage.imageData = imageInfo.inputImage;
+      this.toggleImg2Img();
+    }
   }
 
   resizePromptBoxes() {
     autoResize(this.prompt);
     autoResize(this.negativePrompt);
+  }
+
+  toggleImg2Img() {
+    this.img2img.style.display = this.img2imgCheckbox.checked ? '' : 'none';
+    this.hiresCheckbox.disabled = this.img2imgCheckbox.checked;
+    if (this.img2imgCheckbox.checked) {
+      this.hiresCheckbox.checked = false;
+      this.hiresOptions.style.display = 'none';
+    }
   }
 
   generate(onStart, onEnd, onSuccess, onFailure) {

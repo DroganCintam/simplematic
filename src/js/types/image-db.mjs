@@ -26,6 +26,9 @@ export class ImageDataItem {
   sampler = '';
   modelHash = '';
   modelName = '';
+  denoisingStrength = 0;
+
+  inputImage = '';
 }
 
 export class ImageDataItemCursor {
@@ -233,6 +236,7 @@ export class ImageDB {
         data: img.imageData,
         timestamp: img.timestamp,
         imported: img.imported,
+        inputImage: img.inputImage,
         ...img.info,
       });
       const db = await this.openDB();

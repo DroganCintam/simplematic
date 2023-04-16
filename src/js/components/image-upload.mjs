@@ -48,4 +48,15 @@ export default class ImageUpload extends Component {
   get imageData() {
     return this.image.src;
   }
+
+  set imageData(data) {
+    this.image.src = data;
+    if (data && data !== '') {
+      this.image.style.display = '';
+      this.fileInput.style.display = 'none';
+    } else {
+      this.image.style.display = 'none';
+      this.fileInput.style.display = '';
+    }
+  }
 }

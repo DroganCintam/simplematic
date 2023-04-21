@@ -100,9 +100,11 @@ button {
   column-gap: 0.5rem;
 }
 
-button:hover {
-  background-color: hsl(39, 53%, 50%);
-  border: 2px solid hsl(0, 0%, 100%);
+@supports not (-webkit-touch-callout: none) {
+  button:hover {
+    background-color: hsl(39, 53%, 50%);
+    border: 2px solid hsl(0, 0%, 100%);
+  }
 }
 
 button:disabled {
@@ -127,8 +129,10 @@ button:disabled {
   border: none;
 }
 
-.icon-button:hover {
-  background-color: hsla(0, 0%, 100%, 0.1);
+@supports not (-webkit-touch-callout: none) {
+  .icon-button:hover {
+    background-color: hsla(0, 0%, 100%, 0.1);
+  }
 }
 
 .icon-button:disabled:hover {

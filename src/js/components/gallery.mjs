@@ -384,6 +384,7 @@ export default class Gallery extends Tab {
 
     if (this.currentPage > this.pageCount) {
       this.currentPage = this.pageCount;
+      this.currentPageSpan.innerText = this.currentPage.toString();
     }
     this.prevPageButton.disabled = this.currentPage == 1;
     this.nextPageButton.disabled = this.currentPage == this.pageCount;

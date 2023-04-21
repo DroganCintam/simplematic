@@ -247,8 +247,10 @@ const html = /*html*/ `
       color: hsla(0, 0%, 100%, 1);
     }
 
-    #result-tab .image-navigation button:hover {
-      background-color: hsla(0, 0%, 100%, 0.5);
+    @supports not (-webkit-touch-callout: none) {
+      #result-tab .image-navigation button:hover {
+        background-color: hsla(0, 0%, 100%, 0.5);
+      }
     }
 
     #result-tab .image-navigation button:disabled {

@@ -96,8 +96,10 @@ const html = /*html*/ `
       border-radius: 0.5rem;
     }
 
-    #gallery-tab .pagination button:hover {
-      background-color: hsla(0, 0%, 100%, 0.5);
+    @supports not (-webkit-touch-callout: none) {
+      #gallery-tab .pagination button:hover {
+        background-color: hsla(0, 0%, 100%, 0.5);
+      }
     }
 
     #gallery-tab .pagination button:disabled {

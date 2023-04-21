@@ -11,6 +11,19 @@ const html = /*html*/ `
       <div class="tags">
       </div>
     </div>
+    <div class="pagination">
+      <button type="button" class="btn-prev" title="Previous page">
+        <img src="/img/chevron-left-solid.svg"/>
+      </button>
+      <div class="pages">
+        <span class="current-page">1</span>
+        <span>/</span>
+        <span class="page-count">1</span>
+      </div>
+      <button type="button" class="btn-next" title="Next page">
+        <img src="/img/chevron-right-solid.svg"/>
+      </button>
+    </div>
     <ul class="grid">
     </ul>
   </div>
@@ -61,6 +74,62 @@ const html = /*html*/ `
       color: hsl(0, 0%, 0%);
     }
 
+    #gallery-tab .pagination {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      gap: 0.5rem;
+    }
+
+    #gallery-tab .pagination button {
+      background: none;
+      border: 0;
+      font-size: 0.75rem;
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: center;
+      align-items: center;
+      column-gap: 0.5rem;
+      color: hsla(0, 0%, 100%, 1);
+      border-radius: 0.5rem;
+    }
+
+    #gallery-tab .pagination button:hover {
+      background-color: hsla(0, 0%, 100%, 0.5);
+    }
+
+    #gallery-tab .pagination button:disabled {
+      color: hsla(0, 0%, 100%, 0.5);
+    }
+
+    #gallery-tab .pagination button:disabled:hover {
+      background: none;
+    }
+
+    #gallery-tab .pagination button img {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    #gallery-tab .btn-prev,
+    #gallery-tab .btn-next,
+    #gallery-tab .pages {
+      flex-grow: 1;
+    }
+
+    #gallery-tab .pagination .pages {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: hsla(0, 0%, 0%, 0.5);
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+    }
+
     #gallery-tab .grid {
       list-style: none;
       display: flex;
@@ -108,9 +177,21 @@ const html = /*html*/ `
 </div>
 `;
 
+export const ItemPerPage = 20;
+
 export default class Gallery extends Tab {
   /** @type {HTMLElement} */
   tags;
+
+  /** @type {HTMLButtonElement} */
+  prevPageButton;
+  /** @type {HTMLButtonElement} */
+  nextPageButton;
+  /** @type {HTMLSpanElement} */
+  currentPageSpan;
+  /** @type {HTMLSpanElement} */
+  pageCountSpan;
+
   /** @type {HTMLUListElement} */
   grid;
 
@@ -128,6 +209,11 @@ export default class Gallery extends Tab {
 
   cancelToken = new CancelToken();
 
+  /** @type {Array<ImageDataItemCursor>} */
+  filteredItems = [];
+  currentPage = 1;
+  pageCount = 0;
+
   /** @type {(cursor: ImageDataItemCursor) => void} */
   onView;
 
@@ -136,6 +222,18 @@ export default class Gallery extends Tab {
     this.title = 'GALLERY';
     this.tags = this.root.querySelector('.tags');
     this.grid = this.root.querySelector('.grid');
+    this.prevPageButton = this.root.querySelector('.btn-prev');
+    this.nextPageButton = this.root.querySelector('.btn-next');
+    this.currentPageSpan = this.root.querySelector('.current-page');
+    this.pageCountSpan = this.root.querySelector('.page-count');
+
+    this.prevPageButton.addEventListener('click', () => {
+      this.goPrev();
+    });
+
+    this.nextPageButton.addEventListener('click', () => {
+      this.goNext();
+    });
   }
 
   async show() {
@@ -197,6 +295,10 @@ export default class Gallery extends Tab {
   }
 
   async filterByTag(tag) {
+    if (tag && !ImageDB.instance.imageCountByTag[tag]) {
+      tag = '<none>';
+    }
+
     if (this.selectedTag && this.selectedTag != tag && this.selectedTagElement) {
       this.selectedTagElement.classList.remove('selected');
     }
@@ -211,18 +313,10 @@ export default class Gallery extends Tab {
     const allTag = tag === '<all>';
     const list = ImageDB.instance.imageList;
 
-    const existingViewers = [];
-    for (let i = 0; i < this.grid.children.length; ++i) {
-      existingViewers.push(this.grid.children.item(i));
-    }
-
     /** @type {ImageDataItemCursor | null} */
     let prev = null;
-    let visibleViewers = 0;
 
-    this.cancelToken.cancel();
-    const jobId = this.cancelToken.register();
-
+    const filteredItems = (this.filteredItems = []);
     for (let i = 0; i < list.length; ++i) {
       const idic = list[i];
       if (!allTag) {
@@ -233,6 +327,72 @@ export default class Gallery extends Tab {
           continue;
         }
       }
+
+      filteredItems.push(idic);
+      if (prev != null) {
+        idic.prev = prev;
+        prev.next = idic;
+      } else {
+        idic.prev = null;
+      }
+      prev = idic;
+    }
+
+    if (prev != null) {
+      prev.next = null;
+    }
+
+    this.pageCount = Math.ceil(filteredItems.length / ItemPerPage);
+    if (this.pageCount == 0) {
+      this.pageCount = 1;
+    }
+    this.pageCountSpan.innerText = this.pageCount.toString();
+
+    this.showImages();
+  }
+
+  async goPrev() {
+    if (this.currentPage > 1) {
+      --this.currentPage;
+      this.currentPageSpan.innerText = this.currentPage.toString();
+      await this.showImages();
+    }
+  }
+
+  async goNext() {
+    if (this.currentPage < this.pageCount) {
+      ++this.currentPage;
+      this.currentPageSpan.innerText = this.currentPage.toString();
+      await this.showImages();
+    }
+  }
+
+  async showImages() {
+    const existingViewers = [];
+    for (let i = 0; i < this.grid.children.length; ++i) {
+      existingViewers.push(this.grid.children.item(i));
+    }
+
+    let visibleViewers = 0;
+
+    this.cancelToken.cancel();
+    const jobId = this.cancelToken.register();
+
+    const filteredItems = this.filteredItems;
+
+    if (this.currentPage > this.pageCount) {
+      this.currentPage = this.pageCount;
+    }
+    this.prevPageButton.disabled = this.currentPage == 1;
+    this.nextPageButton.disabled = this.currentPage == this.pageCount;
+
+    for (
+      let i = ItemPerPage * (this.currentPage - 1),
+        c = Math.min(filteredItems.length, ItemPerPage * this.currentPage);
+      i < c;
+      ++i
+    ) {
+      const idic = filteredItems[i];
 
       const row = idic.value;
       let viewer;
@@ -245,21 +405,9 @@ export default class Gallery extends Tab {
       }
       ++visibleViewers;
 
-      if (prev != null) {
-        idic.prev = prev;
-        prev.next = idic;
-      } else {
-        idic.prev = null;
-      }
-      prev = idic;
-
       await waitPromise(1);
 
       if (this.cancelToken.isCanceled(jobId)) break;
-    }
-
-    if (prev != null) {
-      prev.next = null;
     }
 
     if (!this.cancelToken.isCanceled(jobId)) {

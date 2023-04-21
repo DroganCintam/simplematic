@@ -227,6 +227,12 @@ class App {
         } else if (event.key === 'ArrowRight' && this.resultTab.goNext) {
           this.resultTab.goNext();
         }
+      } else if (this.currentTab === this.galleryTab) {
+        if (event.key === 'ArrowLeft') {
+          this.galleryTab.goPrev();
+        } else if (event.key === 'ArrowRight') {
+          this.galleryTab.goNext();
+        }
       }
     });
 

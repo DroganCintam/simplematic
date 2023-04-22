@@ -297,7 +297,7 @@ export default class Gallery extends Tab {
   }
 
   async filterByTag(tag) {
-    if (tag && !ImageDB.instance.imageCountByTag[tag]) {
+    if (tag && tag !== '<all>' && !ImageDB.instance.imageCountByTag[tag]) {
       tag = '<none>';
     }
 

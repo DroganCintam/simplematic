@@ -13,9 +13,12 @@ const html = /*html*/ `
     <div class="pane image-pane">
       <div class="vertical w100p no-gap" style="position: relative">
         <img class="image"/>
-        <div class="input-image-wrapper" style="display: none">
+        <div class="input-image-wrapper">
           <img class="input-image"/>
           <span>INPUT IMAGE</span>
+          <button type="button" class="btn-input-image" style="display: none" title="Show/hide input image">
+            <img src="/img/images-solid.svg"/>
+          </button>
         </div>
       </div>
     </div>
@@ -24,9 +27,6 @@ const html = /*html*/ `
         <button type="button" class="btn-prev" style="display: none" title="Previous image">
           <img src="/img/chevron-left-solid.svg"/>
           PREV
-        </button>
-        <button type="button" class="btn-input-image" style="display: none" title="Show/hide input image">
-          <img src="/img/images-regular.svg"/>
         </button>
         <button type="button" class="btn-next" style="display: none" title="Next image">
           NEXT
@@ -204,12 +204,10 @@ const html = /*html*/ `
       padding: 0.5rem;
     }
 
-    #result-tab .btn-input-image::after {
-      content: 'SHOW INPUT';
-    }
-
-    #result-tab .btn-input-image.showing::after {
-      content: 'HIDE INPUT';
+    #result-tab .input-image-wrapper .btn-input-image {
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
     }
 
     #result-tab textarea {
@@ -267,8 +265,7 @@ const html = /*html*/ `
     }
 
     #result-tab .btn-prev,
-    #result-tab .btn-next,
-    #result-tab .btn-input-image {
+    #result-tab .btn-next {
       flex-grow: 1;
     }
 
@@ -468,7 +465,7 @@ export default class ResultDialog extends Tab {
     this.inputImage = this.root.querySelector('.input-image');
     this.inputImageButton = this.root.querySelector('.btn-input-image');
     this.inputImageButton.addEventListener('click', () => {
-      this.toggleInputImage(this.inputImageWrapper.style.display === 'none');
+      this.toggleInputImage(this.inputImage.style.display === 'none');
     });
 
     this.remixButton = this.root.querySelector('.btn-remix');
@@ -746,11 +743,13 @@ export default class ResultDialog extends Tab {
 
   toggleInputImage(isShowing) {
     if (isShowing) {
-      this.inputImageWrapper.style.display = '';
+      this.inputImage.style.display = '';
+      this.inputImage.nextElementSibling.style.display = '';
       this.inputImageButton.classList.add('showing');
       this.image.style.visibility = 'hidden';
     } else {
-      this.inputImageWrapper.style.display = 'none';
+      this.inputImage.style.display = 'none';
+      this.inputImage.nextElementSibling.style.display = 'none';
       this.inputImageButton.classList.remove('showing');
       this.image.style.visibility = '';
     }

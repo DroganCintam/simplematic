@@ -17,7 +17,7 @@ const html = /*html*/ `
       background-color: hsl(35 67% 30%);
       width: 0;
       height: 100%;
-      transition: width 0.1s ease-out;
+      transition: width 0.5s ease-out;
     }
   </style>
 </div>
@@ -76,16 +76,13 @@ export default class Progress extends Component {
     }
 
     this.root.style.display = '';
-    this.filler.style.transitionDuration = `0.5s`;
+    this.filler.style.transitionDuration = '0.5s';
 
     this.intervalId = window.setInterval(() => {
       Api.instance.getProgress().then((progress) => {
-        if (progress === null) {
-          window.clearInterval(this.intervalId);
-          this.intervalId = 0;
-          return;
+        if (progress) {
+          this.filler.style.width = `${progress * 100}%`;
         }
-        this.filler.style.width = `${progress * 100}%`;
       });
     }, 2000);
   }

@@ -15,39 +15,31 @@ The app is served at https://simplematic.web.app
   - Prompt, negative prompt, steps, CFG scale, seed, sampler (in side menu).
   - Face restoration.
   - HiRes upscaling (Latent).
+- Image-to-Image
+  - Upload an image or send from txt2img.
+  - Supports denoising strength and 3 resize modes.
 - Gallery
-  - Save images along with parameters.
+  - Save images along with parameters, including img2img's source image.
   - Hashtags filtering.
+  - Pagination.
+- Upscaler
+  - Upload an image or send from txt2img.
+  - Supports 1 and 2 upscalers with visibility.
+  - Supports CodeFormer and GFPGAN visibilities.
 - Import PNG & parameters.
 
 ## Screenshots
 
-Main interface
-
-<img src="screenshots/txt2img-landscape.jpeg" width="400"/>
-
-Result screens
-
-<img src="screenshots/result-landscape-1.jpeg" width="200"/>
-<img src="screenshots/result-landscape-2.jpeg" width="200"/>
-
-Gallery
-
-<img src="screenshots/gallery.jpeg" width="400"/>
-
-Settings screen
-
-<img src="screenshots/settings.jpeg" width="400"/>
-
-PNG/parameters import screen
-
-<img src="screenshots/import.jpeg" width="400"/>
-
-In portrait mode
-
-<img src="screenshots/txt2img-portrait.jpeg" width="200"/>
-<img src="screenshots/result-portrait-1.jpeg" width="200"/>
-<img src="screenshots/result-portrait-2.jpeg" width="200"/>
+<p align="left">
+  <img src="screenshots/txt2img.jpeg" width="200" alt="Text to Image"/>
+  <img src="screenshots/img2img.jpeg" width="200" alt="Image to Image"/>
+  <img src="screenshots/result-1.jpeg" width="200" alt="Image to Image Result"/>
+  <img src="screenshots/result-2.jpeg" width="200" alt="Text to Image Result"/>
+  <img src="screenshots/result-3.jpeg" width="200" alt="Text to Image Result"/>
+  <img src="screenshots/upscale.jpeg" width="200" alt="Upscaling Image"/>
+  <img src="screenshots/gallery.jpeg" width="200" alt="Image Gallery"/>
+  <img src="screenshots/import.jpeg" width="200" alt="Import Parameters"/>
+</p>
 
 # Setup
 

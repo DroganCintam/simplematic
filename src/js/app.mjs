@@ -18,6 +18,9 @@ class App {
 
   /** @type {Menu} */
   menu;
+
+  /** @type {HTMLElement} */
+  topBar;
   /** @type {HTMLElement} */
   mainView;
   /** @type {HTMLElement} */
@@ -102,6 +105,7 @@ class App {
     this.root.appendChild(this.menuWidthElement);
 
     const topBar = this.root.querySelector('.top-bar');
+    this.topBar = topBar;
     document.addEventListener('scroll', () => {
       if (document.documentElement.scrollTop > 16) {
         topBar.classList.add('opaque');
@@ -323,7 +327,7 @@ class App {
     this.showingMenu = true;
 
     this.menu.root.style.width = this.menuWidth;
-    // this.mainView.style.left = this.menuWidth;
+    this.topBar.style.left = this.menuWidth;
     this.mainView.style.marginLeft = this.menuWidth;
     const w = getComputedStyle(this.menuWidthElement).width;
     this.mainView.style.marginRight = '-' + w;
@@ -337,7 +341,7 @@ class App {
     if (!this.showingMenu) return;
     this.showingMenu = false;
     this.menu.root.style.width = '0';
-    // this.mainView.style.left = '0';
+    this.topBar.style.left = '0';
     this.mainView.style.marginLeft = '0';
     this.mainView.style.marginRight = '0';
 

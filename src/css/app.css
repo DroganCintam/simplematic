@@ -5,13 +5,13 @@
 
 .tabs {
   min-height: calc(100vh - 7rem);
+  margin-top: 4rem;
 }
 
 .top-bar {
   margin: 0;
   padding: 0 1rem;
-  position: -webkit-sticky;
-  position: sticky;
+  position: fixed;
   left: 0;
   top: 0;
   width: 100%;
@@ -56,12 +56,6 @@ footer {
 }
 
 .main-view {
-  /* position: fixed;
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  overflow-y: scroll; */
   transition: margin 0.2s ease-out;
   box-shadow: rgb(0, 0, 0) -5px 0px 20px -10px;
   -ms-overflow-style: none;

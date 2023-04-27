@@ -6,6 +6,7 @@ import Api, { Img2ImgParameters, Txt2ImgParameters } from '../api.mjs';
 import AppConfig from '../types/app-config.mjs';
 import Checkbox from './checkbox.mjs';
 import ImageUpload from './image-upload.mjs';
+import ConfirmDialog from './confirm-dialog.mjs';
 
 const defaultParameters = {
   sampler: 'DPM++ 2M Karras v2',
@@ -438,11 +439,15 @@ export default class Txt2Img extends Tab {
     );
 
     this.clearPromptButton.addEventListener('click', () => {
-      this.prompt.value = '';
+      ConfirmDialog.instance.show('The whole prompt will be cleared.\nAre you sure?', () => {
+        this.prompt.value = '';
+      });
     });
 
     this.clearNegativePromptButton.addEventListener('click', () => {
-      this.negativePrompt.value = '';
+      ConfirmDialog.instance.show('The whole prompt will be cleared.\nAre you sure?', () => {
+        this.negativePrompt.value = '';
+      });
     });
 
     this.clearSeedButton.addEventListener('click', () => {

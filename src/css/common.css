@@ -175,37 +175,6 @@ button img {
   border: 1px solid hsla(0, 0%, 100%, 1);
 }
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: center;
-  align-items: center;
-  background-color: #00000050;
-  overflow-y: auto;
-  z-index: 9999;
-}
-
-.modal {
-  border-radius: 0.5rem;
-}
-
-.dialog {
-  position: relative;
-  padding: 1rem;
-  display: flex;
-  flex-flow: column nowrap;
-  align-items: center;
-  justify-content: flex-start;
-  row-gap: 1rem;
-  background-color: rgb(8, 21, 43);
-  max-width: calc(100% - 2rem);
-}
-
 .w100p {
   width: 100%;
 }

@@ -11,6 +11,7 @@ import Gallery from './components/gallery.mjs';
 import Upscale from './components/upscale.mjs';
 import Progress from './components/progress.mjs';
 import ImageInfo from './types/image-info.mjs';
+import ConfirmDialog from './components/confirm-dialog.mjs';
 
 class App {
   /** @type {HTMLElement} */
@@ -18,6 +19,9 @@ class App {
 
   /** @type {Menu} */
   menu;
+
+  /** @type {ConfirmDialog} */
+  confirmDialog;
 
   /** @type {HTMLElement} */
   topBar;
@@ -220,6 +224,8 @@ class App {
       this.switchTab(this.resultTab);
     };
 
+    this.confirmDialog = new ConfirmDialog(this.root.querySelector('.confirm-dialog'));
+
     if (this.settingsTab.url == '') {
       this.switchTab(this.settingsTab);
     }
@@ -237,6 +243,11 @@ class App {
         } else if (event.key === 'ArrowRight') {
           this.galleryTab.goNext();
         }
+      }
+
+      if (event.key === 'Escape' && ConfirmDialog.instance.isShowing) {
+        ConfirmDialog.instance.noButton.click();
+        event.preventDefault();
       }
     });
 

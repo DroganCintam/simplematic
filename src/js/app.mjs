@@ -183,13 +183,31 @@ class App {
     };
 
     this.resultTab.onRerun = (imageInfo, progress) => {
-      this.txt2imgTab.retrieveInfo(imageInfo, false);
-      this.generate(progress);
+      const action = () => {
+        this.txt2imgTab.retrieveInfo(imageInfo, false);
+        this.generate(progress);
+      };
+      if (
+        this.txt2imgTab.mayOverwritePrompts(imageInfo.info.prompt, imageInfo.info.negativePrompt)
+      ) {
+        ConfirmDialog.instance.show('Current prompts will be overwritten.\nAre you sure?', action);
+      } else {
+        action();
+      }
     };
 
     this.resultTab.onRemix = (imageInfo) => {
-      this.txt2imgTab.retrieveInfo(imageInfo, true);
-      this.switchTab(this.txt2imgTab);
+      const action = () => {
+        this.txt2imgTab.retrieveInfo(imageInfo, true);
+        this.switchTab(this.txt2imgTab);
+      };
+      if (
+        this.txt2imgTab.mayOverwritePrompts(imageInfo.info.prompt, imageInfo.info.negativePrompt)
+      ) {
+        ConfirmDialog.instance.show('Current prompts will be overwritten.\nAre you sure?', action);
+      } else {
+        action();
+      }
     };
 
     this.resultTab.onUpscale = (imageInfo) => {

@@ -502,6 +502,20 @@ export default class Txt2Img extends Tab {
     this.toggleImg2Img();
   }
 
+  /**
+   * @param {string} prompt
+   * @param {string} negativePrompt
+   */
+  mayOverwritePrompts(prompt, negativePrompt) {
+    if (this.prompt.value == '' && this.negativePrompt.value == '') {
+      return false;
+    }
+    if (prompt != this.prompt.value || negativePrompt != this.negativePrompt.value) {
+      return true;
+    }
+    return false;
+  }
+
   resizePromptBoxes() {
     autoResize(this.prompt);
     autoResize(this.negativePrompt);

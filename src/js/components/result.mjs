@@ -6,6 +6,7 @@ import PngInfo from '../types/png-info.mjs';
 import { ImageDB, ImageDataItemCursor } from '../types/image-db.mjs';
 import Progress from './progress.mjs';
 import extractPngText from '../utils/extractPngText.mjs';
+import ConfirmDialog from './confirm-dialog.mjs';
 
 const html = /*html*/ `
 <div id="result-tab" class="app-tab" style="display: none">
@@ -515,23 +516,28 @@ export default class ResultDialog extends Tab {
     this.deleteButton = this.root.querySelector('.btn-delete');
     this.deleteButton.addEventListener('click', () => {
       if (!ImageDB.instance.has(this.imageInfo.uuid)) return;
-      this.setLoading(true);
-      ImageDB.instance
-        .remove(this.imageInfo.uuid)
-        .then((result) => {
-          this.imageInfo.saved = false;
-          this.populateTags();
-        })
-        .catch((err) => {
-          console.error(err);
-        })
-        .finally(() => {
-          this.setLoading(false);
-          if (!this.imageInfo.saved) {
-            this.saveButton.style.display = '';
-            this.deleteButton.style.display = 'none';
-          }
-        });
+      ConfirmDialog.instance.show(
+        'The image will be removed from the Gallery and its hashtags will be cleared.\nAre you sure?',
+        () => {
+          this.setLoading(true);
+          ImageDB.instance
+            .remove(this.imageInfo.uuid)
+            .then((result) => {
+              this.imageInfo.saved = false;
+              this.populateTags();
+            })
+            .catch((err) => {
+              console.error(err);
+            })
+            .finally(() => {
+              this.setLoading(false);
+              if (!this.imageInfo.saved) {
+                this.saveButton.style.display = '';
+                this.deleteButton.style.display = 'none';
+              }
+            });
+        }
+      );
     });
 
     this.tagging = this.root.querySelector('.tagging');

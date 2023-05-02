@@ -589,6 +589,7 @@ export default class ResultDialog extends Tab {
 
     this.prevImageButton.style.display = 'none';
     this.nextImageButton.style.display = 'none';
+    this.prevImageButton.parentElement.style.display = 'none';
 
     this.populateTags();
 
@@ -642,6 +643,7 @@ export default class ResultDialog extends Tab {
 
     this.prevImageButton.style.display = 'none';
     this.nextImageButton.style.display = 'none';
+    this.prevImageButton.parentElement.style.display = 'none';
 
     this.populateTags();
 
@@ -710,6 +712,7 @@ export default class ResultDialog extends Tab {
     this.prevImageButton.disabled = !onPrev;
     this.nextImageButton.style.display = '';
     this.nextImageButton.disabled = !onNext;
+    this.prevImageButton.parentElement.style.display = '';
 
     this.populateTags(row.tags ?? []);
 

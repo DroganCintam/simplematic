@@ -45,6 +45,8 @@ a {
 
 input[type='text'],
 input[type='number'],
+input[type='password'],
+input[type='url'],
 textarea {
   padding: 0.5rem;
   background-color: rgba(0, 0, 0, 0.5);
@@ -61,12 +63,16 @@ textarea {
 
 input[type='text']:focus-visible,
 input[type='number']:focus-visible,
+input[type='password']:focus-visible,
+input[type='url']:focus-visible,
 textarea:focus-visible {
   outline: none;
 }
 
 input[type='text']:read-only,
 input[type='number']:read-only,
+input[type='password']:read-only,
+input[type='url']:read-only,
 textarea:read-only {
   border: none;
 }

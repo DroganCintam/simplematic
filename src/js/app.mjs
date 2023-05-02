@@ -273,6 +273,8 @@ class App {
       this.switchTab(this.galleryTab);
     } else if (window.location.hash === '#/upscale') {
       this.switchTab(this.upscaleTab);
+    } else if (window.location.hash === '#/settings') {
+      this.switchTab(this.settingsTab);
     }
   }
 

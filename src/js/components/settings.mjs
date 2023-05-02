@@ -4,8 +4,9 @@ import Tab from './tab.mjs';
 
 const html = /*html*/ `
 <div id="settings-tab" class="app-tab" style="display: none">
-  <div>
-    <div>
+  <div class="sections">
+    <div class="section">
+      <span class="title">Backend URL</span>
       <span>Enter your backend URL and press SAVE to start using the app:</span>
       <input type="url" class="w100p txt-url" />
       <input type="text" class="w50p txt-username" placeholder="username" />
@@ -13,14 +14,15 @@ const html = /*html*/ `
       <button type="button" class="w100p btn-save">SAVE</button>
       <span class="clickable-text btn-instructions">Instructions</span>
     </div>
-    <div>
+    <div class="section">
+      <span class="title">Reload</span>
       <span>Reload the entire app to fetch updates:</span>
       <button type="button" class="w100p btn-reload">RELOAD APP</button>
     </div>
   </div>
 
   <style>
-    #settings-tab > div {
+    #settings-tab .sections {
       width: 100%;
       display: flex;
       flex-flow: column nowrap;
@@ -30,26 +32,32 @@ const html = /*html*/ `
       max-width: 720px;
     }
 
-    #settings-tab > div > div {
+    #settings-tab .section {
+      position: relative;
       width: 100%;
       display: flex;
       flex-flow: row wrap;
       align-items: flex-start;
       justify-content: flex-start;
       row-gap: 0.5rem;
-      margin-bottom: 1rem;
-      padding-bottom: 1rem;
+      padding: 1.5rem 0.5rem 0.5rem 0.5rem;
+      margin-top: 1rem;
+      border: 1px solid hsla(0, 0%, 100%, 0.5);
+      border-radius: 0.5rem;
     }
 
-    #settings-tab input {
-      padding: 0.5rem;
-      background-color: rgba(0, 0, 0, 0.5);
-      color: hsl(0, 0%, 100%);
-      font-family: 'Montserrat';
-      font-size: 1rem;
-      border: 1px solid rgba(255, 255, 255, 0.5);
+    #settings-tab .section .title {
+      position: absolute;
+      left: 1rem;
+      top: -1rem;
+      height: 2rem;
+      background-color: #000;
+      border: 1px solid hsla(0, 0%, 100%, 0.5);
       border-radius: 0.5rem;
-      resize: none;
+      padding: 0.5rem;
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
     }
 
     #settings-tab .txt-username {

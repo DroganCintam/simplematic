@@ -1,5 +1,9 @@
 import Api from '../api.mjs';
+import BackgroundLoader from '../background-loader.mjs';
 import AppConfig from '../types/app-config.mjs';
+import Checkbox from './checkbox.mjs';
+import ConfirmDialog from './confirm-dialog.mjs';
+import ImageUpload from './image-upload.mjs';
 import Tab from './tab.mjs';
 
 const html = /*html*/ `
@@ -13,6 +17,14 @@ const html = /*html*/ `
       <input type="password" class="w50p txt-password" placeholder="password" />
       <button type="button" class="w100p btn-save">SAVE</button>
       <span class="clickable-text btn-instructions">Instructions</span>
+    </div>
+    <div class="section bg">
+      <span class="title">Background image</span>
+      <span class="chk-use-default-bg"></span>
+      <span class="chk-use-custom-bg"></span>
+      <span class="chk-dimmed-bg"></span>
+      <span class="custom-bg-upload"></span>
+      <button type="button" class="w100p btn-save-custom-bg">SAVE BACKGROUND</button>
     </div>
     <div class="section">
       <span class="title">Reload</span>
@@ -73,6 +85,18 @@ const html = /*html*/ `
     #settings-tab .clickable-text {
       margin: 0 auto;
     }
+
+    #settings-tab .bg {
+      gap: 0.5rem;
+    }
+
+    #settings-tab .bg .image-upload {
+      max-height: 10rem;
+    }
+
+    #settings-tab .bg .image-upload img {
+      object-fit: contain;
+    }
   </style>
 </div>
 `;
@@ -84,9 +108,20 @@ export default class Settings extends Tab {
   usernameInput;
   /** @type {HTMLInputElement} */
   passwordInput;
-
   /** @type {HTMLButtonElement} */
   saveButton;
+
+  /** @type {Checkbox} */
+  useDefaultBgCheckbox;
+  /** @type {Checkbox} */
+  useCustomBgCheckbox;
+  /** @type {Checkbox} */
+  dimmedBgCheckbox;
+  /** @type {ImageUpload} */
+  customBgUpload;
+  /** @type {HTMLButtonElement} */
+  saveBgButton;
+
   /** @type {HTMLButtonElement} */
   reloadButton;
 
@@ -109,6 +144,40 @@ export default class Settings extends Tab {
     this.usernameInput.value = AppConfig.instance.username;
     this.passwordInput.value = AppConfig.instance.password;
 
+    this.useDefaultBgCheckbox = new Checkbox(
+      this.root.querySelector('.chk-use-default-bg'),
+      {
+        assignedId: 'chk-use-default-bg',
+        label: 'Use Default Background',
+      },
+      true
+    );
+    this.useCustomBgCheckbox = new Checkbox(
+      this.root.querySelector('.chk-use-custom-bg'),
+      {
+        assignedId: 'chk-use-custom-bg',
+        label: 'Use Custom Background',
+      },
+      true
+    );
+    this.dimmedBgCheckbox = new Checkbox(
+      this.root.querySelector('.chk-dimmed-bg'),
+      {
+        assignedId: 'chk-dimmed-bg',
+        label: 'Dimmed Background',
+      },
+      true
+    );
+    this.customBgUpload = new ImageUpload(
+      this.root.querySelector('.custom-bg-upload'),
+      {
+        extraClasses: ['w100p'],
+      },
+      true
+    );
+    this.customBgUpload.acceptedTypes = 'image/png,image/jpeg';
+    this.saveBgButton = this.root.querySelector('.btn-save-custom-bg');
+
     /** @type {HTMLButtonElement} */
     this.saveButton = this.root.querySelector('.btn-save');
     this.saveButton.addEventListener('click', async () => {
@@ -130,11 +199,57 @@ export default class Settings extends Tab {
       this.onRequestInstructions();
     });
 
+    this.useDefaultBgCheckbox.onChange = (chk) => {
+      this.useCustomBgCheckbox.checked = !chk.checked;
+      this.customBgUpload.disabled = chk.checked;
+    };
+    this.useCustomBgCheckbox.onChange = (chk) => {
+      this.useDefaultBgCheckbox.checked = !chk.checked;
+      this.customBgUpload.disabled = !chk.checked;
+    };
+    this.dimmedBgCheckbox.onChange = (chk) => {
+      BackgroundLoader.instance.setDimmedBackground(chk.checked);
+    };
+    this.saveBgButton.addEventListener('click', () => {
+      if (this.useCustomBgCheckbox.checked && this.customBgUpload.hasImage) {
+        const action = async () => {
+          await BackgroundLoader.instance.setCustomBackgroundImage(this.customBgUpload.imageData);
+          BackgroundLoader.instance.setUsingCustomBackground(true);
+        };
+        if (BackgroundLoader.instance.hasCustomBackground) {
+          ConfirmDialog.instance.show(
+            'Previous custom background will be overwritten.\nAre you sure?',
+            action
+          );
+        } else {
+          action();
+        }
+      } else if (this.useDefaultBgCheckbox.checked) {
+        BackgroundLoader.instance.setUsingCustomBackground(false);
+      }
+    });
+
     /** @type {HTMLButtonElement} */
     this.reloadButton = this.root.querySelector('.btn-reload');
     this.reloadButton.addEventListener('click', () => {
       window.location.reload();
     });
+
+    if (
+      BackgroundLoader.instance.isUsingCustomBackground &&
+      BackgroundLoader.instance.hasCustomBackground
+    ) {
+      this.useCustomBgCheckbox.checked = true;
+    } else {
+      this.useCustomBgCheckbox.checked = false;
+    }
+    this.useDefaultBgCheckbox.checked = !this.useCustomBgCheckbox.checked;
+    this.customBgUpload.disabled = !this.useCustomBgCheckbox.checked;
+
+    if (BackgroundLoader.instance.hasCustomBackground) {
+      this.customBgUpload.imageData = BackgroundLoader.instance.customBackgroundImage;
+    }
+    this.dimmedBgCheckbox.checked = BackgroundLoader.instance.isDimmedBackground;
   }
 
   setLoading(isLoading) {

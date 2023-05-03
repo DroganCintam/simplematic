@@ -21,6 +21,7 @@ export default class Checkbox extends Component {
 
   set checked(value) {
     this.input.checked = value;
+    this._lastValue = value;
   }
 
   /** @type {boolean} */
@@ -32,8 +33,12 @@ export default class Checkbox extends Component {
     this.input.disabled = value;
   }
 
+  programmatic = false;
+
   /** @type {(target: Checkbox) => void} */
   onChange;
+
+  _lastValue = false;
 
   /**
    * @param {HTMLElement} parent
@@ -50,7 +55,13 @@ export default class Checkbox extends Component {
 
     this.input = this.root.querySelector('input');
     this.input.addEventListener('change', () => {
+      if (this.programmatic) {
+        this.checked = this._lastValue;
+        return;
+      }
       if (this.onChange) this.onChange(this);
     });
+
+    this._lastValue = this.checked;
   }
 }

@@ -23,14 +23,25 @@ export default class ImageUpload extends Component {
     this.fileInput.disabled = value;
   }
 
+  get acceptedTypes() {
+    return this.fileInput.accept;
+  }
+
+  set acceptedTypes(value) {
+    this.fileInput.accept = value;
+  }
+
   /**
    * @param {HTMLElement} parent
-   * @param {{ extraClasses: string[] | undefined }}} options
+   * @param {{ extraClasses: string[] | undefined }} options
    * @param {boolean} replacing
    */
   constructor(parent, options, replacing = true) {
     super(parent, html, replacing);
 
+    if (options.extraClasses) {
+      this.root.classList.add(options.extraClasses);
+    }
     this.fileInput = this.root.querySelector('input');
     this.image = this.root.querySelector('img');
 

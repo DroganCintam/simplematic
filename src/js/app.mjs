@@ -12,6 +12,7 @@ import Upscale from './components/upscale.mjs';
 import Progress from './components/progress.mjs';
 import ImageInfo from './types/image-info.mjs';
 import ConfirmDialog from './components/confirm-dialog.mjs';
+import BackgroundLoader from './background-loader.mjs';
 
 class App {
   /** @type {HTMLElement} */
@@ -83,8 +84,11 @@ class App {
 
   hasResult = false;
 
-  initialize() {
+  async initialize() {
     Api.instance.baseUrl = AppConfig.instance.apiUrl;
+
+    const backgroundLoader = new BackgroundLoader();
+    await backgroundLoader.initialize();
 
     this.root = document.querySelector('#app');
     this.mainView = this.root.querySelector('.main-view');
@@ -382,9 +386,9 @@ class App {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const app = new App();
-  app.initialize();
+  await app.initialize();
 });
 
 if ('serviceWorker' in navigator) {

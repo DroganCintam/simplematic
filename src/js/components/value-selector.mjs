@@ -173,6 +173,7 @@ export default class ValueSelector extends Component {
           }
         }
         this.switchPreset(matchedPreset);
+        this.dispatchEvent(new Event('change'));
       });
     }
 
@@ -207,6 +208,7 @@ export default class ValueSelector extends Component {
       input.addEventListener('change', () => {
         if (input.checked) {
           this.switchPreset(preset);
+          this.dispatchEvent(new Event('change'));
         } else {
           input.checked = true;
         }

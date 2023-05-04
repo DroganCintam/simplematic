@@ -31,7 +31,9 @@ const html = /*html*/ `
       </button>
     </span></label>
     <textarea class="txt-negative-prompt" autocapitalize="off"></textarea>
-    <label class="heading">Aspect ratio:</label>
+    <label class="heading">Dimensions:</label>
+    <input type="number" class="custom txt-width" value="512" min="32" max="4096" step="32" onchange="validateInputRange(this)"/>
+    <input type="number" class="custom txt-height" value="512" min="32" max="4096" step="32" onchange="validateInputRange(this)"/>
     <span class="sel-aspectRatio"></span>
     <label class="heading">Steps:</label>
     <span class="sel-steps"></span>
@@ -222,6 +224,10 @@ export default class Txt2Img extends Tab {
   negativePrompt;
   /** @type {HTMLButtonElement} */
   clearNegativePromptButton;
+  /** @type {HTMLInputElement} */
+  widthInput;
+  /** @type {HTMLInputElement} */
+  heightInput;
   /** @type {ValueSelector} */
   aspectRatioSelector;
   /** @type {ValueSelector} */
@@ -322,6 +328,9 @@ export default class Txt2Img extends Tab {
     this.negativePrompt.value = sessionStorage.getItem('negativePrompt') ?? '';
     autoResize(this.negativePrompt);
 
+    this.widthInput = this.root.querySelector('.txt-width');
+    this.heightInput = this.root.querySelector('.txt-height');
+
     this.aspectRatioSelector = new ValueSelector(
       this.root.querySelector('.sel-aspectRatio'),
       {
@@ -332,9 +341,25 @@ export default class Txt2Img extends Tab {
           { name: 'Square (512x512)', value: 1 },
           { name: 'Portrait (512x768)', value: 2 },
           { name: 'Landscape (768x512)', value: 3 },
+          { name: 'Big Square (1024x1024)', value: 4 },
         ],
       },
       true
+    );
+
+    this.widthInput.parentElement.removeChild(this.widthInput);
+    this.heightInput.parentElement.removeChild(this.heightInput);
+    {
+      const arList = this.aspectRatioSelector.root.querySelector('.value-list');
+      arList.insertBefore(this.heightInput, arList.firstChild);
+      arList.insertBefore(this.widthInput, this.heightInput);
+    }
+
+    this.widthInput.addEventListener('change', this.updateAspectRatioFromDimensions.bind(this));
+    this.heightInput.addEventListener('change', this.updateAspectRatioFromDimensions.bind(this));
+    this.aspectRatioSelector.addEventListener(
+      'change',
+      this.updateDimensionsFromAspectRatio.bind(this)
     );
 
     this.stepsSelector = new ValueSelector(
@@ -453,18 +478,18 @@ export default class Txt2Img extends Tab {
     this.clearSeedButton.addEventListener('click', () => {
       this.seed.value = '-1';
     });
+
+    this.widthInput.value = localStorage.getItem('width') ?? '512';
+    this.heightInput.value = localStorage.getItem('height') ?? '512';
+    this.updateAspectRatioFromDimensions();
   }
 
   retrieveInfo(/** @type {ImageInfo} */ imageInfo, /** @type {Boolean} */ alsoSeed) {
     this.prompt.value = imageInfo.info.prompt;
     this.negativePrompt.value = imageInfo.info.negativePrompt;
-    if (imageInfo.info.width == 768) {
-      this.aspectRatioSelector.currentValue = 3;
-    } else if (imageInfo.info.height == 768) {
-      this.aspectRatioSelector.currentValue = 2;
-    } else {
-      this.aspectRatioSelector.currentValue = 1;
-    }
+    this.widthInput.valueAsNumber = imageInfo.info.width;
+    this.heightInput.valueAsNumber = imageInfo.info.height;
+    this.updateAspectRatioFromDimensions();
     this.stepsSelector.currentValue = imageInfo.info.steps;
     this.cfgSelector.currentValue = imageInfo.info.cfg;
     if (alsoSeed) {
@@ -530,6 +555,43 @@ export default class Txt2Img extends Tab {
     }
   }
 
+  updateAspectRatioFromDimensions() {
+    const width = this.widthInput.valueAsNumber;
+    const height = this.heightInput.valueAsNumber;
+    if (width === 512 && height === 512) {
+      this.aspectRatioSelector.currentValue = 1;
+    } else if (width === 512 && height === 768) {
+      this.aspectRatioSelector.currentValue = 2;
+    } else if (width === 768 && height === 512) {
+      this.aspectRatioSelector.currentValue = 3;
+    } else if (width === 1024 && height === 1024) {
+      this.aspectRatioSelector.currentValue = 4;
+    } else {
+      this.aspectRatioSelector.currentValue = 0;
+    }
+  }
+
+  updateDimensionsFromAspectRatio() {
+    switch (this.aspectRatioSelector.currentValue) {
+      case 1:
+        this.widthInput.valueAsNumber = 512;
+        this.heightInput.valueAsNumber = 512;
+        break;
+      case 2:
+        this.widthInput.valueAsNumber = 512;
+        this.heightInput.valueAsNumber = 768;
+        break;
+      case 3:
+        this.widthInput.valueAsNumber = 768;
+        this.heightInput.valueAsNumber = 512;
+        break;
+      case 4:
+        this.widthInput.valueAsNumber = 1024;
+        this.heightInput.valueAsNumber = 1024;
+        break;
+    }
+  }
+
   generate(onStart, onEnd, onSuccess, onFailure) {
     if (Api.instance.baseUrl == '') return;
 
@@ -541,20 +603,14 @@ export default class Txt2Img extends Tab {
 
     sessionStorage.setItem('prompt', this.prompt.value);
     sessionStorage.setItem('negativePrompt', this.negativePrompt.value);
+    localStorage.setItem('width', this.widthInput.value);
+    localStorage.setItem('height', this.heightInput.value);
     localStorage.setItem('aspectRatio', this.aspectRatioSelector.currentValue.toString());
     localStorage.setItem('steps', this.stepsSelector.currentValue.toString());
     localStorage.setItem('cfg', this.cfgSelector.currentValue.toString());
 
-    let width = 512;
-    let height = 512;
-    switch (this.aspectRatioSelector.currentValue) {
-      case 2:
-        height = 768;
-        break;
-      case 3:
-        width = 768;
-        break;
-    }
+    const width = this.widthInput.valueAsNumber;
+    const height = this.heightInput.valueAsNumber;
 
     if (this.img2imgCheckbox.checked && this.img2imgInputImage.hasImage) {
       /** @type {Img2ImgParameters} */

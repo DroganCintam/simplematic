@@ -30,4 +30,20 @@ export default class Component {
     const doc = parser.parseFromString(html, 'text/html');
     return doc.body.firstChild;
   }
+
+  /**
+   * @param {any} type
+   * @param {EventListenerOrEventListenerObject} listener
+   */
+  addEventListener(type, listener) {
+    this.root.addEventListener(type, listener);
+  }
+
+  /**
+   * @param {Event} event
+   * @returns {boolean}
+   */
+  dispatchEvent(event) {
+    return this.root.dispatchEvent(event);
+  }
 }

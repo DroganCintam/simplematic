@@ -7,6 +7,45 @@ const html = /*html*/ `
 </div>
 `;
 
+const css = /*css*/ `
+.image-upload {
+  margin: 0;
+  padding: 0;
+  border: 1px solid hsla(0, 0%, 100%, 0.5);
+  border-radius: 0.5rem;
+  display: flex;
+}
+
+.image-upload input[type="file"] {
+  color: transparent;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.image-upload input[type="file"]::before {
+  display: block;
+  width: 100%;
+  height: 0;
+  content: 'Select or drag PNG';
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  text-align: center;
+  color: #ffffff;
+}
+
+.image-upload input[type="file"]::-webkit-file-upload-button {
+  visibility: hidden;
+}
+
+.image-upload img {
+  width: 100%;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+`;
+
 export default class ImageUpload extends Component {
   /** @type {HTMLInputElement} */
   fileInput;
@@ -37,7 +76,7 @@ export default class ImageUpload extends Component {
    * @param {boolean} replacing
    */
   constructor(parent, options, replacing = true) {
-    super(parent, html, replacing);
+    super(parent, html, css, replacing);
 
     if (options.extraClasses) {
       this.root.classList.add(options.extraClasses);

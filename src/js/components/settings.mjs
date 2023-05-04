@@ -32,73 +32,73 @@ const html = /*html*/ `
       <button type="button" class="w100p btn-reload">RELOAD APP</button>
     </div>
   </div>
-
-  <style>
-    #settings-tab .sections {
-      width: 100%;
-      display: flex;
-      flex-flow: column nowrap;
-      align-items: flex-start;
-      justify-content: flex-start;
-      row-gap: 0.5rem;
-      max-width: 720px;
-    }
-
-    #settings-tab .section {
-      position: relative;
-      width: 100%;
-      display: flex;
-      flex-flow: row wrap;
-      align-items: flex-start;
-      justify-content: flex-start;
-      row-gap: 0.5rem;
-      padding: 1.5rem 0.5rem 0.5rem 0.5rem;
-      margin-top: 1rem;
-      border: 1px solid hsla(0, 0%, 100%, 0.5);
-      border-radius: 0.5rem;
-    }
-
-    #settings-tab .section .title {
-      position: absolute;
-      left: 1rem;
-      top: -1rem;
-      height: 2rem;
-      background-color: #000;
-      border: 1px solid hsla(0, 0%, 100%, 0.5);
-      border-radius: 0.5rem;
-      padding: 0.5rem;
-      display: flex;
-      flex-flow: row nowrap;
-      align-items: center;
-    }
-
-    #settings-tab .txt-username {
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
-    }
-
-    #settings-tab .txt-password {
-      border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
-    }
-
-    #settings-tab .clickable-text {
-      margin: 0 auto;
-    }
-
-    #settings-tab .bg {
-      gap: 0.5rem;
-    }
-
-    #settings-tab .bg .image-upload {
-      max-height: 10rem;
-    }
-
-    #settings-tab .bg .image-upload img {
-      object-fit: contain;
-    }
-  </style>
 </div>
+`;
+
+const css = /*css*/ `
+#settings-tab .sections {
+  width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  row-gap: 0.5rem;
+  max-width: 720px;
+}
+
+#settings-tab .section {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  row-gap: 0.5rem;
+  padding: 1.5rem 0.5rem 0.5rem 0.5rem;
+  margin-top: 1rem;
+  border: 1px solid hsla(0, 0%, 100%, 0.5);
+  border-radius: 0.5rem;
+}
+
+#settings-tab .section .title {
+  position: absolute;
+  left: 1rem;
+  top: -1rem;
+  height: 2rem;
+  background-color: #000;
+  border: 1px solid hsla(0, 0%, 100%, 0.5);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+}
+
+#settings-tab .txt-username {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+#settings-tab .txt-password {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+#settings-tab .clickable-text {
+  margin: 0 auto;
+}
+
+#settings-tab .bg {
+  gap: 0.5rem;
+}
+
+#settings-tab .bg .image-upload {
+  max-height: 10rem;
+}
+
+#settings-tab .bg .image-upload img {
+  object-fit: contain;
+}
 `;
 
 export default class Settings extends Tab {
@@ -135,7 +135,7 @@ export default class Settings extends Tab {
   }
 
   constructor(/** @type {HTMLElement} */ parent) {
-    super(parent, html);
+    super(parent, html, css);
     this.title = 'SETTINGS';
     this.urlInput = this.root.querySelector('.txt-url');
     this.usernameInput = this.root.querySelector('.txt-username');

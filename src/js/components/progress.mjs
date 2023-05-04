@@ -4,23 +4,24 @@ import Component from './component.mjs';
 const html = /*html*/ `
 <div class="progress">
   <div class="filler"></div>
-  <style>
-    .progress {
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      height: 4px;
-    }
-
-    .progress .filler {
-      background-color: hsl(35 67% 30%);
-      width: 0;
-      height: 100%;
-      transition: width 0.5s ease-out;
-    }
-  </style>
 </div>
+`;
+
+const css = /*css*/ `
+.progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 4px;
+}
+
+.progress .filler {
+  background-color: hsl(35 67% 30%);
+  width: 0;
+  height: 100%;
+  transition: width 0.5s ease-out;
+}
 `;
 
 export default class Progress extends Component {
@@ -35,7 +36,7 @@ export default class Progress extends Component {
    * @param {boolean} replacing
    */
   constructor(parent, replacing) {
-    super(parent, html, replacing);
+    super(parent, html, css, replacing);
     this.filler = this.root.querySelector('.filler');
   }
 

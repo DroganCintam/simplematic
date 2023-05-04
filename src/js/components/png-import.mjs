@@ -24,85 +24,85 @@ const html = /*html*/ `
       <button class="btn-import-parameters"><img src="/img/file-import-solid-black.svg">IMPORT PARAMETERS</button>
     </div>
   </div>
-
-  <style>
-    #png-import-tab > div {
-      display: flex;
-      flex-flow: row wrap;
-      align-items: flex-start;
-      justify-content: flex-start;
-      width: 100%;
-      max-width: 512px;
-    }
-
-    #png-import-tab > div > div {
-      width: 100%;
-      margin: 0;
-      padding: 0.5rem;
-      display: flex;
-      flex-flow: column nowrap;
-      justify-content: flex-start;
-      align-items: flex-start;
-      row-gap: 0.5rem;
-    }
-
-    #png-import-tab .file-input {
-      color: transparent;
-      width: 100%;
-      padding: 1rem;
-      border: 1px solid #ffffff;
-      border-radius: 0.5rem;
-    }
-
-    #png-import-tab .file-input::before {
-      display: block;
-      width: 100%;
-      height: 100%;
-      content: 'Select or drag PNG';
-      font-family: 'Montserrat', sans-serif;
-      font-size: 1rem;
-      text-align: center;
-      vertical-align: middle;
-      color: #ffffff;
-    }
-
-    #png-import-tab .file-input::-webkit-file-upload-button {
-      visibility: hidden;
-    }
-
-    #png-import-tab .parameters-input {
-      padding: 0.5rem;
-      background-color: rgba(0, 0, 0, 0.5);
-      color: hsl(0, 0%, 100%);
-      font-family: 'Montserrat';
-      font-size: 0.9rem;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 0.5rem;
-      resize: none;
-      outline: none;
-      width: 100%;
-    }
-
-    #png-import-tab .btn-import-parameters {
-      width: 100%;
-    }
-    
-    #png-import-tab label.heading {
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: space-between;
-      align-items: flex-end;
-      width: 100%;
-    }
-
-    #png-import-tab label.heading .options {
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: flex-start;
-      align-items: center;
-    }
-  </style>
 </div>
+`;
+
+const css = /*css*/ `
+#png-import-tab > div {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 512px;
+}
+
+#png-import-tab > div > div {
+  width: 100%;
+  margin: 0;
+  padding: 0.5rem;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  row-gap: 0.5rem;
+}
+
+#png-import-tab .file-input {
+  color: transparent;
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #ffffff;
+  border-radius: 0.5rem;
+}
+
+#png-import-tab .file-input::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  content: 'Select or drag PNG';
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  text-align: center;
+  vertical-align: middle;
+  color: #ffffff;
+}
+
+#png-import-tab .file-input::-webkit-file-upload-button {
+  visibility: hidden;
+}
+
+#png-import-tab .parameters-input {
+  padding: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: hsl(0, 0%, 100%);
+  font-family: 'Montserrat';
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 0.5rem;
+  resize: none;
+  outline: none;
+  width: 100%;
+}
+
+#png-import-tab .btn-import-parameters {
+  width: 100%;
+}
+
+#png-import-tab label.heading {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+}
+
+#png-import-tab label.heading .options {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
 `;
 
 export default class PngImport extends Tab {
@@ -127,7 +127,7 @@ export default class PngImport extends Tab {
   onParameters;
 
   constructor(/** @type {HTMLElement} */ parent) {
-    super(parent, html);
+    super(parent, html, css);
     this.title = 'IMPORT PNG';
 
     this.pngFile = this.root.querySelector('.file-input');

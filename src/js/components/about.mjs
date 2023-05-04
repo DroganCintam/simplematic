@@ -39,66 +39,66 @@ const html = /*html*/ `
       I made this app to learn AI and other coding stuffs.
     </p>
   </div>
-
-  <style>
-    #about-tab {
-      background-color: hsla(0, 0%, 0%, 0.5);
-      min-height: calc(100vh - 7rem);
-      font-size: 0.8rem;
-    }
-
-    #about-tab > div {
-      max-width: 640px;
-      width: 100%;
-      display: flex;
-      flex-flow: column nowrap;
-      justify-content: flex-start;
-      align-items: flex-start;
-      row-gap: 1rem;
-    }
-
-    #about-tab p {
-      margin: 0;
-      padding: 0;
-      line-height: 150%;
-    }
-
-    #about-tab h1 {
-      margin: 0;
-      padding: 0;
-      line-height: 150%;
-      font-size: 1.25em;
-      font-weight: bold;
-    }
-
-    #about-tab a, #about-tab a:visited {
-      text-decoration: underline;
-      color: #ffffff;
-    }
-
-    #about-tab a:hover {
-      color: hsl(35 67% 50%);
-    }
-
-    #about-tab code {
-      color: hsl(75 67% 60%);
-    }
-
-    #about-tab ul {
-      margin: 0;
-      padding: 0 0 0 1.5rem;
-    }
-
-    #about-tab li {
-      padding: 0.25rem 0;
-    }
-  </style>
 </div>
+`;
+
+const css = /*css*/ `
+#about-tab {
+  background-color: hsla(0, 0%, 0%, 0.5);
+  min-height: calc(100vh - 7rem);
+  font-size: 0.8rem;
+}
+
+#about-tab > div {
+  max-width: 640px;
+  width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  row-gap: 1rem;
+}
+
+#about-tab p {
+  margin: 0;
+  padding: 0;
+  line-height: 150%;
+}
+
+#about-tab h1 {
+  margin: 0;
+  padding: 0;
+  line-height: 150%;
+  font-size: 1.25em;
+  font-weight: bold;
+}
+
+#about-tab a, #about-tab a:visited {
+  text-decoration: underline;
+  color: #ffffff;
+}
+
+#about-tab a:hover {
+  color: hsl(35 67% 50%);
+}
+
+#about-tab code {
+  color: hsl(75 67% 60%);
+}
+
+#about-tab ul {
+  margin: 0;
+  padding: 0 0 0 1.5rem;
+}
+
+#about-tab li {
+  padding: 0.25rem 0;
+}
 `;
 
 export default class About extends Tab {
   constructor(/** @type {HTMLElement} */ parent) {
-    super(parent, html);
+    super(parent, html, css);
     this.title = 'ABOUT';
   }
 }

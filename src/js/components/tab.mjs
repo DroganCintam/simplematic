@@ -6,9 +6,10 @@ export default class Tab extends Component {
   /**
    * @param {HTMLElement} parent
    * @param {string} html
+   * @param {string} css
    */
-  constructor(parent, html) {
-    super(parent, html);
+  constructor(parent, html, css) {
+    super(parent, html, css);
   }
 
   show() {

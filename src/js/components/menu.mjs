@@ -40,178 +40,178 @@ const html = /*html*/ `
     <span class="spinning"></span>
     <span>Loading...</span>
   </div>
-
-  <style>
-    #menu {
-      position: fixed;
-      left: 0;
-      top: 0;
-      width: 0;
-      height: 100vh;
-      overflow-y: scroll;
-      background-color: hsl(0, 0%, 20%);
-      transition: width 0.2s ease-out;
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-      z-index: 9999;
-    }
-
-    #menu::-webkit-scrollbar {
-      display: none;
-    }
-
-    #menu > div {
-      display: flex;
-      flex-flow: column nowrap;
-      justify-content: flex-start;
-      align-items: flex-start;
-      width: 100%;
-    }
-
-    #menu .top {
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      height: 4rem;
-      padding: 0 1rem;
-      border-bottom: 1px solid hsla(0, 0%, 100%, 0.2);
-      font-weight: bold;
-    }
-
-    #menu .divider {
-      width: 100%;
-      height: 1px;
-      background-color: hsla(0, 0%, 100%, 0.15);
-    }
-    
-    #menu .option {
-      width: 100%;
-      display: flex;
-      flex-flow: column nowrap;
-      justify-content: flex-start;
-      align-items: flex-start;
-      row-gap: 0.5rem;
-    }
-
-    #menu .option.with-padding {
-      padding: 1rem;
-    }
-
-    #menu .option label {
-      display: inline-flex;
-      flex-flow: row nowrap;
-      justify-content: flex-start;
-      align-items: center;
-    }
-
-    #menu .option button {
-      background: none;
-      border: none;
-      width: 100%;
-      height: auto;
-      padding: 1rem;
-      display: inline-flex;
-      flex-flow: row nowrap;
-      justify-content: flex-start;
-      align-items: center;
-      color: #fff;
-      font-size: 1rem;
-      font-weight: normal;
-    }
-
-    #menu .option button:disabled:hover {
-      background: none;
-    }
-
-    #menu .option button:hover {
-      background-color: hsla(0, 0%, 100%, 0.2);
-    }
-
-    #menu .option label > img,
-    #menu .option button > img {
-      width: 1rem;
-      height: 1rem;
-      margin-left: 0.5rem;
-      margin-right: 0.5rem;
-    }
-
-    #menu select {
-      width: 100%;
-    }
-
-    #menu .bottom-bar {
-      z-index: 999;
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      height: 4rem;
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: flex-start;
-      align-items: center;
-      column-gap: 0.5rem;
-      padding: 1rem;
-      background-color: hsla(0, 0%, 0%, 0.1);
-    }
-
-    #menu .bottom-bar a {
-      display: inline-flex;
-      flex-flow: row nowrap;
-      align-items: center;
-      justify-content: center;
-      width: 2.5rem;
-      height: 2.5rem;
-      padding: 0.5rem;
-    }
-
-    #menu .bottom-bar a:hover {
-      background-color: hsla(0, 0%, 100%, 0.1);
-    }
-
-    #menu .bottom-bar a img {
-      width: 1rem;
-      height: 1rem;
-    }
-
-    #menu .version {
-      flex-grow: 1;
-      text-align: right;
-      font-size: 0.75rem;
-      margin-right: 0.5rem;
-      color: hsla(0, 0%, 100%, 0.7);
-    }
-
-    #menu .loader {
-      position: absolute;
-      left: 0;
-      bottom: 10rem;
-      width: 100%;
-      display: flex;
-      flex-flow: column nowrap;
-      justify-content: center;
-      align-items: center;
-      row-gap: 0.25rem;
-      font-size: 0.75rem;
-    }
-
-    #menu .loader .spinning {
-      border: 0.5rem solid #f3f3f3;
-      border-top: 0.5rem solid #3498db;
-      border-radius: 50%;
-      width: 3rem;
-      height: 3rem;
-      animation: spin 2s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
 </div>
+`;
+
+const css = /*css*/ `
+#menu {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 100vh;
+  overflow-y: scroll;
+  background-color: hsl(0, 0%, 20%);
+  transition: width 0.2s ease-out;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  z-index: 9999;
+}
+
+#menu::-webkit-scrollbar {
+  display: none;
+}
+
+#menu > div {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+}
+
+#menu .top {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 4rem;
+  padding: 0 1rem;
+  border-bottom: 1px solid hsla(0, 0%, 100%, 0.2);
+  font-weight: bold;
+}
+
+#menu .divider {
+  width: 100%;
+  height: 1px;
+  background-color: hsla(0, 0%, 100%, 0.15);
+}
+
+#menu .option {
+  width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  row-gap: 0.5rem;
+}
+
+#menu .option.with-padding {
+  padding: 1rem;
+}
+
+#menu .option label {
+  display: inline-flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+#menu .option button {
+  background: none;
+  border: none;
+  width: 100%;
+  height: auto;
+  padding: 1rem;
+  display: inline-flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: normal;
+}
+
+#menu .option button:disabled:hover {
+  background: none;
+}
+
+#menu .option button:hover {
+  background-color: hsla(0, 0%, 100%, 0.2);
+}
+
+#menu .option label > img,
+#menu .option button > img {
+  width: 1rem;
+  height: 1rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+#menu select {
+  width: 100%;
+}
+
+#menu .bottom-bar {
+  z-index: 999;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 4rem;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  column-gap: 0.5rem;
+  padding: 1rem;
+  background-color: hsla(0, 0%, 0%, 0.1);
+}
+
+#menu .bottom-bar a {
+  display: inline-flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.5rem;
+}
+
+#menu .bottom-bar a:hover {
+  background-color: hsla(0, 0%, 100%, 0.1);
+}
+
+#menu .bottom-bar a img {
+  width: 1rem;
+  height: 1rem;
+}
+
+#menu .version {
+  flex-grow: 1;
+  text-align: right;
+  font-size: 0.75rem;
+  margin-right: 0.5rem;
+  color: hsla(0, 0%, 100%, 0.7);
+}
+
+#menu .loader {
+  position: absolute;
+  left: 0;
+  bottom: 10rem;
+  width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  row-gap: 0.25rem;
+  font-size: 0.75rem;
+}
+
+#menu .loader .spinning {
+  border: 0.5rem solid #f3f3f3;
+  border-top: 0.5rem solid #3498db;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 `;
 
 export default class Menu extends Component {
@@ -251,7 +251,7 @@ export default class Menu extends Component {
   onAbout;
 
   constructor(/** @type {HTMLElement} */ root) {
-    super(root, html, true);
+    super(root, html, css, true);
 
     this.hideMenuButton = this.root.querySelector('.btn-hide');
     this.hideMenuButton.addEventListener('click', () => {

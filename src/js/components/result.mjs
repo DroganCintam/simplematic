@@ -90,272 +90,271 @@ const html = /*html*/ `
       </div>
     </div>
   </div>
-
-  <style>
-    #result-tab .panes {
-      display: flex;
-      flex-flow: row wrap;
-      align-items: flex-start;
-      justify-content: flex-start;
-      width: 100%;
-      max-width: 512px;
-    }
-
-    @media (min-width: 720px) {
-      #result-tab .panes {
-        max-width: 1024px;
-      }
-      #result-tab .pane {
-        width: 50%;
-        max-width: 50%;
-      }
-    }
-
-    #result-tab .pane {
-      display: flex;
-      flex-flow: row wrap;
-      align-items: flex-start;
-      justify-content: flex-start;
-      width: 100%;
-    }
-
-    #result-tab .pane > div {
-      margin: 0;
-      padding: 0.5rem;
-      display: flex;
-      align-items: flex-start;
-    }
-
-    #result-tab .pane > div.vertical {
-      flex-flow: column nowrap;
-      justify-content: flex-start;
-      row-gap: 0.5rem;
-    }
-
-    #result-tab .pane > div.horizontal {
-      flex-flow: row nowrap;
-      justify-content: stretch;
-      column-gap: 0.25rem;
-    }
-
-    #result-tab .pane > div.horizontal > * {
-      flex-grow: 1;
-    }
-
-    #result-tab .pane > div.no-gap {
-      gap: 0;
-    }
-
-    #result-tab .actions {
-      flex-flow: row wrap !important;
-      gap: 0.25rem;
-    }
-
-    #result-tab .actions button {
-      font-size: 0.75rem;
-    }
-
-    #result-tab .image {
-      width: 100%;
-      border: 1px solid hsla(0, 0%, 100%, 0.5);
-      border-radius: 0.5rem;
-    }
-
-    #result-tab .image.square {
-      max-width: 512px;
-      max-height: 512px;
-    }
-
-    #result-tab .image.portrait {
-      max-width: 512px;
-      max-height: 768px;
-    }
-
-    #result-tab .image.landscape {
-      max-width: 768px;
-      max-height: 512px;
-    }
-
-    #result-tab .input-image-wrapper {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      padding: 0.5rem;
-    }
-
-    #result-tab .input-image {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      border: 1px solid hsla(0, 0%, 100%, 0.5);
-      border-radius: 0.5rem;
-    }
-
-    #result-tab .input-image-wrapper span {
-      position: absolute;
-      left: 0.5rem;
-      right: 0.5rem;
-      bottom: 0.5rem;
-      border-radius: 0 0 0.5rem 0.5rem;
-      text-align: center;
-      background-color: hsla(0, 0%, 0%, 0.5);
-      color: hsl(0, 0%, 100%);
-      padding: 0.5rem;
-    }
-
-    #result-tab .input-image-wrapper .btn-input-image {
-      position: absolute;
-      right: 1rem;
-      top: 1rem;
-    }
-
-    #result-tab textarea {
-      width: 100%;
-      max-width: 512px;
-    }
-
-    #result-tab input[type=text],
-    #result-tab input[type=number],
-    #result-tab textarea {
-      width: 100%;
-      color: hsl(0, 0%, 90%);
-    }
-
-    #result-tab input[type=text],
-    #result-tab input[type=number],
-    #result-tab textarea {
-      font-size: 0.8rem;
-    }
-
-    #result-tab .image-navigation {
-      align-items: center;
-      width: 100%;
-    }
-
-    #result-tab .image-navigation button {
-      background: none;
-      border: 0;
-      font-size: 0.75rem;
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: center;
-      align-items: center;
-      column-gap: 0.5rem;
-      color: hsla(0, 0%, 100%, 1);
-    }
-
-    @supports not (-webkit-touch-callout: none) {
-      #result-tab .image-navigation button:hover {
-        background-color: hsla(0, 0%, 100%, 0.5);
-      }
-    }
-
-    #result-tab .image-navigation button:disabled {
-      color: hsla(0, 0%, 100%, 0.5);
-    }
-
-    #result-tab .image-navigation button:disabled:hover {
-      background: none;
-    }
-
-    #result-tab .image-navigation button img {
-      width: 1rem;
-      height: 1rem;
-    }
-
-    #result-tab .btn-prev,
-    #result-tab .btn-next {
-      flex-grow: 1;
-    }
-
-    #result-tab .tagging {
-      width: 100%;
-      display: flex;
-      flex-flow: column nowrap;
-      justify-content: flex-start;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    #result-tab .tagging .tags {
-      width: 100%;
-      display: flex;
-      flex-flow: row wrap;
-      justify-content: flex-start;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    #result-tab .tagging .tags .tag {
-      padding: 0.5rem;
-      background-color: hsla(0, 0%, 0%, 0.5);
-      color: hsla(0, 0%, 100%, 1);
-      border-radius: 0.5rem;
-      font-size: 0.8rem;
-    }
-
-    #result-tab .tagging .tags .tag .btn-remove-tag {
-      content: 'x';
-      width: 1rem;
-      height: 1rem;
-      margin-left: 0.5rem;
-      display: inline-block;
-      vertical-align: middle;
-      background-image: url('/img/xmark-solid.svg');
-      background-position: center;
-      background-repeat: no-repeat;
-      cursor: pointer;
-      opacity: 0.5;
-    }
-
-    #result-tab .tagging .tags .tag .btn-remove-tag:hover {
-      opacity: 1;
-    }
-
-    #result-tab .tagging .tags .add-tag {
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: flex-start;
-      align-items: center;
-    }
-
-    #result-tab .tagging .tags .add-tag .hash {
-      border: 1px solid hsla(0, 0%, 100%, 0.25);
-      border-right: none;
-      border-radius: 0.5rem 0 0 0.5rem;
-      height: 2rem;
-      background-color: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      padding-left: 0.5rem;
-      font-size: 0.8rem;
-      color: hsla(0, 0%, 100%, 0.75);
-    }
-
-    #result-tab .tagging .tags .add-tag input {
-      border: 1px solid hsla(0, 0%, 100%, 0.25);
-      border-left: none;
-      padding-left: 0.25rem;
-      max-width: 12ch;
-      border-radius: 0;
-      height: 2rem;
-    }
-    
-    #result-tab .tagging .tags .add-tag button {
-      border: 1px solid hsla(0, 0%, 100%, 0.25);
-      border-radius: 0 0.5rem 0.5rem 0;
-      background-color: hsla(0, 0%, 0%, 1);
-      height: 2rem;
-    }
-
-    #result-tab .tagging .tags .add-tag button:hover {
-      background-color: hsla(0, 0%, 30%, 1);
-    }
-  </style>
-
 </div>
+`;
+
+const css = /*css*/ `
+#result-tab .panes {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 512px;
+}
+
+@media (min-width: 720px) {
+  #result-tab .panes {
+    max-width: 1024px;
+  }
+  #result-tab .pane {
+    width: 50%;
+    max-width: 50%;
+  }
+}
+
+#result-tab .pane {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+#result-tab .pane > div {
+  margin: 0;
+  padding: 0.5rem;
+  display: flex;
+  align-items: flex-start;
+}
+
+#result-tab .pane > div.vertical {
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  row-gap: 0.5rem;
+}
+
+#result-tab .pane > div.horizontal {
+  flex-flow: row nowrap;
+  justify-content: stretch;
+  column-gap: 0.25rem;
+}
+
+#result-tab .pane > div.horizontal > * {
+  flex-grow: 1;
+}
+
+#result-tab .pane > div.no-gap {
+  gap: 0;
+}
+
+#result-tab .actions {
+  flex-flow: row wrap !important;
+  gap: 0.25rem;
+}
+
+#result-tab .actions button {
+  font-size: 0.75rem;
+}
+
+#result-tab .image {
+  width: 100%;
+  border: 1px solid hsla(0, 0%, 100%, 0.5);
+  border-radius: 0.5rem;
+}
+
+#result-tab .image.square {
+  max-width: 512px;
+  max-height: 512px;
+}
+
+#result-tab .image.portrait {
+  max-width: 512px;
+  max-height: 768px;
+}
+
+#result-tab .image.landscape {
+  max-width: 768px;
+  max-height: 512px;
+}
+
+#result-tab .input-image-wrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0.5rem;
+}
+
+#result-tab .input-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border: 1px solid hsla(0, 0%, 100%, 0.5);
+  border-radius: 0.5rem;
+}
+
+#result-tab .input-image-wrapper span {
+  position: absolute;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  border-radius: 0 0 0.5rem 0.5rem;
+  text-align: center;
+  background-color: hsla(0, 0%, 0%, 0.5);
+  color: hsl(0, 0%, 100%);
+  padding: 0.5rem;
+}
+
+#result-tab .input-image-wrapper .btn-input-image {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+}
+
+#result-tab textarea {
+  width: 100%;
+  max-width: 512px;
+}
+
+#result-tab input[type=text],
+#result-tab input[type=number],
+#result-tab textarea {
+  width: 100%;
+  color: hsl(0, 0%, 90%);
+}
+
+#result-tab input[type=text],
+#result-tab input[type=number],
+#result-tab textarea {
+  font-size: 0.8rem;
+}
+
+#result-tab .image-navigation {
+  align-items: center;
+  width: 100%;
+}
+
+#result-tab .image-navigation button {
+  background: none;
+  border: 0;
+  font-size: 0.75rem;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  column-gap: 0.5rem;
+  color: hsla(0, 0%, 100%, 1);
+}
+
+@supports not (-webkit-touch-callout: none) {
+  #result-tab .image-navigation button:hover {
+    background-color: hsla(0, 0%, 100%, 0.5);
+  }
+}
+
+#result-tab .image-navigation button:disabled {
+  color: hsla(0, 0%, 100%, 0.5);
+}
+
+#result-tab .image-navigation button:disabled:hover {
+  background: none;
+}
+
+#result-tab .image-navigation button img {
+  width: 1rem;
+  height: 1rem;
+}
+
+#result-tab .btn-prev,
+#result-tab .btn-next {
+  flex-grow: 1;
+}
+
+#result-tab .tagging {
+  width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#result-tab .tagging .tags {
+  width: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#result-tab .tagging .tags .tag {
+  padding: 0.5rem;
+  background-color: hsla(0, 0%, 0%, 0.5);
+  color: hsla(0, 0%, 100%, 1);
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+}
+
+#result-tab .tagging .tags .tag .btn-remove-tag {
+  content: 'x';
+  width: 1rem;
+  height: 1rem;
+  margin-left: 0.5rem;
+  display: inline-block;
+  vertical-align: middle;
+  background-image: url('/img/xmark-solid.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+#result-tab .tagging .tags .tag .btn-remove-tag:hover {
+  opacity: 1;
+}
+
+#result-tab .tagging .tags .add-tag {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+#result-tab .tagging .tags .add-tag .hash {
+  border: 1px solid hsla(0, 0%, 100%, 0.25);
+  border-right: none;
+  border-radius: 0.5rem 0 0 0.5rem;
+  height: 2rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  padding-left: 0.5rem;
+  font-size: 0.8rem;
+  color: hsla(0, 0%, 100%, 0.75);
+}
+
+#result-tab .tagging .tags .add-tag input {
+  border: 1px solid hsla(0, 0%, 100%, 0.25);
+  border-left: none;
+  padding-left: 0.25rem;
+  max-width: 12ch;
+  border-radius: 0;
+  height: 2rem;
+}
+
+#result-tab .tagging .tags .add-tag button {
+  border: 1px solid hsla(0, 0%, 100%, 0.25);
+  border-radius: 0 0.5rem 0.5rem 0;
+  background-color: hsla(0, 0%, 0%, 1);
+  height: 2rem;
+}
+
+#result-tab .tagging .tags .add-tag button:hover {
+  background-color: hsla(0, 0%, 30%, 1);
+}
 `;
 
 export default class ResultDialog extends Tab {
@@ -440,7 +439,7 @@ export default class ResultDialog extends Tab {
   goNext;
 
   constructor(/** @type {HTMLElement} */ parent) {
-    super(parent, html);
+    super(parent, html, css);
     this.image = this.root.querySelector('.image');
     this.prompt = this.root.querySelector('.result-prompt');
     this.negativePrompt = this.root.querySelector('.result-negative-prompt');

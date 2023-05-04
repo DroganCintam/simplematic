@@ -79,138 +79,138 @@ const html = /*html*/ `
       </div>
     </div>
   </div>
-
-  <style>
-    #txt2img-tab .parameter-pane {
-      width: 100%;
-      display: flex;
-      flex-flow: column nowrap;
-      align-items: flex-start;
-      justify-content: flex-start;
-      row-gap: 0.5rem;
-      max-width: 720px;
-    }
-
-    #txt2img-tab .txt-prompt,
-    #txt2img-tab .txt-negative-prompt {
-      width: 100%;
-      min-height: 4rem;
-      margin-bottom: 0.5rem;
-      resize: none;
-    }
-
-    #txt2img-tab .txt-seed {
-      max-width: 16ch;
-    }
-
-    #txt2img-tab label.heading {
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: space-between;
-      align-items: flex-end;
-      width: 100%;
-    }
-
-    #txt2img-tab label.heading .options {
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: flex-start;
-      align-items: center;
-    }
-
-    #txt2img-tab .advanced-parameters {
-      width: 100%;
-      display: flex;
-      flex-flow: row wrap;
-      justify-content: flex-start;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    #txt2img-tab .advanced-parameters > * {
-      flex-grow: 1;
-    }
-
-    #txt2img-tab .hires {
-      width: 100%;
-      padding: 0;
-      border: 1px solid hsla(0, 0%, 100%, 0.5);
-      border-radius: 0.5rem;
-    }
-
-    #txt2img-tab .hires .title {
-      padding: 0.5rem;
-      border-radius: 0.5rem 0.5rem 0 0;
-      border-bottom: 1px solid hsla(0, 0%, 100%, 0.5);
-      background-color: hsla(0, 0%, 0%, 0.5);
-      text-align: center;
-    }
-
-    #txt2img-tab .hires .options {
-      padding: 0.5rem;
-      width: 100%;
-      display: flex;
-      flex-flow: row wrap;
-      justify-content: stretch;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    #txt2img-tab .hires .options .option {
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: flex-start;
-      align-items: center;
-      gap: 0.5rem;
-      flex-grow: 1;
-    }
-
-    #txt2img-tab .hires .options .option label {
-      font-size: 1rem;
-    }
-
-    #txt2img-tab .hires .options .option input {
-      flex-grow: 1;
-    }
-
-    #txt2img-tab .img2img {
-      width: 100%;
-      padding: 0;
-      border: 1px solid hsla(0, 0%, 100%, 0.5);
-      border-radius: 0.5rem;
-    }
-
-    #txt2img-tab .img2img .title {
-      padding: 0.5rem;
-      border-radius: 0.5rem 0.5rem 0 0;
-      border-bottom: 1px solid hsla(0, 0%, 100%, 0.5);
-      background-color: hsla(0, 0%, 0%, 0.5);
-      text-align: center;
-    }
-
-    #txt2img-tab .img2img .options {
-      display: flex;
-      flex-flow: column nowrap;
-      justify-content: flex-start;
-      align-items: flex-start;
-      gap: 0.5rem;
-      padding: 0.5rem;
-    }
-
-    #txt2img-tab .img2img .options .txt-denoising-strength {
-      min-width: 16ch;
-    }
-
-    #txt2img-tab .img2img .options .image-upload {
-      width: 100%;
-      max-height: 512px;
-    }
-
-    #txt2img-tab .img2img .options .image-upload img {
-      object-fit: contain;
-    }
-  </style>
 </div>
+`;
+
+const css = /*css*/ `
+#txt2img-tab .parameter-pane {
+  width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  row-gap: 0.5rem;
+  max-width: 720px;
+}
+
+#txt2img-tab .txt-prompt,
+#txt2img-tab .txt-negative-prompt {
+  width: 100%;
+  min-height: 4rem;
+  margin-bottom: 0.5rem;
+  resize: none;
+}
+
+#txt2img-tab .txt-seed {
+  max-width: 16ch;
+}
+
+#txt2img-tab label.heading {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+}
+
+#txt2img-tab label.heading .options {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+#txt2img-tab .advanced-parameters {
+  width: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#txt2img-tab .advanced-parameters > * {
+  flex-grow: 1;
+}
+
+#txt2img-tab .hires {
+  width: 100%;
+  padding: 0;
+  border: 1px solid hsla(0, 0%, 100%, 0.5);
+  border-radius: 0.5rem;
+}
+
+#txt2img-tab .hires .title {
+  padding: 0.5rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+  border-bottom: 1px solid hsla(0, 0%, 100%, 0.5);
+  background-color: hsla(0, 0%, 0%, 0.5);
+  text-align: center;
+}
+
+#txt2img-tab .hires .options {
+  padding: 0.5rem;
+  width: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: stretch;
+  align-items: center;
+  gap: 1rem;
+}
+
+#txt2img-tab .hires .options .option {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+  flex-grow: 1;
+}
+
+#txt2img-tab .hires .options .option label {
+  font-size: 1rem;
+}
+
+#txt2img-tab .hires .options .option input {
+  flex-grow: 1;
+}
+
+#txt2img-tab .img2img {
+  width: 100%;
+  padding: 0;
+  border: 1px solid hsla(0, 0%, 100%, 0.5);
+  border-radius: 0.5rem;
+}
+
+#txt2img-tab .img2img .title {
+  padding: 0.5rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+  border-bottom: 1px solid hsla(0, 0%, 100%, 0.5);
+  background-color: hsla(0, 0%, 0%, 0.5);
+  text-align: center;
+}
+
+#txt2img-tab .img2img .options {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+#txt2img-tab .img2img .options .txt-denoising-strength {
+  min-width: 16ch;
+}
+
+#txt2img-tab .img2img .options .image-upload {
+  width: 100%;
+  max-height: 512px;
+}
+
+#txt2img-tab .img2img .options .image-upload img {
+  object-fit: contain;
+}
 `;
 
 export default class Txt2Img extends Tab {
@@ -292,7 +292,7 @@ export default class Txt2Img extends Tab {
   }
 
   constructor(/** @type {HTMLElement} */ parent) {
-    super(parent, html);
+    super(parent, html, css);
     this.prompt = this.root.querySelector('.txt-prompt');
     this.clearPromptButton = this.root.querySelector('.btn-clear-prompt');
     this.negativePrompt = this.root.querySelector('.txt-negative-prompt');

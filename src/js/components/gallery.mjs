@@ -27,156 +27,158 @@ const html = /*html*/ `
     <ul class="grid">
     </ul>
   </div>
-  <style>
-    #gallery-tab > div {
-      width: 100%;
-      max-width: 1024px;
-      display: flex;
-      flex-flow: column nowrap;
-      justify-content: flex-start;
-      align-items: flex-start;
-      gap: 1rem;
-    }
-
-    #gallery-tab .options {
-      display: flex;
-      flex-flow: column nowrap;
-      justify-content: flex-start;
-      align-items: flex-start;
-    }
-
-    #gallery-tab .tags {
-      display: flex;
-      flex-flow: row wrap;
-      justify-content: flex-start;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    #gallery-tab .tags .tag {
-      padding: 0.5rem;
-      border: 1px solid hsla(0, 0%, 100%, 0.5);
-      border-radius: 0.25rem;
-      color: hsla(0, 0%, 100%, 0.8);
-      font-size: 0.8rem;
-      cursor: pointer;
-    }
-
-    #gallery-tab .tags .tag:hover {
-      border-color: hsl(0, 0%, 100%);
-      color: hsl(0, 0%, 100%);
-    }
-
-    #gallery-tab .tags .tag.selected,
-    #gallery-tab .tags .tag.selected:hover {
-      border: none;
-      background-color: hsl(45, 100%, 50%);
-      color: hsl(0, 0%, 0%);
-    }
-
-    #gallery-tab .pagination {
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      gap: 0.5rem;
-    }
-
-    #gallery-tab .pagination button {
-      background: none;
-      border: 0;
-      font-size: 0.75rem;
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: center;
-      align-items: center;
-      column-gap: 0.5rem;
-      color: hsla(0, 0%, 100%, 1);
-      border-radius: 0.5rem;
-    }
-
-    @supports not (-webkit-touch-callout: none) {
-      #gallery-tab .pagination button:hover {
-        background-color: hsla(0, 0%, 100%, 0.5);
-      }
-    }
-
-    #gallery-tab .pagination button:disabled {
-      color: hsla(0, 0%, 100%, 0.5);
-    }
-
-    #gallery-tab .pagination button:disabled:hover {
-      background: none;
-    }
-
-    #gallery-tab .pagination button img {
-      width: 1rem;
-      height: 1rem;
-    }
-
-    #gallery-tab .btn-prev,
-    #gallery-tab .btn-next,
-    #gallery-tab .pages {
-      flex-grow: 1;
-    }
-
-    #gallery-tab .pagination .pages {
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: center;
-      align-items: center;
-      gap: 0.5rem;
-      background-color: hsla(0, 0%, 0%, 0.5);
-      border-radius: 0.5rem;
-      padding: 0.5rem;
-    }
-
-    #gallery-tab .grid {
-      list-style: none;
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin: 0 auto;
-      padding: 0;
-      max-width: 1024px;
-    }
-
-    #gallery-tab .grid li {
-      flex: 1 1 auto;
-      cursor: pointer;
-      position: relative;
-      height: 8rem;
-    }
-
-    #gallery-tab .grid li > img {
-      object-fit: cover;
-      width: 100%;
-      height: 100%;
-      vertical-align: middle;
-      border-radius: 0.25rem;
-      border: 1px solid #ffffff;
-    }
-
-    #gallery-tab .grid li.landscape {
-      width: 12rem;
-    }
-
-    #gallery-tab .grid li.portrait {
-      width: 5rem;
-    }
-
-    #gallery-tab .grid li.square {
-      width: 8rem;
-    }
-
-    #gallery-tab .grid::after {
-      content: '';
-      flex-grow: 999;
-    }
-  </style>
+  
 </div>
+`;
+
+const css = /*css*/ `
+#gallery-tab > div {
+  width: 100%;
+  max-width: 1024px;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+#gallery-tab .options {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+#gallery-tab .tags {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#gallery-tab .tags .tag {
+  padding: 0.5rem;
+  border: 1px solid hsla(0, 0%, 100%, 0.5);
+  border-radius: 0.25rem;
+  color: hsla(0, 0%, 100%, 0.8);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+#gallery-tab .tags .tag:hover {
+  border-color: hsl(0, 0%, 100%);
+  color: hsl(0, 0%, 100%);
+}
+
+#gallery-tab .tags .tag.selected,
+#gallery-tab .tags .tag.selected:hover {
+  border: none;
+  background-color: hsl(45, 100%, 50%);
+  color: hsl(0, 0%, 0%);
+}
+
+#gallery-tab .pagination {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+#gallery-tab .pagination button {
+  background: none;
+  border: 0;
+  font-size: 0.75rem;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  column-gap: 0.5rem;
+  color: hsla(0, 0%, 100%, 1);
+  border-radius: 0.5rem;
+}
+
+@supports not (-webkit-touch-callout: none) {
+  #gallery-tab .pagination button:hover {
+    background-color: hsla(0, 0%, 100%, 0.5);
+  }
+}
+
+#gallery-tab .pagination button:disabled {
+  color: hsla(0, 0%, 100%, 0.5);
+}
+
+#gallery-tab .pagination button:disabled:hover {
+  background: none;
+}
+
+#gallery-tab .pagination button img {
+  width: 1rem;
+  height: 1rem;
+}
+
+#gallery-tab .btn-prev,
+#gallery-tab .btn-next,
+#gallery-tab .pages {
+  flex-grow: 1;
+}
+
+#gallery-tab .pagination .pages {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: hsla(0, 0%, 0%, 0.5);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+#gallery-tab .grid {
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 1024px;
+}
+
+#gallery-tab .grid li {
+  flex: 1 1 auto;
+  cursor: pointer;
+  position: relative;
+  height: 8rem;
+}
+
+#gallery-tab .grid li > img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  vertical-align: middle;
+  border-radius: 0.25rem;
+  border: 1px solid #ffffff;
+}
+
+#gallery-tab .grid li.landscape {
+  width: 12rem;
+}
+
+#gallery-tab .grid li.portrait {
+  width: 5rem;
+}
+
+#gallery-tab .grid li.square {
+  width: 8rem;
+}
+
+#gallery-tab .grid::after {
+  content: '';
+  flex-grow: 999;
+}
 `;
 
 export const ItemPerPage = 20;
@@ -220,7 +222,7 @@ export default class Gallery extends Tab {
   onView;
 
   constructor(/** @type {HTMLElement} */ parent) {
-    super(parent, html);
+    super(parent, html, css);
     this.title = 'GALLERY';
     this.tags = this.root.querySelector('.tags');
     this.grid = this.root.querySelector('.grid');

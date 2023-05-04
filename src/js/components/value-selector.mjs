@@ -1,73 +1,73 @@
 import Component from './component.mjs';
 
 const html = /*html*/ `
-<div id="ASSIGNED_ID" class="value-selector-ASSIGNED_ID">
+<div id="ASSIGNED_ID" class="value-selector">
   <div class="value-list"></div>
-
-  <style>
-    .value-selector-ASSIGNED_ID .value-list {
-      display: flex;
-      flex-flow: row wrap;
-      justify-content: flex-start;
-      align-items: center;
-      margin: 0;
-      padding: 0;
-    }
-
-    .value-selector-ASSIGNED_ID .value-list > * {
-      margin: 0.1rem;
-    }
-
-    .value-selector-ASSIGNED_ID .value-list .custom {
-      width: 10ch;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 0.75rem;
-      padding: 0.5rem;
-      outline: none;
-      background-color: hsla(0, 0%, 0%, 0.5);
-      color: hsl(0, 0%, 100%);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 0.5rem;
-    }
-
-    .value-selector-ASSIGNED_ID .value-list .preset {
-      flex-grow: 1;
-      display: flex;
-      flex-flow: row nowrap;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .value-selector-ASSIGNED_ID .value-list .preset>input {
-      display: none;
-    }
-
-    .value-selector-ASSIGNED_ID .value-list .preset label {
-      flex-grow: 1;
-      background-color: hsla(0, 0%, 0%, 0.5);
-      color: hsl(0, 0%, 100%);
-      text-align: center;
-      padding: 0.5rem;
-      min-width: 10ch;
-      font-size: 0.75rem;
-      cursor: pointer;
-      border-radius: 0.5rem;
-    }
-
-    .value-selector-ASSIGNED_ID .value-list .preset input:checked+label {
-      background-color: hsl(45, 100%, 50%);
-      color: hsl(0, 0%, 0%);
-    }
-
-    .value-selector-ASSIGNED_ID .value-list .preset input:disabled+label {
-      color: hsl(0, 0%, 100%, 0.8);
-    }
-
-    .value-selector-ASSIGNED_ID .value-list .preset input:disabled:checked+label {
-      background-color: hsla(45, 100%, 50%, 0.8);
-    }
-  </style>
 </div>
+`;
+
+const css = /*css*/ `
+.value-selector .value-list {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.value-selector .value-list > * {
+  margin: 0.1rem;
+}
+
+.value-selector .value-list .custom {
+  width: 10ch;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  padding: 0.5rem;
+  outline: none;
+  background-color: hsla(0, 0%, 0%, 0.5);
+  color: hsl(0, 0%, 100%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 0.5rem;
+}
+
+.value-selector .value-list .preset {
+  flex-grow: 1;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.value-selector .value-list .preset>input {
+  display: none;
+}
+
+.value-selector .value-list .preset label {
+  flex-grow: 1;
+  background-color: hsla(0, 0%, 0%, 0.5);
+  color: hsl(0, 0%, 100%);
+  text-align: center;
+  padding: 0.5rem;
+  min-width: 10ch;
+  font-size: 0.75rem;
+  cursor: pointer;
+  border-radius: 0.5rem;
+}
+
+.value-selector .value-list .preset input:checked+label {
+  background-color: hsl(45, 100%, 50%);
+  color: hsl(0, 0%, 0%);
+}
+
+.value-selector .value-list .preset input:disabled+label {
+  color: hsl(0, 0%, 100%, 0.8);
+}
+
+.value-selector .value-list .preset input:disabled:checked+label {
+  background-color: hsla(45, 100%, 50%, 0.8);
+}
 `;
 
 class SelectorOptions {
@@ -141,7 +141,7 @@ export default class ValueSelector extends Component {
    * @param {SelectorOptions} options
    */
   constructor(parent, options, replacing = false) {
-    super(parent, html.replace(/ASSIGNED_ID/g, options.assignedId), replacing);
+    super(parent, html.replace(/ASSIGNED_ID/g, options.assignedId), css, replacing);
 
     options.hasCustom = options.hasCustom ?? defaultOptions.hasCustom;
     options.values = options.values ?? defaultOptions.values;

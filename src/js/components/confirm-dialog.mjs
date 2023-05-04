@@ -12,72 +12,72 @@ const html = /*html*/ `
       <button type="button" class="btn-no">NO</button>
     </div>
   </div>
-
-  <style>
-    .confirm-dialog {
-      left: 0;
-      top: 0;
-      width: 100vw;
-      height: 100vh;
-      position: fixed;
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: center;
-      align-items: center;
-      background-color: ${overlayBgOff};
-      z-index: 9999;
-      backdrop-filter: blur(2px);
-      -webkit-backdrop-filter: blur(2px);
-      transition: background-color 0.2s ease-out;
-    }
-
-    .confirm-dialog .dialog {
-      width: 40ch;
-      max-width: calc(100vw - 2rem);
-      background-color: hsla(0, 0%, 0%, 0.8);
-      color: hsl(0, 0%, 100%);
-      border: 1px solid hsla(0, 0%, 100%, 0.5);
-      border-radius: 0.5rem;
-      display: flex;
-      flex-flow: column nowrap;
-      transition: opacity 0.2s ease-out;
-    }
-
-    .confirm-dialog .message {
-      padding: 1rem;
-      text-align: center;
-    }
-
-    .confirm-dialog .buttons {
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .confirm-dialog .buttons button {
-      flex-grow: 1;
-      border: 1px solid hsla(0, 0%, 100%, 0.5);
-      border-bottom: none;
-      background: hsla(0, 0%, 100%, 0.1);
-      color: hsl(0, 0%, 100%);
-    }
-
-    @supports not (-webkit-touch-callout: none) {
-      .confirm-dialog .buttons button:hover {
-        background-color: hsla(0, 0%, 100%, 0.2);
-      }
-    }
-
-    .confirm-dialog .buttons button:first-child {
-      border-left: none;
-    }
-
-    .confirm-dialog .buttons button:last-child {
-      border-right: none;
-    }
-  </style>
 </div>
+`;
+
+const css = /*css*/ `
+.confirm-dialog {
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  background-color: ${overlayBgOff};
+  z-index: 9999;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  transition: background-color 0.2s ease-out;
+}
+
+.confirm-dialog .dialog {
+  width: 40ch;
+  max-width: calc(100vw - 2rem);
+  background-color: hsla(0, 0%, 0%, 0.8);
+  color: hsl(0, 0%, 100%);
+  border: 1px solid hsla(0, 0%, 100%, 0.5);
+  border-radius: 0.5rem;
+  display: flex;
+  flex-flow: column nowrap;
+  transition: opacity 0.2s ease-out;
+}
+
+.confirm-dialog .message {
+  padding: 1rem;
+  text-align: center;
+}
+
+.confirm-dialog .buttons {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.confirm-dialog .buttons button {
+  flex-grow: 1;
+  border: 1px solid hsla(0, 0%, 100%, 0.5);
+  border-bottom: none;
+  background: hsla(0, 0%, 100%, 0.1);
+  color: hsl(0, 0%, 100%);
+}
+
+@supports not (-webkit-touch-callout: none) {
+  .confirm-dialog .buttons button:hover {
+    background-color: hsla(0, 0%, 100%, 0.2);
+  }
+}
+
+.confirm-dialog .buttons button:first-child {
+  border-left: none;
+}
+
+.confirm-dialog .buttons button:last-child {
+  border-right: none;
+}
 `;
 
 export default class ConfirmDialog extends Component {
@@ -113,7 +113,7 @@ export default class ConfirmDialog extends Component {
   isShowing = false;
 
   constructor(/** @type {HTMLElement} */ root) {
-    super(root, html, true);
+    super(root, html, css, true);
     ConfirmDialog._instance = this;
 
     this.overlay = this.root;

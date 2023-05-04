@@ -72,130 +72,130 @@ const html = /*html*/ `
   <div class="output-wrapper w100p" style="display: none">
     <img class="output-image" alt="Upscaled image">
   </div>
-
-  <style>
-    #upscale-tab {
-      position: relative;
-    }
-
-    #upscale-tab .panes {
-      display: flex;
-      flex-flow: row wrap;
-      align-items: flex-start;
-      justify-content: flex-start;
-      width: 100%;
-      max-width: 512px;
-    }
-
-    @media (min-width: 720px) {
-      #upscale-tab .panes {
-        max-width: 1024px;
-      }
-      #upscale-tab .pane {
-        width: 50%;
-        max-width: 50%;
-      }
-    }
-
-    #upscale-tab .pane {
-      display: flex;
-      flex-flow: row wrap;
-      align-items: flex-start;
-      justify-content: flex-start;
-      width: 100%;
-    }
-
-    #upscale-tab .input-wrapper {
-      display: flex;
-      flex-flow: column nowrap;
-      justify-content: flex-start;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem;
-    }
-
-    #upscale-tab .input-image-file {
-      color: transparent;
-      width: 100%;
-      padding: 1rem;
-      border: 1px solid #ffffff;
-      border-radius: 0.5rem;
-    }
-
-    #upscale-tab .input-image-file::before {
-      display: block;
-      width: 100%;
-      height: 0;
-      content: 'Select or drag PNG';
-      font-family: 'Montserrat', sans-serif;
-      font-size: 1rem;
-      text-align: center;
-      vertical-align: middle;
-      color: #ffffff;
-    }
-
-    #upscale-tab .input-image-file::-webkit-file-upload-button {
-      visibility: hidden;
-    }
-
-    #upscale-tab .input-image {
-      width: 100%;
-      border-radius: 0.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-    }
-
-    #upscale-tab .option {
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: flex-start;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem;
-    }
-
-    #upscale-tab .heading {
-      font-size: 0.9rem;
-    }
-
-    #upscale-tab .btn-upscale,
-    #upscale-tab .btn-show-result {
-      width: 100%;
-    }
-
-    #upscale-tab input[type=text],
-    #upscale-tab input[type=number],
-    #upscale-tab select {
-      flex-grow: 1;
-      min-width: 0;
-    }
-
-    #upscale-tab input[type=text]:disabled,
-    #upscale-tab input[type=number]:disabled,
-    #upscale-tab select:disabled {
-      color: hsla(0, 0%, 100%, 0.3);
-    }
-
-    #upscale-tab .output-wrapper {
-      position: fixed;
-      left: 0;
-      top: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: hsla(0, 0%, 0%, 0.5);
-      display: flex;
-      flex-flow: column nowrap;
-      justify-content: center;
-      align-items: center;
-    }
-
-    #upscale-tab .output-image {
-      max-width: min(512px, calc(100vw - 3rem));
-      max-height: min(512px, 80vh);
-      border-radius: 0.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-    }
-  </style>
 </div>
+`;
+
+const css = /*css*/ `
+#upscale-tab {
+  position: relative;
+}
+
+#upscale-tab .panes {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 512px;
+}
+
+@media (min-width: 720px) {
+  #upscale-tab .panes {
+    max-width: 1024px;
+  }
+  #upscale-tab .pane {
+    width: 50%;
+    max-width: 50%;
+  }
+}
+
+#upscale-tab .pane {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+#upscale-tab .input-wrapper {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+#upscale-tab .input-image-file {
+  color: transparent;
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #ffffff;
+  border-radius: 0.5rem;
+}
+
+#upscale-tab .input-image-file::before {
+  display: block;
+  width: 100%;
+  height: 0;
+  content: 'Select or drag PNG';
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  text-align: center;
+  vertical-align: middle;
+  color: #ffffff;
+}
+
+#upscale-tab .input-image-file::-webkit-file-upload-button {
+  visibility: hidden;
+}
+
+#upscale-tab .input-image {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+#upscale-tab .option {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+#upscale-tab .heading {
+  font-size: 0.9rem;
+}
+
+#upscale-tab .btn-upscale,
+#upscale-tab .btn-show-result {
+  width: 100%;
+}
+
+#upscale-tab input[type=text],
+#upscale-tab input[type=number],
+#upscale-tab select {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+#upscale-tab input[type=text]:disabled,
+#upscale-tab input[type=number]:disabled,
+#upscale-tab select:disabled {
+  color: hsla(0, 0%, 100%, 0.3);
+}
+
+#upscale-tab .output-wrapper {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: hsla(0, 0%, 0%, 0.5);
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+#upscale-tab .output-image {
+  max-width: min(512px, calc(100vw - 3rem));
+  max-height: min(512px, 80vh);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
 `;
 
 export default class Upscale extends Tab {
@@ -239,7 +239,7 @@ export default class Upscale extends Tab {
   outputImage;
 
   constructor(/** @type {HTMLElement} */ parent) {
-    super(parent, html);
+    super(parent, html, css);
     this.title = 'UPSCALE';
 
     this.inputImageFile = this.root.querySelector('.input-image-file');

@@ -10,6 +10,64 @@ const html = /*html*/ `
 </div>
 `;
 
+const css = /*css*/ `
+.checkbox {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.checkbox input {
+  display: none;
+}
+
+.checkbox label {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  column-gap: 0.5rem;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 0.5rem;
+}
+
+.checkbox input + label {
+  background-color: hsla(0, 0%, 0%, 0.5);
+  color: hsl(0, 0%, 100%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.checkbox input:checked + label {
+  background-color: hsl(45, 100%, 50%);
+  color: hsl(0, 0%, 0%);
+}
+
+.checkbox input + label .check {
+  width: 1rem;
+  height: 1rem;
+  background-image: url('/img/square-regular.svg');
+  background-repeat: no-repeat;
+}
+
+.checkbox input:checked + label .check {
+  background-image: url('/img/square-check-solid.svg');
+}
+
+.checkbox input:disabled+label {
+  color: hsla(0, 0%, 100%, 0.5);
+}
+
+.checkbox input:disabled:checked + label {
+  background-color: hsla(45, 100%, 50%, 0.8);
+  color: hsl(0, 0%, 0%);
+}
+`;
+
 export default class Checkbox extends Component {
   /** @type {HTMLInputElement} */
   input;
@@ -46,7 +104,7 @@ export default class Checkbox extends Component {
    * @param {boolean} replacing
    */
   constructor(parent, options, replacing = true) {
-    super(parent, html.replace(/ASSIGNED_ID/g, options.assignedId), replacing);
+    super(parent, html.replace(/ASSIGNED_ID/g, options.assignedId), css, replacing);
 
     if (options.extraClasses) {
       this.root.classList.add(options.extraClasses);

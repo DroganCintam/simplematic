@@ -1,3 +1,5 @@
+import StylePool from '../style-pool.mjs';
+
 export default class Component {
   /** @type {HTMLElement} */
   root;
@@ -5,16 +7,27 @@ export default class Component {
   /**
    * @param {HTMLElement} parent The HTML element to be used as parent or to be replaced.
    * @param {string} html The HTML string to parse into elements.
+   * @param {string} css The CSS styles for the component.
    * @param {boolean} replacing Replace the given element with this.
    */
-  constructor(parent, html, replacing = false) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    this.root = doc.body.firstChild;
+  constructor(parent, html, css, replacing = false) {
+    this.root = Component.fromHTML(html);
     if (replacing) {
       parent.parentElement.replaceChild(this.root, parent);
     } else {
       parent.appendChild(this.root);
     }
+    StylePool.instance.addStyles(this.constructor.name, css);
+  }
+
+  /**
+   *
+   * @param {string} html
+   * @returns {HTMLElement}
+   */
+  static fromHTML(html) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    return doc.body.firstChild;
   }
 }

@@ -39,6 +39,7 @@ const html = /*html*/ `
         <button type="button" class="btn-rerun" title="Re-generate with a new seed"><p></p><img src="/img/wand-magic-sparkles-solid.svg"><span>NEW SEED</span></button>
         <button type="button" class="btn-save" title="Save to gallery"><img src="/img/floppy-disk-solid.svg">SAVE</button>
         <button type="button" class="btn-delete" title="Delete from gallery"><img src="/img/trash-solid.svg">DELETE</button>
+        <button type="button" class="btn-download" title="Download this image"><img src="/img/download-solid.svg">DOWNLOAD</button>
         <button type="button" class="btn-upscale" title="Upscale this"><img src="/img/up-right-and-down-left-from-center-solid-black.svg">UPSCALE</button>
         <button type="button" class="btn-img2img" title="Use this as img2img input"><img src="/img/images-solid.svg">IMG2IMG</button>
       </div>
@@ -59,6 +60,14 @@ const html = /*html*/ `
       <div class="vertical w100p">
         <label class="heading">Negative prompt:</label>
         <textarea class="result-negative-prompt" readonly></textarea>
+      </div>
+      <div class="vertical w50p">
+        <label class="heading">Width:</label>
+        <input type="text" class="result-width" readonly />
+      </div>
+      <div class="vertical w50p">
+        <label class="heading">Height:</label>
+        <input type="text" class="result-height" readonly />
       </div>
       <div class="vertical w50p">
         <label class="heading">Steps:</label>
@@ -380,6 +389,8 @@ export default class ResultDialog extends Tab {
   rerunProgress;
 
   /** @type {HTMLButtonElement} */
+  downloadButton;
+  /** @type {HTMLButtonElement} */
   upscaleButton;
   /** @type {HTMLButtonElement} */
   img2imgButton;
@@ -404,6 +415,10 @@ export default class ResultDialog extends Tab {
   prompt;
   /** @type {HTMLTextAreaElement} */
   negativePrompt;
+  /** @type {HTMLInputElement} */
+  width;
+  /** @type {HTMLInputElement} */
+  height;
   /** @type {HTMLInputElement} */
   steps;
   /** @type {HTMLInputElement} */
@@ -443,6 +458,8 @@ export default class ResultDialog extends Tab {
     this.image = this.root.querySelector('.image');
     this.prompt = this.root.querySelector('.result-prompt');
     this.negativePrompt = this.root.querySelector('.result-negative-prompt');
+    this.width = this.root.querySelector('.result-width');
+    this.height = this.root.querySelector('.result-height');
     this.steps = this.root.querySelector('.result-steps');
     this.cfg = this.root.querySelector('.result-cfg');
     this.seed = this.root.querySelector('.result-seed');
@@ -478,6 +495,11 @@ export default class ResultDialog extends Tab {
       this.onRerun(this.imageInfo, this.rerunProgress);
     });
     this.rerunProgress = new Progress(this.rerunButton.querySelector('p'), true);
+
+    this.downloadButton = this.root.querySelector('.btn-download');
+    this.downloadButton.addEventListener('click', () => {
+      this.downloadImage();
+    });
 
     this.upscaleButton = this.root.querySelector('.btn-upscale');
     this.upscaleButton.addEventListener('click', () => {
@@ -566,6 +588,8 @@ export default class ResultDialog extends Tab {
     this.image.title = this.imageInfo.info.prompt;
     this.prompt.value = this.imageInfo.info.prompt;
     this.negativePrompt.value = this.imageInfo.info.negativePrompt;
+    this.width.value = this.imageInfo.info.width.toString();
+    this.height.value = this.imageInfo.info.height.toString();
     this.steps.value = this.imageInfo.info.steps;
     this.cfg.value = this.imageInfo.info.cfg;
     this.seed.value = this.imageInfo.info.seed;
@@ -615,6 +639,8 @@ export default class ResultDialog extends Tab {
     this.image.title = this.imageInfo.info.prompt;
     this.prompt.value = this.imageInfo.info.prompt;
     this.negativePrompt.value = this.imageInfo.info.negativePrompt;
+    this.width.value = this.imageInfo.info.width.toString();
+    this.height.value = this.imageInfo.info.height.toString();
     this.steps.value = this.imageInfo.info.steps;
     this.cfg.value = this.imageInfo.info.cfg;
     this.seed.value = this.imageInfo.info.seed;
@@ -673,6 +699,8 @@ export default class ResultDialog extends Tab {
     this.image.title = this.imageInfo.info.prompt;
     this.prompt.value = this.imageInfo.info.prompt;
     this.negativePrompt.value = this.imageInfo.info.negativePrompt;
+    this.width.value = this.imageInfo.info.width.toString();
+    this.height.value = this.imageInfo.info.height.toString();
     this.steps.value = this.imageInfo.info.steps;
     this.cfg.value = this.imageInfo.info.cfg;
     this.seed.value = this.imageInfo.info.seed;
@@ -843,6 +871,19 @@ export default class ResultDialog extends Tab {
     });
   }
 
+  downloadImage() {
+    const link = document.createElement('a');
+    link.href = this.image.src;
+    link.download = `image-${new Date()
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace('T', '-')
+      .slice(0, -5)}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   setLoading(isLoading) {
     this.prevImageButton.disabled = isLoading || !this.onPrev;
     this.nextImageButton.disabled = isLoading || !this.onNext;
@@ -851,6 +892,7 @@ export default class ResultDialog extends Tab {
     this.rerunButton.disabled = isLoading;
     this.saveButton.disabled = isLoading;
     this.deleteButton.disabled = isLoading;
+    this.downloadButton.disabled = isLoading;
     this.upscaleButton.disabled = isLoading;
     this.img2imgButton.disabled = isLoading;
     this.addTagButton.disabled = isLoading;

@@ -13,14 +13,14 @@ const html = /*html*/ `
   <div class="panes">
     <div class="pane image-pane">
       <div class="vertical w100p no-gap" style="position: relative">
-        <img class="image"/>
         <div class="input-image-wrapper">
           <img class="input-image"/>
           <span>INPUT IMAGE</span>
-          <button type="button" class="btn-input-image" style="display: none" title="Show/hide input image">
-            <img src="/img/images-solid.svg"/>
-          </button>
         </div>
+        <img class="image"/>
+        <button type="button" class="btn-input-image" style="display: none" title="Show/hide input image">
+          <img src="/img/images-solid.svg"/>
+        </button>
       </div>
     </div>
     <div class="pane info-pane">
@@ -170,6 +170,7 @@ const css = /*css*/ `
   width: 100%;
   border: 1px solid hsla(0, 0%, 100%, 0.5);
   border-radius: 0.5rem;
+  position: relative;
 }
 
 #result-tab .image.square {
@@ -216,7 +217,7 @@ const css = /*css*/ `
   padding: 0.5rem;
 }
 
-#result-tab .input-image-wrapper .btn-input-image {
+#result-tab .btn-input-image {
   position: absolute;
   right: 1rem;
   top: 1rem;

@@ -267,9 +267,13 @@ class App {
         }
       }
 
-      if (event.key === 'Escape' && ConfirmDialog.instance.isShowing) {
-        ConfirmDialog.instance.noButton.click();
-        event.preventDefault();
+      if (event.key === 'Escape') {
+        if (ConfirmDialog.instance.isShowing) {
+          ConfirmDialog.instance.noButton.click();
+          event.preventDefault();
+        } else if (!this.backButton.disabled) {
+          this.backButton.click();
+        }
       }
     });
 

@@ -84,6 +84,8 @@ class App {
 
   hasResult = false;
 
+  isLoading = false;
+
   async initialize() {
     Api.instance.baseUrl = AppConfig.instance.apiUrl;
 
@@ -253,7 +255,7 @@ class App {
     }
 
     document.addEventListener('keydown', (event) => {
-      if (this.currentTab == this.resultTab) {
+      if (this.currentTab === this.resultTab && !this.isLoading) {
         if (event.key === 'ArrowLeft' && this.resultTab.goPrev) {
           this.resultTab.goPrev();
         } else if (event.key === 'ArrowRight' && this.resultTab.goNext) {
@@ -264,6 +266,16 @@ class App {
           this.galleryTab.goPrev();
         } else if (event.key === 'ArrowRight') {
           this.galleryTab.goNext();
+        }
+      } else if (this.currentTab === this.txt2imgTab && !this.isLoading) {
+        if (event.key === ',' && event.ctrlKey) {
+          this.switchTab(this.settingsTab);
+        } else if (event.key === 'i' && event.ctrlKey && this.hasResult) {
+          this.switchTab(this.resultTab);
+        } else if (event.key === 'g' && event.ctrlKey) {
+          this.switchTab(this.galleryTab);
+        } else if (event.key === 'u') {
+          this.switchTab(this.upscaleTab);
         }
       }
 
@@ -328,6 +340,8 @@ class App {
 
     this.txt2imgTab.setLoading(isLoading);
     this.resultTab.setLoading(isLoading);
+
+    this.isLoading = isLoading;
   }
 
   switchTab(newTab) {

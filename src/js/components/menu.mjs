@@ -24,13 +24,13 @@ const html = /*html*/ `
     </div>
     <div class="divider"></div>
     <div class="option">
-      <button type="button" class="btn-upscale"><img src="/img/up-right-and-down-left-from-center-solid.svg" alt="Upscale image">Upscale</button>
+      <button type="button" class="btn-upscale" title="Upscale image (Ctrl+U)"><img src="/img/up-right-and-down-left-from-center-solid.svg">Upscale</button>
     </div>
     <div class="option">
-      <button type="button" class="btn-gallery"><img src="/img/grip-solid.svg" alt="Open gallery">Gallery</button>
+      <button type="button" class="btn-gallery" title="Open gallery (Ctrl+G)"><img src="/img/grip-solid.svg">Gallery</button>
     </div>
     <div class="bottom-bar">
-      <button type="button" class="icon-button btn-settings" title="Settings"><img src="/img/gear-solid.svg" title="Settings"/></button>
+      <button type="button" class="icon-button btn-settings" title="Settings (Ctrl+,)"><img src="/img/gear-solid.svg"/></button>
       <button type="button" class="icon-button btn-about" title="About"><img src="/img/circle-info-solid.svg" title="About"/></button>
       <a href="https://github.com/DroganCintam/simplematic" target="_blank"><img src="/img/github.svg" title="Github repository"/></a>
       <span class="version"></span>

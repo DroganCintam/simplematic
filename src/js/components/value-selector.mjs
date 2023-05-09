@@ -6,6 +6,17 @@ const html = /*html*/ `
 </div>
 `;
 
+const customHtml = /*html*/ `
+<input type="number" class="custom"/>
+`;
+
+const presetHtml = /*html*/ `
+<div class="preset">
+  <input type="checkbox" />
+  <label></label>
+</div>
+`;
+
 const css = /*css*/ `
 .value-selector .value-list {
   display: flex;
@@ -22,14 +33,7 @@ const css = /*css*/ `
 
 .value-selector .value-list .custom {
   width: 10ch;
-  font-family: 'Montserrat', sans-serif;
   font-size: 0.75rem;
-  padding: 0.5rem;
-  outline: none;
-  background-color: hsla(0, 0%, 0%, 0.5);
-  color: hsl(0, 0%, 100%);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 0.5rem;
 }
 
 .value-selector .value-list .preset {
@@ -149,10 +153,7 @@ export default class ValueSelector extends Component {
     const valueList = this.root.querySelector('.value-list');
 
     if (options.hasCustom) {
-      this.customInput = Object.assign(document.createElement('input'), {
-        type: 'number',
-        className: 'custom',
-      });
+      this.customInput = Component.fromHTML(customHtml);
       valueList.appendChild(this.customInput);
       this.customInput.addEventListener('change', () => {
         let v = this.customInput.value;
@@ -178,17 +179,12 @@ export default class ValueSelector extends Component {
     }
 
     for (let i = 0; i < options.values.length; ++i) {
-      const el = Object.assign(document.createElement('div'), {
-        className: 'preset',
-      });
-      const input = Object.assign(document.createElement('input'), {
-        type: 'checkbox',
-        id: `${options.assignedId}-value-${i}`,
-      });
-      const label = Object.assign(document.createElement('label'), {
-        htmlFor: `${options.assignedId}-value-${i}`,
-        innerText: options.values[i].name,
-      });
+      const el = Component.fromHTML(presetHtml);
+      const input = el.querySelector('input');
+      input.id = `${options.assignedId}-value-${i}`;
+      const label = el.querySelector('label');
+      label.htmlFor = input.id;
+      label.innerText = options.values[i].name;
       el.appendChild(input);
       el.appendChild(label);
       valueList.appendChild(el);

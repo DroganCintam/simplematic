@@ -274,7 +274,7 @@ class App {
           this.switchTab(this.resultTab);
         } else if (event.key === 'g' && event.ctrlKey) {
           this.switchTab(this.galleryTab);
-        } else if (event.key === 'u') {
+        } else if (event.key === 'u' && event.ctrlKey) {
           this.switchTab(this.upscaleTab);
         }
       }

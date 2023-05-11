@@ -67,7 +67,31 @@ const css = /*css*/ `
 `;
 
 export default class TopBar extends Component {
+  /** @type {HTMLButtonElement} */
+  menuButton;
+  /** @type {HTMLButtonElement} */
+  backButton;
+  /** @type {HTMLButtonElement} */
+  resultButton;
+  /** @type {HTMLButtonElement} */
+  importButton;
+  /** @type {HTMLButtonElement} */
+  galleryButton;
+  /** @type {HTMLButtonElement} */
+  generateButton;
+
+  /** @type {HTMLSpanElement} */
+  tabTitle;
+
   constructor(/** @type {HTMLElement} */ parent) {
     super(parent, html, css, true);
+
+    this.menuButton = this.root.querySelector('.btn-menu');
+    this.backButton = this.root.querySelector('.btn-back');
+    this.resultButton = this.root.querySelector('.btn-result');
+    this.importButton = this.root.querySelector('.btn-png-import');
+    this.galleryButton = this.root.querySelector('.btn-gallery');
+    this.generateButton = this.root.querySelector('.btn-generate');
+    this.tabTitle = this.root.querySelector('.tab-title');
   }
 }

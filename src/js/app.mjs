@@ -125,18 +125,18 @@ class App {
       }
     });
 
-    this.menuButton = topBar.root.querySelector('.btn-menu');
+    this.menuButton = topBar.menuButton;
     this.menuButton.addEventListener('click', () => {
       if (this.showingMenu) this.hideMenu();
       else this.showMenu();
     });
 
-    this.resultButton = topBar.root.querySelector('.btn-result');
+    this.resultButton = topBar.resultButton;
     this.resultButton.addEventListener('click', () => {
       this.switchTab(this.resultTab);
     });
 
-    this.backButton = topBar.root.querySelector('.btn-back');
+    this.backButton = topBar.backButton;
     this.backButton.addEventListener('click', () => {
       if (this.currentTab == this.aboutTab && !AppConfig.instance.hasUrl) {
         this.switchTab(this.settingsTab);
@@ -147,20 +147,20 @@ class App {
       }
     });
 
-    this.pngImportButton = topBar.root.querySelector('.btn-png-import');
+    this.pngImportButton = topBar.importButton;
     this.pngImportButton.addEventListener('click', () => {
       this.switchTab(this.pngImportTab);
     });
 
-    this.galleryButton = topBar.root.querySelector('.btn-gallery');
+    this.galleryButton = topBar.galleryButton;
     this.galleryButton.addEventListener('click', () => {
       this.switchTab(this.galleryTab);
     });
 
-    this.tabTitle = topBar.root.querySelector('.tab-title');
+    this.tabTitle = topBar.tabTitle;
     this.tabTitle.style.display = 'none';
 
-    this.generateButton = topBar.root.querySelector('.btn-generate');
+    this.generateButton = topBar.generateButton;
     this.generateButton.addEventListener('click', () => {
       this.generate(this.generationProgress);
     });

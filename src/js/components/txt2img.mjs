@@ -655,6 +655,8 @@ export default class Txt2Img extends Tab {
   setLoading(isLoading) {
     this.prompt.disabled = isLoading;
     this.negativePrompt.disabled = isLoading;
+    this.widthInput.disabled = isLoading;
+    this.heightInput.disabled = isLoading;
     this.aspectRatioSelector.disabled = isLoading;
     this.stepsSelector.disabled = isLoading;
     this.cfgSelector.disabled = isLoading;

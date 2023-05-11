@@ -250,6 +250,8 @@ export default class Menu extends Component {
   /** @type {() => void} */
   onAbout;
 
+  isLoading = false;
+
   constructor(/** @type {HTMLElement} */ root) {
     super(root, html, css, true);
 
@@ -346,6 +348,7 @@ export default class Menu extends Component {
   }
 
   setLoading(isLoading) {
+    this.isLoading = isLoading;
     this.hideMenuButton.disabled = isLoading;
     this.samplers.disabled = isLoading;
     this.models.disabled = isLoading;

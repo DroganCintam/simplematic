@@ -258,24 +258,40 @@ class App {
       if (this.currentTab === this.resultTab && !this.isLoading) {
         if (event.key === 'ArrowLeft' && this.resultTab.goPrev) {
           this.resultTab.goPrev();
+          event.stopPropagation();
+          event.preventDefault();
         } else if (event.key === 'ArrowRight' && this.resultTab.goNext) {
           this.resultTab.goNext();
+          event.stopPropagation();
+          event.preventDefault();
         }
       } else if (this.currentTab === this.galleryTab) {
         if (event.key === 'ArrowLeft') {
           this.galleryTab.goPrev();
+          event.stopPropagation();
+          event.preventDefault();
         } else if (event.key === 'ArrowRight') {
           this.galleryTab.goNext();
+          event.stopPropagation();
+          event.preventDefault();
         }
-      } else if (this.currentTab === this.txt2imgTab && !this.isLoading) {
+      } else if (this.currentTab === this.txt2imgTab && !this.isLoading && !this.showingMenu) {
         if (event.key === ',' && event.ctrlKey) {
           this.switchTab(this.settingsTab);
+          event.stopPropagation();
+          event.preventDefault();
         } else if (event.key === 'i' && event.ctrlKey && this.hasResult) {
           this.switchTab(this.resultTab);
+          event.stopPropagation();
+          event.preventDefault();
         } else if (event.key === 'g' && event.ctrlKey) {
           this.switchTab(this.galleryTab);
+          event.stopPropagation();
+          event.preventDefault();
         } else if (event.key === 'u' && event.ctrlKey) {
           this.switchTab(this.upscaleTab);
+          event.stopPropagation();
+          event.preventDefault();
         }
       }
 
@@ -285,6 +301,8 @@ class App {
           event.preventDefault();
         } else if (!this.backButton.disabled) {
           this.backButton.click();
+        } else if (this.showingMenu && !this.menu.isLoading) {
+          this.hideMenu();
         }
       }
     });

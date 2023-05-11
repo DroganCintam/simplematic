@@ -13,6 +13,7 @@ import Progress from './components/progress.mjs';
 import ImageInfo from './types/image-info.mjs';
 import ConfirmDialog from './components/confirm-dialog.mjs';
 import BackgroundLoader from './background-loader.mjs';
+import TopBar from './components/top-bar.mjs';
 
 class App {
   /** @type {HTMLElement} */
@@ -24,7 +25,7 @@ class App {
   /** @type {ConfirmDialog} */
   confirmDialog;
 
-  /** @type {HTMLElement} */
+  /** @type {TopBar} */
   topBar;
   /** @type {HTMLElement} */
   mainView;
@@ -114,28 +115,28 @@ class App {
     this.menuWidthElement.style.display = 'none';
     this.root.appendChild(this.menuWidthElement);
 
-    const topBar = this.root.querySelector('.top-bar');
+    const topBar = new TopBar(this.root.querySelector('.top-bar'));
     this.topBar = topBar;
     document.addEventListener('scroll', () => {
       if (document.documentElement.scrollTop > 16) {
-        topBar.classList.add('opaque');
+        topBar.root.classList.add('opaque');
       } else {
-        topBar.classList.remove('opaque');
+        topBar.root.classList.remove('opaque');
       }
     });
 
-    this.menuButton = topBar.querySelector('.btn-menu');
+    this.menuButton = topBar.root.querySelector('.btn-menu');
     this.menuButton.addEventListener('click', () => {
       if (this.showingMenu) this.hideMenu();
       else this.showMenu();
     });
 
-    this.resultButton = topBar.querySelector('.btn-result');
+    this.resultButton = topBar.root.querySelector('.btn-result');
     this.resultButton.addEventListener('click', () => {
       this.switchTab(this.resultTab);
     });
 
-    this.backButton = topBar.querySelector('.btn-back');
+    this.backButton = topBar.root.querySelector('.btn-back');
     this.backButton.addEventListener('click', () => {
       if (this.currentTab == this.aboutTab && !AppConfig.instance.hasUrl) {
         this.switchTab(this.settingsTab);
@@ -146,20 +147,20 @@ class App {
       }
     });
 
-    this.pngImportButton = topBar.querySelector('.btn-png-import');
+    this.pngImportButton = topBar.root.querySelector('.btn-png-import');
     this.pngImportButton.addEventListener('click', () => {
       this.switchTab(this.pngImportTab);
     });
 
-    this.galleryButton = topBar.querySelector('.btn-gallery');
+    this.galleryButton = topBar.root.querySelector('.btn-gallery');
     this.galleryButton.addEventListener('click', () => {
       this.switchTab(this.galleryTab);
     });
 
-    this.tabTitle = topBar.querySelector('.tab-title');
+    this.tabTitle = topBar.root.querySelector('.tab-title');
     this.tabTitle.style.display = 'none';
 
-    this.generateButton = topBar.querySelector('.btn-generate');
+    this.generateButton = topBar.root.querySelector('.btn-generate');
     this.generateButton.addEventListener('click', () => {
       this.generate(this.generationProgress);
     });
@@ -398,7 +399,7 @@ class App {
     this.showingMenu = true;
 
     this.menu.root.style.width = this.menuWidth;
-    this.topBar.style.left = this.menuWidth;
+    this.topBar.root.style.left = this.menuWidth;
     this.mainView.style.marginLeft = this.menuWidth;
     const w = getComputedStyle(this.menuWidthElement).width;
     this.mainView.style.marginRight = '-' + w;
@@ -412,7 +413,7 @@ class App {
     if (!this.showingMenu) return;
     this.showingMenu = false;
     this.menu.root.style.width = '0';
-    this.topBar.style.left = '0';
+    this.topBar.root.style.left = '0';
     this.mainView.style.marginLeft = '0';
     this.mainView.style.marginRight = '0';
 

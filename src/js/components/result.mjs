@@ -886,8 +886,8 @@ export default class ResultDialog extends Tab {
   }
 
   setLoading(isLoading) {
-    this.prevImageButton.disabled = isLoading || !this.onPrev;
-    this.nextImageButton.disabled = isLoading || !this.onNext;
+    this.prevImageButton.disabled = isLoading || !this.goPrev;
+    this.nextImageButton.disabled = isLoading || !this.goNext;
     this.inputImageButton.disabled = isLoading;
     this.remixButton.disabled = isLoading;
     this.rerunButton.disabled = isLoading;

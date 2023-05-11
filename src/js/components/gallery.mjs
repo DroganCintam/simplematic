@@ -3,18 +3,12 @@ import Tab from './tab.mjs';
 import waitPromise from '../utils/waitPromise.mjs';
 import ImageInfo from '../types/image-info.mjs';
 import CancelToken from '../types/cancel-token.mjs';
-import RadioGroup from './radio-group.mjs';
 
 const html = /*html*/ `
 <div id="gallery-tab" class="app-tab" style="display: none">
   <div>
     <div class="options">
-      <div class="tag-options-wrapper">
-        Tag filtering:
-        <div class="tag-options"></div>
-      </div>
-      <div class="tags">
-      </div>
+      <div class="tags"></div>
     </div>
     <div class="pagination">
       <button type="button" class="btn-prev" title="Previous page">
@@ -53,17 +47,6 @@ const css = /*css*/ `
   justify-content: flex-start;
   align-items: flex-start;
   width: 100%;
-}
-
-#gallery-tab .tag-options-wrapper {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  border: 1px solid hsla(0, 0%, 100%, 0.5);
-  width: 100%;
-  margin-bottom: 0.5rem;
 }
 
 #gallery-tab .tags {
@@ -201,8 +184,6 @@ const css = /*css*/ `
 export const ItemPerPage = 20;
 
 export default class Gallery extends Tab {
-  /** @type {RadioGroup} */
-  tagOptions;
   /** @type {HTMLElement} */
   tags;
 
@@ -243,31 +224,12 @@ export default class Gallery extends Tab {
   constructor(/** @type {HTMLElement} */ parent) {
     super(parent, html, css);
     this.title = 'GALLERY';
-
-    this.tagOptions = new RadioGroup(
-      this.root.querySelector('.tag-options'),
-      {
-        assignedId: 'tag-options',
-        defaultValue: 'only',
-        items: [
-          { name: 'only', value: 'Only' },
-          { name: 'any', value: 'Any' },
-          { name: 'all', value: 'All' },
-        ],
-      },
-      true
-    );
-
     this.tags = this.root.querySelector('.tags');
     this.grid = this.root.querySelector('.grid');
     this.prevPageButton = this.root.querySelector('.btn-prev');
     this.nextPageButton = this.root.querySelector('.btn-next');
     this.currentPageSpan = this.root.querySelector('.current-page');
     this.pageCountSpan = this.root.querySelector('.page-count');
-
-    this.tagOptions.addEventListener('change', () => {
-      console.log(this.tagOptions.currentValue);
-    });
 
     this.prevPageButton.addEventListener('click', () => {
       this.goPrev();

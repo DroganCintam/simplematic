@@ -51,8 +51,9 @@ const html = /*html*/ `
       <span class="chk-restore-faces"></span>
       <span class="chk-hires"></span>
       <span class="chk-img2img"></span>
+      <span class="chk-script"></span>
     </div>
-    <div class="hires" style="display: none">
+    <div class="advanced-box hires" style="display: none">
       <div class="title">HiRes options</div>
       <div class="options">
         <div class="option">
@@ -69,7 +70,7 @@ const html = /*html*/ `
         </div>
       </div>
     </div>
-    <div class="img2img" style="display: none">
+    <div class="advanced-box img2img" style="display: none">
       <div class="title">Image-to-Image</div>
       <div class="options">
         <label class="heading">Denoising strength:</label>
@@ -78,6 +79,16 @@ const html = /*html*/ `
         <span class="sel-resize-mode"></span>
         <label class="heading">Input image:</label>
         <div class="img2img-input-image"></div>
+      </div>
+    </div>
+    <div class="advanced-box script" style="display: none">
+      <div class="title">Script</div>
+      <div class="options">
+        <span class="w100p">Run extension script. Make sure you know what you are doing.</span>
+        <label>Name:</label>
+        <input type="text" class="txt-script-name">
+        <label>Arguments (as a JSON array):</label>
+        <input type="text" class="txt-script-args" placeholder="[]" spellcheck="false">
       </div>
     </div>
   </div>
@@ -135,14 +146,14 @@ const css = /*css*/ `
   flex-grow: 1;
 }
 
-#txt2img-tab .hires {
+#txt2img-tab .advanced-box {
   width: 100%;
   padding: 0;
   border: 1px solid hsla(0, 0%, 100%, 0.5);
   border-radius: 0.5rem;
 }
 
-#txt2img-tab .hires .title {
+#txt2img-tab .advanced-box .title {
   padding: 0.5rem;
   border-radius: 0.5rem 0.5rem 0 0;
   border-bottom: 1px solid hsla(0, 0%, 100%, 0.5);
@@ -150,7 +161,7 @@ const css = /*css*/ `
   text-align: center;
 }
 
-#txt2img-tab .hires .options {
+#txt2img-tab .advanced-box .options {
   padding: 0.5rem;
   width: 100%;
   display: flex;
@@ -160,7 +171,7 @@ const css = /*css*/ `
   gap: 1rem;
 }
 
-#txt2img-tab .hires .options .option {
+#txt2img-tab .advanced-box .options .option {
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-start;
@@ -169,36 +180,12 @@ const css = /*css*/ `
   flex-grow: 1;
 }
 
-#txt2img-tab .hires .options .option label {
+#txt2img-tab .advanced-box .options .option label {
   font-size: 1rem;
 }
 
-#txt2img-tab .hires .options .option input {
+#txt2img-tab .advanced-box .options .option input {
   flex-grow: 1;
-}
-
-#txt2img-tab .img2img {
-  width: 100%;
-  padding: 0;
-  border: 1px solid hsla(0, 0%, 100%, 0.5);
-  border-radius: 0.5rem;
-}
-
-#txt2img-tab .img2img .title {
-  padding: 0.5rem;
-  border-radius: 0.5rem 0.5rem 0 0;
-  border-bottom: 1px solid hsla(0, 0%, 100%, 0.5);
-  background-color: hsla(0, 0%, 0%, 0.5);
-  text-align: center;
-}
-
-#txt2img-tab .img2img .options {
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 0.5rem;
-  padding: 0.5rem;
 }
 
 #txt2img-tab .img2img .options .txt-denoising-strength {
@@ -212,6 +199,12 @@ const css = /*css*/ `
 
 #txt2img-tab .img2img .options .image-upload img {
   object-fit: contain;
+}
+
+#txt2img-tab .script input {
+  width: 100%;
+  font-family: monospace;
+  font-size: 0.9rem;
 }
 `;
 
@@ -245,6 +238,8 @@ export default class Txt2Img extends Tab {
   hiresCheckbox;
   /** @type {Checkbox} */
   img2imgCheckbox;
+  /** @type {Checkbox} */
+  scriptCheckbox;
 
   /** @type {HTMLElement} */
   hiresOptions;
@@ -263,6 +258,13 @@ export default class Txt2Img extends Tab {
   resizeModeSelector;
   /** @type {ImageUpload} */
   img2imgInputImage;
+
+  /** @type {HTMLElement} */
+  scriptOptions;
+  /** @type {HTMLInputElement} */
+  scriptName;
+  /** @type {HTMLInputElement} */
+  scriptArgs;
 
   /** @type {()=>void} */
   onSubmit;
@@ -323,9 +325,9 @@ export default class Txt2Img extends Tab {
     this.negativePrompt.addEventListener('input', resizeOnInput);
     this.negativePrompt.addEventListener('keydown', submitOnEnter);
 
-    this.prompt.value = sessionStorage.getItem('prompt') ?? '';
+    this.prompt.value = localStorage.getItem('prompt') ?? '';
     autoResize(this.prompt);
-    this.negativePrompt.value = sessionStorage.getItem('negativePrompt') ?? '';
+    this.negativePrompt.value = localStorage.getItem('negativePrompt') ?? '';
     autoResize(this.negativePrompt);
 
     this.widthInput = this.root.querySelector('.txt-width');
@@ -442,12 +444,25 @@ export default class Txt2Img extends Tab {
       true
     );
 
+    this.scriptCheckbox = new Checkbox(
+      this.root.querySelector('.chk-script'),
+      {
+        assignedId: 'chk-script',
+        label: 'Script',
+      },
+      true
+    );
+
     this.hiresCheckbox.onChange = (chk) => {
       this.hiresOptions.style.display = chk.checked ? '' : 'none';
     };
 
     this.img2imgCheckbox.onChange = (chk) => {
       this.toggleImg2Img();
+    };
+
+    this.scriptCheckbox.onChange = (chk) => {
+      this.scriptOptions.style.display = chk.checked ? '' : 'none';
     };
 
     this.hiresOptions = this.root.querySelector('.hires');
@@ -462,6 +477,13 @@ export default class Txt2Img extends Tab {
       {},
       true
     );
+
+    this.scriptOptions = this.root.querySelector('.script');
+    this.scriptName = this.scriptOptions.querySelector('.txt-script-name');
+    this.scriptArgs = this.scriptOptions.querySelector('.txt-script-args');
+
+    this.scriptName.value = localStorage.getItem('script_name') ?? '';
+    this.scriptArgs.value = localStorage.getItem('script_args') ?? '';
 
     this.clearPromptButton.addEventListener('click', () => {
       ConfirmDialog.instance.show('The whole prompt will be cleared.\nAre you sure?', () => {
@@ -599,15 +621,30 @@ export default class Txt2Img extends Tab {
       this.seed.value = '-1';
     }
 
+    let scriptName = undefined;
+    let scriptArgs = undefined;
+    if (this.scriptCheckbox.checked) {
+      scriptName = this.scriptName.value.trim();
+      if (scriptName != '') {
+        try {
+          scriptArgs = JSON.parse(this.scriptArgs.value.trim());
+        } catch {
+          return;
+        }
+      }
+    }
+
     onStart();
 
-    sessionStorage.setItem('prompt', this.prompt.value);
-    sessionStorage.setItem('negativePrompt', this.negativePrompt.value);
+    localStorage.setItem('prompt', this.prompt.value);
+    localStorage.setItem('negativePrompt', this.negativePrompt.value);
     localStorage.setItem('width', this.widthInput.value);
     localStorage.setItem('height', this.heightInput.value);
     localStorage.setItem('aspectRatio', this.aspectRatioSelector.currentValue.toString());
     localStorage.setItem('steps', this.stepsSelector.currentValue.toString());
     localStorage.setItem('cfg', this.cfgSelector.currentValue.toString());
+    localStorage.setItem('script_name', this.scriptName.value);
+    localStorage.setItem('script_args', this.scriptArgs.value);
 
     const width = this.widthInput.valueAsNumber;
     const height = this.heightInput.valueAsNumber;
@@ -628,6 +665,10 @@ export default class Txt2Img extends Tab {
         denoising_strength: this.denoisingStrength.valueAsNumber,
         resize_mode: this.resizeModeSelector.currentValue,
       };
+      if (scriptName && scriptArgs) {
+        parameters.script_name = scriptName;
+        parameters.script_args = scriptArgs;
+      }
       Api.instance.img2img(parameters).then(onSuccess).catch(onFailure).finally(onEnd);
     } else {
       /** @type {Txt2ImgParameters} */
@@ -647,6 +688,10 @@ export default class Txt2Img extends Tab {
         parameters.denoising_strength = this.hiresDenoisingStrength.valueAsNumber;
         parameters.hr_scale = this.hiresScale.valueAsNumber;
         parameters.hr_second_pass_steps = this.hiresSteps.valueAsNumber;
+      }
+      if (scriptName && scriptArgs) {
+        parameters.script_name = scriptName;
+        parameters.script_args = scriptArgs;
       }
       Api.instance.txt2img(parameters).then(onSuccess).catch(onFailure).finally(onEnd);
     }

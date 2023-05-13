@@ -537,9 +537,24 @@ export default class Txt2Img extends Tab {
 
     if (imageInfo.inputImage && imageInfo.inputImage !== '') {
       this.img2imgCheckbox.checked = true;
+      this.denoisingStrength.valueAsNumber = imageInfo.info.denoisingStrength;
       this.resizeModeSelector.currentValue = imageInfo.inputResizeMode;
       this.img2imgInputImage.imageData = imageInfo.inputImage;
       this.toggleImg2Img();
+    } else {
+      this.img2imgCheckbox.checked = false;
+      this.toggleImg2Img();
+    }
+
+    if (imageInfo.scriptName && imageInfo.scriptArgs) {
+      this.scriptCheckbox.checked = true;
+      this.scriptName.value = imageInfo.scriptName;
+      this.scriptArgs.value = imageInfo.scriptArgs;
+      this.scriptOptions.style.display = '';
+      this.processRetrievedScript(imageInfo);
+    } else {
+      this.scriptCheckbox.checked = false;
+      this.scriptOptions.style.display = 'none';
     }
   }
 
@@ -614,6 +629,34 @@ export default class Txt2Img extends Tab {
     }
   }
 
+  processRetrievedScript(/** @type {ImageInfo} */ imageInfo) {
+    if (imageInfo.scriptName === 'Ultimate SD upscale' && imageInfo.inputImage) {
+      try {
+        const args = JSON.parse(imageInfo.scriptArgs);
+        if (Array.isArray(args) && args.length == 18) {
+          const scaleFactor = args[17];
+          if (typeof scaleFactor === 'number' && scaleFactor > 0) {
+            const orgWidth = imageInfo.info.width / scaleFactor;
+            const orgHeight = imageInfo.info.height / scaleFactor;
+            this.widthInput.valueAsNumber = orgWidth;
+            this.heightInput.valueAsNumber = orgHeight;
+            this.updateAspectRatioFromDimensions();
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }
+
+  /**
+   *
+   * @param {() => void} onStart
+   * @param {() => void} onEnd
+   * @param {(json: any, scriptName: string | undefined, scriptArgs: string | undefined) => void} onSuccess
+   * @param {(err: any) => void} onFailure
+   * @returns
+   */
   generate(onStart, onEnd, onSuccess, onFailure) {
     if (Api.instance.baseUrl == '') return;
 
@@ -669,7 +712,13 @@ export default class Txt2Img extends Tab {
         parameters.script_name = scriptName;
         parameters.script_args = scriptArgs;
       }
-      Api.instance.img2img(parameters).then(onSuccess).catch(onFailure).finally(onEnd);
+      Api.instance
+        .img2img(parameters)
+        .then((json) => {
+          onSuccess(json, scriptName, scriptArgs ? JSON.stringify(scriptArgs) : undefined);
+        })
+        .catch(onFailure)
+        .finally(onEnd);
     } else {
       /** @type {Txt2ImgParameters} */
       const parameters = {
@@ -693,7 +742,13 @@ export default class Txt2Img extends Tab {
         parameters.script_name = scriptName;
         parameters.script_args = scriptArgs;
       }
-      Api.instance.txt2img(parameters).then(onSuccess).catch(onFailure).finally(onEnd);
+      Api.instance
+        .txt2img(parameters)
+        .then((json) => {
+          onSuccess(json, scriptName, scriptArgs ? JSON.stringify(scriptArgs) : undefined);
+        })
+        .catch(onFailure)
+        .finally(onEnd);
     }
   }
 
@@ -712,11 +767,14 @@ export default class Txt2Img extends Tab {
     this.restoreFacesCheckbox.disabled = isLoading;
     this.hiresCheckbox.disabled = isLoading;
     this.img2imgCheckbox.disabled = isLoading;
+    this.scriptCheckbox.disabled = isLoading;
     this.hiresDenoisingStrength.disabled = isLoading;
     this.hiresScale.disabled = isLoading;
     this.hiresSteps.disabled = isLoading;
     this.denoisingStrength.disabled = isLoading;
     this.resizeModeSelector.disabled = isLoading;
     this.img2imgInputImage.disabled = isLoading;
+    this.scriptName.disabled = isLoading;
+    this.scriptArgs.disabled = isLoading;
   }
 }

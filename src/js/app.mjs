@@ -245,6 +245,7 @@ class App {
     };
 
     this.galleryTab.onView = (idic) => {
+      this.hasResult = true;
       this.resultTab.displaySaved(idic);
       this.switchTab(this.resultTab);
     };
@@ -330,14 +331,16 @@ class App {
         this.setLoading(false);
         progress.hide();
       },
-      (json) => {
+      (json, scriptName, scriptArgs) => {
         this.hasResult = true;
         this.resultTab.display(
           json,
           this.txt2imgTab.img2imgCheckbox.checked
             ? this.txt2imgTab.img2imgInputImage.imageData
             : '',
-          this.txt2imgTab.resizeModeSelector.currentValue
+          this.txt2imgTab.resizeModeSelector.currentValue,
+          scriptName,
+          scriptArgs
         );
         this.switchTab(this.resultTab);
       },

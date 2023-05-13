@@ -16,6 +16,11 @@ export default class ImageInfo {
   /** @type {number} */
   inputResizeMode;
 
+  /** @type {string} */
+  scriptName;
+  /** @type {string} */
+  scriptArgs;
+
   /**
    * @param {string} imageData
    * @param {string} infoText

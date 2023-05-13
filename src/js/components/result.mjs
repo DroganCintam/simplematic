@@ -97,6 +97,14 @@ const html = /*html*/ `
         <label class="heading">Parameters:</label>
         <textarea class="result-parameters" readonly></textarea>
       </div>
+      <div class="vertical w100p" data-script-info>
+        <label class="heading">Script name:</label>
+        <input type="text" class="result-script-name" readonly />
+      </div>
+      <div class="vertical w100p" data-script-info>
+        <label class="heading">Script arguments:</label>
+        <input type="text" class="result-script-args" readonly />
+      </div>
     </div>
   </div>
 </div>
@@ -239,6 +247,11 @@ const css = /*css*/ `
 #result-tab input[type=number],
 #result-tab textarea {
   font-size: 0.8rem;
+}
+
+#result-tab .result-script-name,
+#result-tab .result-script-args {
+  font-family: monospace;
 }
 
 #result-tab .image-navigation {
@@ -435,6 +448,11 @@ export default class ResultDialog extends Tab {
   /** @type {HTMLTextAreaElement} */
   parameters;
 
+  /** @type {HTMLInputElement} */
+  scriptName;
+  /** @type {HTMLInputElement} */
+  scriptArgs;
+
   /** @type {ImageInfo} */
   imageInfo;
 
@@ -468,6 +486,8 @@ export default class ResultDialog extends Tab {
     this.modelName = this.root.querySelector('.result-model-name');
     this.modelHash = this.root.querySelector('.result-model-hash');
     this.parameters = this.root.querySelector('.result-parameters');
+    this.scriptName = this.root.querySelector('.result-script-name');
+    this.scriptArgs = this.root.querySelector('.result-script-args');
 
     this.prevImageButton = this.root.querySelector('.btn-prev');
     this.prevImageButton.addEventListener('click', () => {
@@ -582,7 +602,14 @@ export default class ResultDialog extends Tab {
     });
   }
 
-  display(json, inputImage, inputResizeMode) {
+  /**
+   * @param {any} json
+   * @param {string} inputImage
+   * @param {number} inputResizeMode
+   * @param {string | undefined} scriptName
+   * @param {string | undefined} scriptArgs
+   */
+  display(json, inputImage, inputResizeMode, scriptName, scriptArgs) {
     const infoText = JSON.parse(json.info).infotexts[0];
     this.imageInfo = new ImageInfo(json.images[0], infoText);
     this.image.src = this.imageInfo.imageData;
@@ -627,6 +654,10 @@ export default class ResultDialog extends Tab {
       this.inputImageButton.style.display = 'none';
     }
     this.toggleInputImage(false);
+
+    this.imageInfo.scriptName = scriptName;
+    this.imageInfo.scriptArgs = scriptArgs;
+    this.updateScript();
   }
 
   /**
@@ -675,6 +706,8 @@ export default class ResultDialog extends Tab {
 
     this.inputImageButton.style.display = 'none';
     this.toggleInputImage(false);
+
+    this.updateScript();
   }
 
   /**
@@ -754,6 +787,10 @@ export default class ResultDialog extends Tab {
       this.inputImageButton.style.display = 'none';
     }
     this.toggleInputImage(false);
+
+    this.imageInfo.scriptName = row.scriptName;
+    this.imageInfo.scriptArgs = row.scriptArgs;
+    this.updateScript();
   }
 
   resizePromptBoxes() {
@@ -803,6 +840,20 @@ export default class ResultDialog extends Tab {
       case 2:
         this.inputImage.style.objectFit = 'contain';
         break;
+    }
+  }
+
+  updateScript() {
+    if (this.imageInfo.scriptName) {
+      this.root.querySelectorAll('[data-script-info]').forEach((el) => {
+        el.style.display = '';
+      });
+      this.scriptName.value = this.imageInfo.scriptName;
+      this.scriptArgs.value = this.imageInfo.scriptArgs;
+    } else {
+      this.root.querySelectorAll('[data-script-info]').forEach((el) => {
+        el.style.display = 'none';
+      });
     }
   }
 

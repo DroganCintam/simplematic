@@ -30,6 +30,9 @@ export class ImageDataItem {
 
   inputImage = '';
   inputResizeMode = 0;
+
+  scriptName = '';
+  scriptArgs = '';
 }
 
 export class ImageDataItemCursor {
@@ -239,6 +242,8 @@ export class ImageDB {
         imported: img.imported,
         inputImage: img.inputImage,
         inputResizeMode: img.inputResizeMode,
+        scriptName: img.scriptName,
+        scriptArgs: img.scriptArgs,
         ...img.info,
       });
       const db = await this.openDB();

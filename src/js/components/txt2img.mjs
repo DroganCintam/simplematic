@@ -312,6 +312,8 @@ export default class Txt2Img extends Tab {
   /** @type {HTMLButtonElement} */
   inpaintCanvasUndoButton;
 
+  inpaintCanvasStates = [];
+
   /** @type {HTMLElement} */
   scriptOptions;
   /** @type {HTMLInputElement} */
@@ -552,7 +554,7 @@ export default class Txt2Img extends Tab {
         assignedId: 'sel-inpaint-mask-invert',
         hasCustom: false,
         isInteger: true,
-        defaultValue: 0,
+        defaultValue: 1,
         values: [
           // The following values are swapped
           // so that the app won't have to
@@ -610,14 +612,16 @@ export default class Txt2Img extends Tab {
         this.inpaintCanvas.style.pointerEvents = 'unset';
         this.inpaintCanvasUndoButton.style.visibility = 'visible';
         setTimeout(() => {
-          const width = this.img2imgInputImage.image.naturalWidth;
-          const height = this.img2imgInputImage.image.naturalHeight;
+          const width = this.img2imgInputImage.image.width;
+          const height = this.img2imgInputImage.image.height;
           this.inpaintCanvas.width = width;
           this.inpaintCanvas.height = height;
+          this.clearInpaintCanvas();
         }, 1);
       } else {
         this.inpaintCanvas.style.pointerEvents = 'none';
         this.inpaintCanvasUndoButton.style.visibility = 'hidden';
+        this.clearInpaintCanvas();
       }
     });
 
@@ -821,32 +825,58 @@ export default class Txt2Img extends Tab {
     const ctx = this.inpaintCanvas.getContext('2d');
     ctx.fillStyle = '#000000';
 
-    const states = [];
+    const states = this.inpaintCanvasStates;
     let isPainting = false;
     let brushSize = 1;
-    let scaleFactor = 1;
-    this.inpaintCanvas.addEventListener('mousedown', (e) => {
+
+    const onBegin = () => {
       isPainting = true;
       brushSize = this.inpaintBrushSize.valueAsNumber;
-      scaleFactor = this.inpaintCanvas.width / this.inpaintCanvas.offsetWidth;
       states.push(this.inpaintCanvas.toDataURL());
-    });
-    this.inpaintCanvas.addEventListener('mouseleave', () => {
+    };
+    const onEnd = () => {
       isPainting = false;
-    });
-    this.inpaintCanvas.addEventListener('mouseup', () => {
-      isPainting = false;
-    });
-    this.inpaintCanvas.addEventListener('mousemove', (e) => {
+    };
+    const onMove = (offsetX, offsetY) => {
       if (isPainting) {
         ctx.save();
         ctx.beginPath();
-        ctx.arc(e.offsetX * scaleFactor, e.offsetY * scaleFactor, brushSize, 0, Math.PI * 2);
+        ctx.arc(offsetX, offsetY, brushSize, 0, Math.PI * 2);
         ctx.closePath();
         ctx.fill();
         ctx.restore();
       }
+    };
+
+    this.inpaintCanvas.addEventListener('mousedown', (e) => {
+      if (e.button == 0) {
+        e.preventDefault();
+        onBegin();
+      }
     });
+    this.inpaintCanvas.addEventListener('mouseleave', onEnd);
+    this.inpaintCanvas.addEventListener('mouseup', onEnd);
+    this.inpaintCanvas.addEventListener('mousemove', (e) => {
+      onMove(e.offsetX, e.offsetY);
+    });
+
+    let rect;
+    this.inpaintCanvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      rect = this.inpaintCanvas.getBoundingClientRect();
+      onBegin();
+    });
+    this.inpaintCanvas.addEventListener('touchend', onEnd);
+    this.inpaintCanvas.addEventListener('touchcancel', onEnd);
+    this.inpaintCanvas.addEventListener('touchmove', (e) => {
+      if (isPainting) {
+        const touch = e.changedTouches[0];
+        const offsetX = touch.clientX - rect.left;
+        const offsetY = touch.clientY - rect.top;
+        onMove(offsetX, offsetY);
+      }
+    });
+
     this.inpaintCanvasUndoButton.addEventListener('click', () => {
       if (states.length > 0) {
         const undoImage = new Image();
@@ -863,24 +893,26 @@ export default class Txt2Img extends Tab {
     });
   }
 
-  async getInpaintMask() {
-    return new Promise((resolve) => {
-      const canvas = document.createElement('canvas');
-      canvas.width = this.inpaintCanvas.width;
-      canvas.height = this.inpaintCanvas.height;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      const mask = new Image();
-      mask.src = this.inpaintCanvas.toDataURL();
-      mask.onload = () => {
-        ctx.drawImage(mask, 0, 0);
-        const result = canvas.toDataURL('image/png');
-        mask.remove();
-        canvas.remove();
-        resolve(result);
-      };
-    });
+  getInpaintMask() {
+    const canvas = document.createElement('canvas');
+    canvas.width = this.img2imgInputImage.image.naturalWidth;
+    canvas.height = this.img2imgInputImage.image.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(this.inpaintCanvas, 0, 0, canvas.width, canvas.height);
+
+    const result = canvas.toDataURL();
+    canvas.remove();
+    return result;
+  }
+
+  clearInpaintCanvas() {
+    this.inpaintCanvasStates.splice(0);
+    const ctx = this.inpaintCanvas.getContext('2d');
+    ctx.save();
+    ctx.clearRect(0, 0, this.inpaintCanvas.width, this.inpaintCanvas.height);
+    ctx.restore();
   }
 
   /**
@@ -891,7 +923,7 @@ export default class Txt2Img extends Tab {
    * @param {(err: any) => void} onFailure
    * @returns
    */
-  async generate(onStart, onEnd, onSuccess, onFailure) {
+  generate(onStart, onEnd, onSuccess, onFailure) {
     if (Api.instance.baseUrl == '') return;
 
     if (this.seed.value == '') {
@@ -947,7 +979,7 @@ export default class Txt2Img extends Tab {
         parameters.script_args = scriptArgs;
       }
       if (this.inpaintCheckbox.checked) {
-        parameters.mask = await this.getInpaintMask();
+        parameters.mask = this.getInpaintMask();
         parameters.mask_blur = this.inpaintMaskBlur.valueAsNumber;
         parameters.inpainting_mask_invert = this.inpaintMaskInvertSelector.currentValue;
         parameters.inpainting_fill = this.inpaintFillSelector.currentValue;

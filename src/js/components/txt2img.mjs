@@ -7,6 +7,7 @@ import AppConfig from '../types/app-config.mjs';
 import Checkbox from './checkbox.mjs';
 import ImageUpload from './image-upload.mjs';
 import ConfirmDialog from './confirm-dialog.mjs';
+import Component from './component.mjs';
 
 const defaultParameters = {
   sampler: 'DPM++ 2M Karras v2',
@@ -79,6 +80,21 @@ const html = /*html*/ `
         <span class="sel-resize-mode"></span>
         <label class="heading">Input image:</label>
         <div class="img2img-input-image"></div>
+        <span class="chk-inpaint"></span>
+        <input type="range" class="inpaint-options range-inpaint-brush-size" min="1" max="32" step="1">
+        <button type="button" class="inpaint-options icon-button btn-inpaint-canvas-undo" title="Undo">
+          <img src="/img/rotate-left-solid.svg"/>
+        </button>
+        <label class="w100p inpaint-options">Mask blur:</label>
+        <input type="number" class="inpaint-options txt-inpaint-mask-blur" min="0" max="64" step="4" value="4" onchange="validateInputRange(this)">
+        <label class="w100p inpaint-options">Mask mode:</label>
+        <span class="sel-inpaint-mask-invert"></span>
+        <label class="w100p inpaint-options">Mask content:</label>
+        <span class="sel-inpaint-fill"></span>
+        <label class="w100p inpaint-options">Inpaint area:</label>
+        <span class="sel-inpaint-full-res"></span>
+        <label class="w100p inpaint-options">Only masked padding:</label>
+        <input type="number" class="inpaint-options txt-inpaint-full-res-padding" min="0" max="256" step="4" value="32" onchange="validateInputRange(this)">
       </div>
     </div>
     <div class="advanced-box script" style="display: none">
@@ -194,7 +210,6 @@ const css = /*css*/ `
 
 #txt2img-tab .img2img .options .image-upload {
   width: 100%;
-  max-height: 512px;
 }
 
 #txt2img-tab .img2img .options .image-upload img {
@@ -205,6 +220,25 @@ const css = /*css*/ `
   width: 100%;
   font-family: monospace;
   font-size: 0.9rem;
+}
+
+#txt2img-tab .img2img .inpaint-canvas {
+  width: 100%;
+  height: 100%;
+  border: 1px dashed hsla(0, 0%, 100%, 0.5);
+  border-radius: 0.5rem;
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+
+#txt2img-tab .img2img .btn-inpaint-canvas-undo {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  z-index: 5;
+  visibility: hidden;
 }
 `;
 
@@ -258,6 +292,25 @@ export default class Txt2Img extends Tab {
   resizeModeSelector;
   /** @type {ImageUpload} */
   img2imgInputImage;
+  /** @type {Checkbox} */
+  inpaintCheckbox;
+  /** @type {HTMLInputElement} */
+  inpaintMaskBlur;
+  /** @type {ValueSelector} */
+  inpaintMaskInvertSelector;
+  /** @type {ValueSelector} */
+  inpaintFillSelector;
+  /** @type {ValueSelector} */
+  inpaintFullResSelector;
+  /** @type {HTMLInputElement} */
+  inpaintFullResPadding;
+
+  /** @type {HTMLCanvasElement} */
+  inpaintCanvas;
+  /** @type {HTMLInputElement} */
+  inpaintBrushSize;
+  /** @type {HTMLButtonElement} */
+  inpaintCanvasUndoButton;
 
   /** @type {HTMLElement} */
   scriptOptions;
@@ -479,6 +532,94 @@ export default class Txt2Img extends Tab {
       {},
       true
     );
+    this.img2imgInputImage.lockedClickToChange = true;
+    this.inpaintCheckbox = new Checkbox(
+      this.img2img.querySelector('.chk-inpaint'),
+      {
+        assignedId: 'chk-inpaint',
+        label: 'Inpaint',
+      },
+      true
+    );
+    this.inpaintBrushSize = this.img2img.querySelector('.range-inpaint-brush-size');
+    this.inpaintCanvasUndoButton = this.img2img.querySelector('.btn-inpaint-canvas-undo');
+    this.inpaintCanvasUndoButton.parentElement.removeChild(this.inpaintCanvasUndoButton);
+    this.img2imgInputImage.root.appendChild(this.inpaintCanvasUndoButton);
+    this.inpaintMaskBlur = this.img2img.querySelector('.txt-inpaint-mask-blur');
+    this.inpaintMaskInvertSelector = new ValueSelector(
+      this.img2img.querySelector('.sel-inpaint-mask-invert'),
+      {
+        assignedId: 'sel-inpaint-mask-invert',
+        hasCustom: false,
+        isInteger: true,
+        defaultValue: 0,
+        values: [
+          // The following values are swapped
+          // so that the app won't have to
+          // invert the mask image.
+          { name: 'Inpaint masked', value: 1 },
+          { name: 'Inpaint not masked', value: 0 },
+        ],
+        extraClasses: ['inpaint-options'],
+      },
+      true
+    );
+    this.inpaintFillSelector = new ValueSelector(
+      this.img2img.querySelector('.sel-inpaint-fill'),
+      {
+        assignedId: 'sel-inpaint-fill',
+        hasCustom: false,
+        isInteger: true,
+        defaultValue: 1,
+        values: [
+          { name: 'Fill', value: 0 },
+          { name: 'Original', value: 1 },
+          { name: 'Latent noise', value: 2 },
+          { name: 'Latent nothing', value: 3 },
+        ],
+        extraClasses: ['inpaint-options'],
+      },
+      true
+    );
+    this.inpaintFullResSelector = new ValueSelector(
+      this.img2img.querySelector('.sel-inpaint-full-res'),
+      {
+        assignedId: 'sel-inpaint-full-res',
+        hasCustom: false,
+        isInteger: true,
+        defaultValue: 0,
+        values: [
+          { name: 'Whole picture', value: 0 },
+          { name: 'Only masked', value: 1 },
+        ],
+        extraClasses: ['inpaint-options'],
+      },
+      true
+    );
+    this.inpaintFullResPadding = this.img2img.querySelector('.txt-inpaint-full-res-padding');
+    this.inpaintCanvas = Component.fromHTML(/*html*/ `
+      <canvas class="inpaint-options inpaint-canvas"/>
+    `);
+    this.img2imgInputImage.root.appendChild(this.inpaintCanvas);
+
+    this.inpaintCheckbox.onChange = (chk) => {
+      this.toggleInpaint();
+    };
+    this.img2imgInputImage.addEventListener('imageData', () => {
+      if (this.img2imgInputImage.hasImage) {
+        this.inpaintCanvas.style.pointerEvents = 'unset';
+        this.inpaintCanvasUndoButton.style.visibility = 'visible';
+        setTimeout(() => {
+          const width = this.img2imgInputImage.image.naturalWidth;
+          const height = this.img2imgInputImage.image.naturalHeight;
+          this.inpaintCanvas.width = width;
+          this.inpaintCanvas.height = height;
+        }, 1);
+      } else {
+        this.inpaintCanvas.style.pointerEvents = 'none';
+        this.inpaintCanvasUndoButton.style.visibility = 'hidden';
+      }
+    });
 
     this.scriptOptions = this.root.querySelector('.script');
     this.scriptName = this.scriptOptions.querySelector('.txt-script-name');
@@ -506,6 +647,9 @@ export default class Txt2Img extends Tab {
     this.widthInput.value = localStorage.getItem('width') ?? '512';
     this.heightInput.value = localStorage.getItem('height') ?? '512';
     this.updateAspectRatioFromDimensions();
+
+    this.initInpaintCanvas();
+    this.toggleInpaint();
   }
 
   retrieveInfo(/** @type {ImageInfo} */ imageInfo, /** @type {Boolean} */ alsoSeed) {
@@ -594,6 +738,16 @@ export default class Txt2Img extends Tab {
     }
   }
 
+  toggleInpaint() {
+    if (this.inpaintCheckbox.checked) {
+      this.img2img.querySelectorAll('.inpaint-options').forEach((el) => (el.style.display = ''));
+    } else {
+      this.img2img
+        .querySelectorAll('.inpaint-options')
+        .forEach((el) => (el.style.display = 'none'));
+    }
+  }
+
   updateAspectRatioFromDimensions() {
     const width = this.widthInput.valueAsNumber;
     const height = this.heightInput.valueAsNumber;
@@ -663,6 +817,72 @@ export default class Txt2Img extends Tab {
     }
   }
 
+  initInpaintCanvas() {
+    const ctx = this.inpaintCanvas.getContext('2d');
+    ctx.fillStyle = '#000000';
+
+    const states = [];
+    let isPainting = false;
+    let brushSize = 1;
+    let scaleFactor = 1;
+    this.inpaintCanvas.addEventListener('mousedown', (e) => {
+      isPainting = true;
+      brushSize = this.inpaintBrushSize.valueAsNumber;
+      scaleFactor = this.inpaintCanvas.width / this.inpaintCanvas.offsetWidth;
+      states.push(this.inpaintCanvas.toDataURL());
+    });
+    this.inpaintCanvas.addEventListener('mouseleave', () => {
+      isPainting = false;
+    });
+    this.inpaintCanvas.addEventListener('mouseup', () => {
+      isPainting = false;
+    });
+    this.inpaintCanvas.addEventListener('mousemove', (e) => {
+      if (isPainting) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(e.offsetX * scaleFactor, e.offsetY * scaleFactor, brushSize, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+    });
+    this.inpaintCanvasUndoButton.addEventListener('click', () => {
+      if (states.length > 0) {
+        const undoImage = new Image();
+        undoImage.src = states[states.length - 1];
+        undoImage.onload = () => {
+          ctx.clearRect(0, 0, this.inpaintCanvas.width, this.inpaintCanvas.height);
+          ctx.save();
+          ctx.drawImage(undoImage, 0, 0);
+          ctx.restore();
+          undoImage.remove();
+        };
+        states.pop();
+      }
+    });
+  }
+
+  async getInpaintMask() {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = this.inpaintCanvas.width;
+      canvas.height = this.inpaintCanvas.height;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const mask = new Image();
+      mask.src = this.inpaintCanvas.toDataURL();
+      mask.onload = () => {
+        ctx.drawImage(mask, 0, 0);
+        const result = canvas.toDataURL('image/png');
+        mask.remove();
+        canvas.remove();
+        resolve(result);
+      };
+    });
+  }
+
   /**
    *
    * @param {() => void} onStart
@@ -671,7 +891,7 @@ export default class Txt2Img extends Tab {
    * @param {(err: any) => void} onFailure
    * @returns
    */
-  generate(onStart, onEnd, onSuccess, onFailure) {
+  async generate(onStart, onEnd, onSuccess, onFailure) {
     if (Api.instance.baseUrl == '') return;
 
     if (this.seed.value == '') {
@@ -725,6 +945,14 @@ export default class Txt2Img extends Tab {
       if (scriptName && scriptArgs) {
         parameters.script_name = scriptName;
         parameters.script_args = scriptArgs;
+      }
+      if (this.inpaintCheckbox.checked) {
+        parameters.mask = await this.getInpaintMask();
+        parameters.mask_blur = this.inpaintMaskBlur.valueAsNumber;
+        parameters.inpainting_mask_invert = this.inpaintMaskInvertSelector.currentValue;
+        parameters.inpainting_fill = this.inpaintFillSelector.currentValue;
+        parameters.inpaint_full_res = this.inpaintFullResSelector.currentValue == 0;
+        parameters.inpaint_full_res_padding = this.inpaintFullResPadding.valueAsNumber;
       }
       Api.instance
         .img2img(parameters)

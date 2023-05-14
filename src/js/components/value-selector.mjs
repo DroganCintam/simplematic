@@ -83,6 +83,8 @@ class SelectorOptions {
   hasCustom = true;
   /** @type {{name: string, value: number}[]} */
   values = [];
+  /** @type {string[] | undefined} */
+  extraClasses = undefined;
 }
 
 const defaultOptions = new SelectorOptions();
@@ -218,6 +220,10 @@ export default class ValueSelector extends Component {
       this.selectedPreset.checkbox.checked = true;
     } else if (options.hasCustom) {
       this.customInput.value = options.defaultValue;
+    }
+
+    if (options.extraClasses) {
+      this.root.classList.add(options.extraClasses);
     }
   }
 

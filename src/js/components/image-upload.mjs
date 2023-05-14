@@ -4,6 +4,9 @@ const html = /*html*/ `
 <div class="image-upload">
   <input type="file" accept="image/png">
   <img alt="Input image" style="display: none">
+  <button type="button" class="icon-button btn-clear" title="Clear" style="display: none">
+    <img src="/img/xmark-solid.svg"/>
+  </button>
 </div>
 `;
 
@@ -14,6 +17,7 @@ const css = /*css*/ `
   border: 1px solid hsla(0, 0%, 100%, 0.5);
   border-radius: 0.5rem;
   display: flex;
+  position: relative;
 }
 
 .image-upload input[type="file"] {
@@ -44,6 +48,17 @@ const css = /*css*/ `
   border-radius: 0.5rem;
   cursor: pointer;
 }
+
+.image-upload img.locked-click {
+  cursor: default;
+}
+
+.image-upload .btn-clear {
+  position: absolute;
+  right: 0.5rem;
+  top: 0.5rem;
+  z-index: 5;
+}
 `;
 
 export default class ImageUpload extends Component {
@@ -51,8 +66,11 @@ export default class ImageUpload extends Component {
   fileInput;
   /** @type {HTMLImageElement} */
   image;
+  /** @type {HTMLButtonElement} */
+  clearButton;
 
   _disabled = false;
+  _lockedClickToChange = false;
 
   get disabled() {
     return this._disabled;
@@ -70,6 +88,12 @@ export default class ImageUpload extends Component {
     this.fileInput.accept = value;
   }
 
+  set lockedClickToChange(value) {
+    this._lockedClickToChange = value;
+    if (value) this.image.classList.add('locked-click');
+    else this.image.classList.remove('locked-click');
+  }
+
   /**
    * @param {HTMLElement} parent
    * @param {{ extraClasses: string[] | undefined }} options
@@ -83,22 +107,25 @@ export default class ImageUpload extends Component {
     }
     this.fileInput = this.root.querySelector('input');
     this.image = this.root.querySelector('img');
+    this.clearButton = this.root.querySelector('.btn-clear');
 
     this.fileInput.addEventListener('change', () => {
       if (this.fileInput.files.length == 0) return;
       const file = this.fileInput.files[0];
       const reader = new FileReader();
       reader.addEventListener('load', () => {
-        this.image.src = reader.result;
-        this.image.style.display = '';
-        this.fileInput.style.display = 'none';
+        this.imageData = reader.result;
       });
       reader.readAsDataURL(file);
     });
 
     this.image.addEventListener('click', () => {
-      if (this._disabled) return;
+      if (this._disabled || this._lockedClickToChange) return;
       this.fileInput.click();
+    });
+
+    this.clearButton.addEventListener('click', () => {
+      this.imageData = '';
     });
   }
 
@@ -115,9 +142,13 @@ export default class ImageUpload extends Component {
     if (data && data !== '') {
       this.image.style.display = '';
       this.fileInput.style.display = 'none';
+      this.clearButton.style.display = '';
     } else {
       this.image.style.display = 'none';
       this.fileInput.style.display = '';
+      this.clearButton.style.display = 'none';
+      this.fileInput.value = null;
     }
+    this.dispatchEvent(new Event('imageData'));
   }
 }

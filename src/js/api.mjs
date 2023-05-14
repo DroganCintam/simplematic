@@ -47,6 +47,14 @@ export class Img2ImgParameters {
 
   n_iter = 1;
   batch_size = 1;
+
+  /** @type {string | undefined} */
+  mask = undefined;
+  mask_blur = 4;
+  inpainting_mask_invert = 0;
+  inpainting_fill = 0;
+  inpaint_full_res = true;
+  inpaint_full_res_padding = 0;
 }
 
 export class UpscaleParameters {
@@ -188,19 +196,27 @@ export default class Api {
     const url = this.baseUrl + 'sdapi/v1/txt2img';
     const headers = this.prepareHeaders(false);
     try {
-      const json = await (
-        await fetch(url, {
-          method: 'POST',
-          mode: 'cors',
-          headers,
-          body: JSON.stringify(parameters),
-        })
-      ).json();
-      if (Array.isArray(json.images) && json.images.length > 0) {
-        return json;
-      } else {
-        throw json;
-      }
+      const result = await fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers,
+        body: JSON.stringify(parameters),
+      });
+      console.log(await result.text());
+
+      // const json = await (
+      //   await fetch(url, {
+      //     method: 'POST',
+      //     mode: 'cors',
+      //     headers,
+      //     body: JSON.stringify(parameters),
+      //   })
+      // ).json();
+      // if (Array.isArray(json.images) && json.images.length > 0) {
+      //   return json;
+      // } else {
+      //   throw json;
+      // }
     } catch (err) {
       console.error(err);
     }

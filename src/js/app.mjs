@@ -14,6 +14,7 @@ import ImageInfo from './types/image-info.mjs';
 import ConfirmDialog from './components/confirm-dialog.mjs';
 import BackgroundLoader from './background-loader.mjs';
 import TopBar from './components/top-bar.mjs';
+import Changelog from './components/changelog.mjs';
 
 class App {
   /** @type {HTMLElement} */
@@ -62,6 +63,9 @@ class App {
   /** @type {About} */
   aboutTab;
 
+  /** @type {Changelog} */
+  changelogTab;
+
   /** @type {Result} */
   resultTab;
 
@@ -109,6 +113,7 @@ class App {
     this.menu.onOpenGallery = () => this.switchTab(this.galleryTab);
     this.menu.onSettings = () => this.switchTab(this.settingsTab);
     this.menu.onAbout = () => this.switchTab(this.aboutTab);
+    this.menu.onChangelog = () => this.switchTab(this.changelogTab);
 
     this.menuWidthElement = document.createElement('div');
     this.menuWidthElement.style.width = this.menuWidth;
@@ -172,6 +177,7 @@ class App {
 
     this.settingsTab = new Settings(tabs);
     this.aboutTab = new About(tabs);
+    this.changelogTab = new Changelog(tabs);
     this.resultTab = new Result(tabs);
     this.pngImportTab = new PngImport(tabs);
     this.txt2imgTab = new Txt2Img(tabs);

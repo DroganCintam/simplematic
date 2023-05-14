@@ -31,7 +31,8 @@ const html = /*html*/ `
     </div>
     <div class="bottom-bar">
       <button type="button" class="icon-button btn-settings" title="Settings (Ctrl+,)"><img src="/img/gear-solid.svg"/></button>
-      <button type="button" class="icon-button btn-about" title="About"><img src="/img/circle-info-solid.svg" title="About"/></button>
+      <button type="button" class="icon-button btn-about" title="About"><img src="/img/circle-info-solid.svg"/></button>
+      <button type="button" class="icon-button btn-changelog" title="Changelog"><img src="/img/file-lines-solid.svg"/></button>
       <a href="https://github.com/DroganCintam/simplematic" target="_blank"><img src="/img/github.svg" title="Github repository"/></a>
       <span class="version"></span>
     </div>
@@ -231,6 +232,8 @@ export default class Menu extends Component {
   settingsButton;
   /** @type {HTMLButtonElement} */
   aboutButton;
+  /** @type {HTMLButtonElement} */
+  changelogButton;
 
   /** @type {HTMLElement} */
   loader;
@@ -249,6 +252,9 @@ export default class Menu extends Component {
 
   /** @type {() => void} */
   onAbout;
+
+  /** @type {() => void} */
+  onChangelog;
 
   isLoading = false;
 
@@ -282,6 +288,12 @@ export default class Menu extends Component {
     this.aboutButton.addEventListener('click', () => {
       this.onHide();
       this.onAbout();
+    });
+
+    this.changelogButton = this.root.querySelector('.btn-changelog');
+    this.changelogButton.addEventListener('click', () => {
+      this.onHide();
+      this.onChangelog();
     });
 
     this.samplers = this.root.querySelector('.sel-samplers');

@@ -344,6 +344,8 @@ export default class Txt2Img extends Tab {
           { name: 'Portrait (512x768)', value: 2 },
           { name: 'Landscape (768x512)', value: 3 },
           { name: 'Big Square (1024x1024)', value: 4 },
+          { name: 'Big Portrait (1024x1536)', value: 5 },
+          { name: 'Big Landscape (1536x1024)', value: 6 },
         ],
       },
       true
@@ -603,6 +605,10 @@ export default class Txt2Img extends Tab {
       this.aspectRatioSelector.currentValue = 3;
     } else if (width === 1024 && height === 1024) {
       this.aspectRatioSelector.currentValue = 4;
+    } else if (width === 1024 && height === 1536) {
+      this.aspectRatioSelector.currentValue = 5;
+    } else if (width === 1536 && height === 1024) {
+      this.aspectRatioSelector.currentValue = 6;
     } else {
       this.aspectRatioSelector.currentValue = 0;
     }
@@ -624,6 +630,14 @@ export default class Txt2Img extends Tab {
         break;
       case 4:
         this.widthInput.valueAsNumber = 1024;
+        this.heightInput.valueAsNumber = 1024;
+        break;
+      case 5:
+        this.widthInput.valueAsNumber = 1024;
+        this.heightInput.valueAsNumber = 1536;
+        break;
+      case 6:
+        this.widthInput.valueAsNumber = 1536;
         this.heightInput.valueAsNumber = 1024;
         break;
     }

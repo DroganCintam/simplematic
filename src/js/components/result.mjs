@@ -800,19 +800,23 @@ export default class ResultDialog extends Tab {
   }
 
   setImageAspectRatio() {
-    if (this.imageInfo.info.width > this.imageInfo.info.height) {
-      this.image.classList.remove('square');
-      this.image.classList.remove('portrait');
-      this.image.classList.add('landscape');
-    } else if (this.imageInfo.info.height > this.imageInfo.info.width) {
-      this.image.classList.remove('landscape');
-      this.image.classList.remove('square');
-      this.image.classList.add('portrait');
-    } else {
-      this.image.classList.remove('landscape');
-      this.image.classList.remove('portrait');
-      this.image.classList.add('square');
-    }
+    setTimeout(() => {
+      const width = this.image.naturalWidth;
+      const height = this.image.naturalHeight;
+      if (width > height) {
+        this.image.classList.remove('square');
+        this.image.classList.remove('portrait');
+        this.image.classList.add('landscape');
+      } else if (height > width) {
+        this.image.classList.remove('landscape');
+        this.image.classList.remove('square');
+        this.image.classList.add('portrait');
+      } else {
+        this.image.classList.remove('landscape');
+        this.image.classList.remove('portrait');
+        this.image.classList.add('square');
+      }
+    }, 1);
   }
 
   toggleInputImage(isShowing) {

@@ -1,4 +1,4 @@
-const defaultBackgoundImage = '/img/bg.png';
+const defaultBackgoundImage = '/img/bg.webp';
 const dimmingLinear = 'linear-gradient(to bottom, #00000070, #00000070)';
 
 const KEY_USING_CUSTOM = 'usingCustomBackground';

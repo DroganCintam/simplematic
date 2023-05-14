@@ -196,27 +196,19 @@ export default class Api {
     const url = this.baseUrl + 'sdapi/v1/txt2img';
     const headers = this.prepareHeaders(false);
     try {
-      const result = await fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers,
-        body: JSON.stringify(parameters),
-      });
-      console.log(await result.text());
-
-      // const json = await (
-      //   await fetch(url, {
-      //     method: 'POST',
-      //     mode: 'cors',
-      //     headers,
-      //     body: JSON.stringify(parameters),
-      //   })
-      // ).json();
-      // if (Array.isArray(json.images) && json.images.length > 0) {
-      //   return json;
-      // } else {
-      //   throw json;
-      // }
+      const json = await (
+        await fetch(url, {
+          method: 'POST',
+          mode: 'cors',
+          headers,
+          body: JSON.stringify(parameters),
+        })
+      ).json();
+      if (Array.isArray(json.images) && json.images.length > 0) {
+        return json;
+      } else {
+        throw json;
+      }
     } catch (err) {
       console.error(err);
     }

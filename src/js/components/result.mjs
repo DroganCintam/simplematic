@@ -176,24 +176,10 @@ const css = /*css*/ `
 
 #result-tab .image {
   width: 100%;
+  height: auto;
   border: 1px solid hsla(0, 0%, 100%, 0.5);
   border-radius: 0.5rem;
   position: relative;
-}
-
-#result-tab .image.square {
-  max-width: 512px;
-  max-height: 512px;
-}
-
-#result-tab .image.portrait {
-  max-width: 512px;
-  max-height: 768px;
-}
-
-#result-tab .image.landscape {
-  max-width: 768px;
-  max-height: 512px;
 }
 
 #result-tab .input-image-wrapper {
@@ -600,6 +586,13 @@ export default class ResultDialog extends Tab {
     this.addTagButton.addEventListener('click', () => {
       this.addTag();
     });
+
+    this.image.addEventListener('load', () => {
+      const width = this.image.naturalWidth;
+      const height = this.image.naturalHeight;
+      this.width.value = width;
+      this.height.value = height;
+    });
   }
 
   /**
@@ -626,8 +619,6 @@ export default class ResultDialog extends Tab {
       friendlyModelNames[this.imageInfo.info.modelHash] ?? this.imageInfo.info.modelName;
     this.modelHash.value = this.imageInfo.info.modelHash;
     this.parameters.value = infoText;
-
-    this.setImageAspectRatio();
 
     this.title = 'RESULT';
     this.fromGallery = false;
@@ -681,8 +672,6 @@ export default class ResultDialog extends Tab {
       friendlyModelNames[this.imageInfo.info.modelHash] ?? this.imageInfo.info.modelName;
     this.modelHash.value = this.imageInfo.info.modelHash;
     this.parameters.value = infoText;
-
-    this.setImageAspectRatio();
 
     this.title = 'IMPORTED RESULT';
     this.fromGallery = false;
@@ -744,8 +733,6 @@ export default class ResultDialog extends Tab {
     this.modelHash.value = this.imageInfo.info.modelHash;
     this.parameters.value = extractPngText(row.data.substring('data:image/png;base64,'.length));
 
-    this.setImageAspectRatio();
-
     this.title = 'SAVED IMAGE';
     this.fromGallery = true;
 
@@ -797,26 +784,6 @@ export default class ResultDialog extends Tab {
     autoResize(this.prompt);
     autoResize(this.negativePrompt);
     autoResize(this.parameters);
-  }
-
-  setImageAspectRatio() {
-    setTimeout(() => {
-      const width = this.image.naturalWidth;
-      const height = this.image.naturalHeight;
-      if (width > height) {
-        this.image.classList.remove('square');
-        this.image.classList.remove('portrait');
-        this.image.classList.add('landscape');
-      } else if (height > width) {
-        this.image.classList.remove('landscape');
-        this.image.classList.remove('square');
-        this.image.classList.add('portrait');
-      } else {
-        this.image.classList.remove('landscape');
-        this.image.classList.remove('portrait');
-        this.image.classList.add('square');
-      }
-    }, 1);
   }
 
   toggleInputImage(isShowing) {

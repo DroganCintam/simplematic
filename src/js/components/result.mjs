@@ -442,11 +442,12 @@ export default class ResultDialog extends Tab {
   /** @type {ImageInfo} */
   imageInfo;
 
+  fromGeneration = false;
   fromGallery = false;
 
-  /** @type {(info: ImageInfo, progress: Progress) => void} */
+  /** @type {(info: ImageInfo, progress: Progress, fromSameWork: boolean) => void} */
   onRerun;
-  /** @type {(info: ImageInfo) => void} */
+  /** @type {(info: ImageInfo, fromSameWork: boolean) => void} */
   onRemix;
   /** @type {(info: ImageInfo) => void} */
   onUpscale;
@@ -494,12 +495,12 @@ export default class ResultDialog extends Tab {
 
     this.remixButton = this.root.querySelector('.btn-remix');
     this.remixButton.addEventListener('click', () => {
-      this.onRemix(this.imageInfo);
+      this.onRemix(this.imageInfo, this.fromGeneration);
     });
 
     this.rerunButton = this.root.querySelector('.btn-rerun');
     this.rerunButton.addEventListener('click', () => {
-      this.onRerun(this.imageInfo, this.rerunProgress);
+      this.onRerun(this.imageInfo, this.rerunProgress, this.fromGeneration);
     });
     this.rerunProgress = new Progress(this.rerunButton.querySelector('p'), true);
 
@@ -649,6 +650,8 @@ export default class ResultDialog extends Tab {
     this.imageInfo.scriptName = scriptName;
     this.imageInfo.scriptArgs = scriptArgs;
     this.updateScript();
+
+    this.fromGeneration = true;
   }
 
   /**
@@ -697,6 +700,8 @@ export default class ResultDialog extends Tab {
     this.toggleInputImage(false);
 
     this.updateScript();
+
+    this.fromGeneration = false;
   }
 
   /**
@@ -778,6 +783,8 @@ export default class ResultDialog extends Tab {
     this.imageInfo.scriptName = row.scriptName;
     this.imageInfo.scriptArgs = row.scriptArgs;
     this.updateScript();
+
+    this.fromGeneration = false;
   }
 
   resizePromptBoxes() {

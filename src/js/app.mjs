@@ -195,9 +195,13 @@ class App {
       this.switchTab(this.aboutTab);
     };
 
-    this.resultTab.onRerun = (imageInfo, progress) => {
+    this.resultTab.onRerun = (imageInfo, progress, fromSameWork) => {
       const action = () => {
-        this.txt2imgTab.retrieveInfo(imageInfo, false);
+        if (fromSameWork) {
+          this.txt2imgTab.seed.valueAsNumber = -1;
+        } else {
+          this.txt2imgTab.retrieveInfo(imageInfo, false);
+        }
         this.generate(progress);
       };
       if (
@@ -209,9 +213,13 @@ class App {
       }
     };
 
-    this.resultTab.onRemix = (imageInfo) => {
+    this.resultTab.onRemix = (imageInfo, fromSameWork) => {
       const action = () => {
-        this.txt2imgTab.retrieveInfo(imageInfo, true);
+        if (fromSameWork) {
+          this.txt2imgTab.seed.valueAsNumber = imageInfo.info.seed;
+        } else {
+          this.txt2imgTab.retrieveInfo(imageInfo, true);
+        }
         this.switchTab(this.txt2imgTab);
       };
       if (

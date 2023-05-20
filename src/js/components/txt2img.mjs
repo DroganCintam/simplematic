@@ -1048,6 +1048,14 @@ export default class Txt2Img extends Tab {
     this.denoisingStrength.disabled = isLoading;
     this.resizeModeSelector.disabled = isLoading;
     this.img2imgInputImage.disabled = isLoading;
+    this.inpaintCheckbox.disabled = isLoading;
+    this.inpaintBrushSize.disabled = isLoading;
+    this.inpaintCanvasUndoButton.disabled = isLoading;
+    this.inpaintMaskBlur.disabled = isLoading;
+    this.inpaintMaskInvertSelector.disabled = isLoading;
+    this.inpaintFillSelector.disabled = isLoading;
+    this.inpaintFullResSelector.disabled = isLoading;
+    this.inpaintFullResPadding.disabled = isLoading;
     this.scriptName.disabled = isLoading;
     this.scriptArgs.disabled = isLoading;
   }

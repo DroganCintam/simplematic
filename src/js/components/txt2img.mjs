@@ -321,6 +321,8 @@ export default class Txt2Img extends Tab {
   /** @type {HTMLInputElement} */
   scriptArgs;
 
+  isLoading = false;
+
   /** @type {()=>void} */
   onSubmit;
 
@@ -830,6 +832,8 @@ export default class Txt2Img extends Tab {
     let brushSize = 1;
 
     const onBegin = () => {
+      if (this.isLoading) return;
+
       isPainting = true;
       brushSize = this.inpaintBrushSize.valueAsNumber;
       states.push(this.inpaintCanvas.toDataURL());
@@ -1058,5 +1062,7 @@ export default class Txt2Img extends Tab {
     this.inpaintFullResPadding.disabled = isLoading;
     this.scriptName.disabled = isLoading;
     this.scriptArgs.disabled = isLoading;
+
+    this.isLoading = isLoading;
   }
 }

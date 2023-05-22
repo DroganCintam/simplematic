@@ -85,16 +85,8 @@ const html = /*html*/ `
         <button type="button" class="inpaint-options icon-button btn-inpaint-canvas-undo" title="Undo">
           <img src="/img/rotate-left-solid.svg"/>
         </button>
-        <label class="w100p inpaint-options">Mask blur:</label>
-        <input type="number" class="inpaint-options txt-inpaint-mask-blur" min="0" max="64" step="4" value="4" onchange="validateInputRange(this)">
         <label class="w100p inpaint-options">Mask mode:</label>
         <span class="sel-inpaint-mask-invert"></span>
-        <label class="w100p inpaint-options">Mask content:</label>
-        <span class="sel-inpaint-fill"></span>
-        <label class="w100p inpaint-options">Inpaint area:</label>
-        <span class="sel-inpaint-full-res"></span>
-        <label class="w100p inpaint-options">Only masked padding:</label>
-        <input type="number" class="inpaint-options txt-inpaint-full-res-padding" min="0" max="256" step="4" value="32" onchange="validateInputRange(this)">
       </div>
     </div>
     <div class="advanced-box script" style="display: none">
@@ -294,16 +286,8 @@ export default class Txt2Img extends Tab {
   img2imgInputImage;
   /** @type {Checkbox} */
   inpaintCheckbox;
-  /** @type {HTMLInputElement} */
-  inpaintMaskBlur;
   /** @type {ValueSelector} */
   inpaintMaskInvertSelector;
-  /** @type {ValueSelector} */
-  inpaintFillSelector;
-  /** @type {ValueSelector} */
-  inpaintFullResSelector;
-  /** @type {HTMLInputElement} */
-  inpaintFullResPadding;
 
   /** @type {HTMLCanvasElement} */
   inpaintCanvas;
@@ -549,7 +533,6 @@ export default class Txt2Img extends Tab {
     this.inpaintCanvasUndoButton = this.img2img.querySelector('.btn-inpaint-canvas-undo');
     this.inpaintCanvasUndoButton.parentElement.removeChild(this.inpaintCanvasUndoButton);
     this.img2imgInputImage.root.appendChild(this.inpaintCanvasUndoButton);
-    this.inpaintMaskBlur = this.img2img.querySelector('.txt-inpaint-mask-blur');
     this.inpaintMaskInvertSelector = new ValueSelector(
       this.img2img.querySelector('.sel-inpaint-mask-invert'),
       {
@@ -568,39 +551,6 @@ export default class Txt2Img extends Tab {
       },
       true
     );
-    this.inpaintFillSelector = new ValueSelector(
-      this.img2img.querySelector('.sel-inpaint-fill'),
-      {
-        assignedId: 'sel-inpaint-fill',
-        hasCustom: false,
-        isInteger: true,
-        defaultValue: 1,
-        values: [
-          { name: 'Fill', value: 0 },
-          { name: 'Original', value: 1 },
-          { name: 'Latent noise', value: 2 },
-          { name: 'Latent nothing', value: 3 },
-        ],
-        extraClasses: ['inpaint-options'],
-      },
-      true
-    );
-    this.inpaintFullResSelector = new ValueSelector(
-      this.img2img.querySelector('.sel-inpaint-full-res'),
-      {
-        assignedId: 'sel-inpaint-full-res',
-        hasCustom: false,
-        isInteger: true,
-        defaultValue: 0,
-        values: [
-          { name: 'Whole picture', value: 0 },
-          { name: 'Only masked', value: 1 },
-        ],
-        extraClasses: ['inpaint-options'],
-      },
-      true
-    );
-    this.inpaintFullResPadding = this.img2img.querySelector('.txt-inpaint-full-res-padding');
     this.inpaintCanvas = Component.fromHTML(/*html*/ `
       <canvas class="inpaint-options inpaint-canvas"/>
     `);
@@ -984,11 +934,11 @@ export default class Txt2Img extends Tab {
       }
       if (this.inpaintCheckbox.checked) {
         parameters.mask = this.getInpaintMask();
-        parameters.mask_blur = this.inpaintMaskBlur.valueAsNumber;
+        parameters.mask_blur = 4;
         parameters.inpainting_mask_invert = this.inpaintMaskInvertSelector.currentValue;
-        parameters.inpainting_fill = this.inpaintFillSelector.currentValue;
-        parameters.inpaint_full_res = this.inpaintFullResSelector.currentValue == 0;
-        parameters.inpaint_full_res_padding = this.inpaintFullResPadding.valueAsNumber;
+        parameters.inpainting_fill = 1;
+        parameters.inpaint_full_res = true;
+        parameters.inpaint_full_res_padding = 32;
       }
       Api.instance
         .img2img(parameters)
@@ -1055,11 +1005,7 @@ export default class Txt2Img extends Tab {
     this.inpaintCheckbox.disabled = isLoading;
     this.inpaintBrushSize.disabled = isLoading;
     this.inpaintCanvasUndoButton.disabled = isLoading;
-    this.inpaintMaskBlur.disabled = isLoading;
     this.inpaintMaskInvertSelector.disabled = isLoading;
-    this.inpaintFillSelector.disabled = isLoading;
-    this.inpaintFullResSelector.disabled = isLoading;
-    this.inpaintFullResPadding.disabled = isLoading;
     this.scriptName.disabled = isLoading;
     this.scriptArgs.disabled = isLoading;
 

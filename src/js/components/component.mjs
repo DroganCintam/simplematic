@@ -32,6 +32,15 @@ export default class Component {
   }
 
   /**
+   * @param {HTMLElement} el
+   * @param {HTMLElement} newParent
+   */
+  static changeParent(el, newParent) {
+    el.parentElement.removeChild(el);
+    newParent.appendChild(el);
+  }
+
+  /**
    * @param {any} type
    * @param {EventListenerOrEventListenerObject} listener
    */

@@ -531,8 +531,8 @@ export default class Txt2Img extends Tab {
     );
     this.inpaintBrushSize = this.img2img.querySelector('.range-inpaint-brush-size');
     this.inpaintCanvasUndoButton = this.img2img.querySelector('.btn-inpaint-canvas-undo');
-    this.inpaintCanvasUndoButton.parentElement.removeChild(this.inpaintCanvasUndoButton);
-    this.img2imgInputImage.root.appendChild(this.inpaintCanvasUndoButton);
+    Component.changeParent(this.inpaintCanvasUndoButton, this.img2imgInputImage.root);
+
     this.inpaintMaskInvertSelector = new ValueSelector(
       this.img2img.querySelector('.sel-inpaint-mask-invert'),
       {
@@ -551,6 +551,7 @@ export default class Txt2Img extends Tab {
       },
       true
     );
+
     this.inpaintCanvas = Component.fromHTML(/*html*/ `
       <canvas class="inpaint-options inpaint-canvas"/>
     `);

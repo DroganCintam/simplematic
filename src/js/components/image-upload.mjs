@@ -71,6 +71,7 @@ export default class ImageUpload extends Component {
 
   _disabled = false;
   _lockedClickToChange = false;
+  _hasImage = false;
 
   get disabled() {
     return this._disabled;
@@ -103,7 +104,7 @@ export default class ImageUpload extends Component {
     super(parent, html, css, replacing);
 
     if (options.extraClasses) {
-      this.root.classList.add(options.extraClasses);
+      this.root.classList.add(...options.extraClasses);
     }
     this.fileInput = this.root.querySelector('input');
     this.image = this.root.querySelector('img');
@@ -114,6 +115,7 @@ export default class ImageUpload extends Component {
       const file = this.fileInput.files[0];
       const reader = new FileReader();
       reader.addEventListener('load', () => {
+        this._hasImage = true;
         this.imageData = reader.result;
       });
       reader.readAsDataURL(file);
@@ -125,12 +127,13 @@ export default class ImageUpload extends Component {
     });
 
     this.clearButton.addEventListener('click', () => {
+      this._hasImage = false;
       this.imageData = '';
     });
   }
 
   get hasImage() {
-    return this.image.src != '';
+    return this._hasImage;
   }
 
   get imageData() {
@@ -143,11 +146,13 @@ export default class ImageUpload extends Component {
       this.image.style.display = '';
       this.fileInput.style.display = 'none';
       this.clearButton.style.display = '';
+      this._hasImage = true;
     } else {
       this.image.style.display = 'none';
       this.fileInput.style.display = '';
       this.clearButton.style.display = 'none';
       this.fileInput.value = null;
+      this._hasImage = false;
     }
     this.dispatchEvent(new Event('imageData'));
   }

@@ -223,7 +223,7 @@ export default class ValueSelector extends Component {
     }
 
     if (options.extraClasses) {
-      this.root.classList.add(options.extraClasses);
+      this.root.classList.add(...options.extraClasses);
     }
   }
 

@@ -8,6 +8,7 @@ import Checkbox from './checkbox.mjs';
 import ImageUpload from './image-upload.mjs';
 import ConfirmDialog from './confirm-dialog.mjs';
 import Component from './component.mjs';
+import InpaintBox from './inpaint-box.mjs';
 
 const defaultParameters = {
   sampler: 'DPM++ 2M Karras v2',
@@ -80,13 +81,6 @@ const html = /*html*/ `
         <span class="sel-resize-mode"></span>
         <label class="heading">Input image:</label>
         <div class="img2img-input-image"></div>
-        <span class="chk-inpaint"></span>
-        <input type="range" class="inpaint-options range-inpaint-brush-size" min="1" max="32" step="1">
-        <button type="button" class="inpaint-options icon-button btn-inpaint-canvas-undo" title="Undo">
-          <img src="/img/rotate-left-solid.svg"/>
-        </button>
-        <label class="w100p inpaint-options">Mask mode:</label>
-        <span class="sel-inpaint-mask-invert"></span>
       </div>
     </div>
     <div class="advanced-box script" style="display: none">
@@ -222,7 +216,6 @@ const css = /*css*/ `
   position: absolute;
   left: 0;
   top: 0;
-  pointer-events: none;
 }
 
 #txt2img-tab .img2img .btn-inpaint-canvas-undo {
@@ -284,19 +277,14 @@ export default class Txt2Img extends Tab {
   resizeModeSelector;
   /** @type {ImageUpload} */
   img2imgInputImage;
-  /** @type {Checkbox} */
-  inpaintCheckbox;
-  /** @type {ValueSelector} */
-  inpaintMaskInvertSelector;
 
   /** @type {HTMLCanvasElement} */
   inpaintCanvas;
-  /** @type {HTMLInputElement} */
-  inpaintBrushSize;
-  /** @type {HTMLButtonElement} */
-  inpaintCanvasUndoButton;
+  /** @type {InpaintBox} */
+  inpaintBox;
 
   inpaintCanvasStates = [];
+  inpaintCanvasStateIndex = -1;
 
   /** @type {HTMLElement} */
   scriptOptions;
@@ -521,49 +509,21 @@ export default class Txt2Img extends Tab {
       true
     );
     this.img2imgInputImage.lockedClickToChange = true;
-    this.inpaintCheckbox = new Checkbox(
-      this.img2img.querySelector('.chk-inpaint'),
-      {
-        assignedId: 'chk-inpaint',
-        label: 'Inpaint',
-      },
-      true
-    );
-    this.inpaintBrushSize = this.img2img.querySelector('.range-inpaint-brush-size');
-    this.inpaintCanvasUndoButton = this.img2img.querySelector('.btn-inpaint-canvas-undo');
-    Component.changeParent(this.inpaintCanvasUndoButton, this.img2imgInputImage.root);
-
-    this.inpaintMaskInvertSelector = new ValueSelector(
-      this.img2img.querySelector('.sel-inpaint-mask-invert'),
-      {
-        assignedId: 'sel-inpaint-mask-invert',
-        hasCustom: false,
-        isInteger: true,
-        defaultValue: 1,
-        values: [
-          // The following values are swapped
-          // so that the app won't have to
-          // invert the mask image.
-          { name: 'Inpaint masked', value: 1 },
-          { name: 'Inpaint not masked', value: 0 },
-        ],
-        extraClasses: ['inpaint-options'],
-      },
-      true
-    );
 
     this.inpaintCanvas = Component.fromHTML(/*html*/ `
       <canvas class="inpaint-options inpaint-canvas"/>
     `);
     this.img2imgInputImage.root.appendChild(this.inpaintCanvas);
 
-    this.inpaintCheckbox.onChange = (chk) => {
-      this.toggleInpaint();
+    this.inpaintBox = new InpaintBox(this.img2imgInputImage.root);
+    this.inpaintBox.onInpaintingChanged = (inpainting) => {
+      this.inpaintCanvas.style.display = inpainting ? '' : 'none';
     };
+
     this.img2imgInputImage.addEventListener('imageData', () => {
       if (this.img2imgInputImage.hasImage) {
-        this.inpaintCanvas.style.pointerEvents = 'unset';
-        this.inpaintCanvasUndoButton.style.visibility = 'visible';
+        this.inpaintBox.show();
+        this.inpaintCanvas.style.display = this.inpaintBox.isInpainting ? '' : 'none';
         setTimeout(() => {
           const width = this.img2imgInputImage.image.width;
           const height = this.img2imgInputImage.image.height;
@@ -572,8 +532,8 @@ export default class Txt2Img extends Tab {
           this.clearInpaintCanvas();
         }, 1);
       } else {
-        this.inpaintCanvas.style.pointerEvents = 'none';
-        this.inpaintCanvasUndoButton.style.visibility = 'hidden';
+        this.inpaintBox.hide();
+        this.inpaintCanvas.style.display = 'none';
         this.clearInpaintCanvas();
       }
     });
@@ -606,7 +566,8 @@ export default class Txt2Img extends Tab {
     this.updateAspectRatioFromDimensions();
 
     this.initInpaintCanvas();
-    this.toggleInpaint();
+    this.inpaintCanvas.style.display = 'none';
+    this.inpaintBox.hide();
   }
 
   retrieveInfo(/** @type {ImageInfo} */ imageInfo, /** @type {Boolean} */ alsoSeed) {
@@ -642,10 +603,13 @@ export default class Txt2Img extends Tab {
       this.img2imgCheckbox.checked = true;
       this.denoisingStrength.valueAsNumber = imageInfo.info.denoisingStrength;
       this.resizeModeSelector.currentValue = imageInfo.inputResizeMode;
+      this.inpaintCanvas.style.display = this.inpaintBox.isInpainting ? '' : 'none';
       this.img2imgInputImage.imageData = imageInfo.inputImage;
+      this.inpaintBox.show();
       this.toggleImg2Img();
     } else {
       this.img2imgCheckbox.checked = false;
+      this.inpaintCanvas.style.display = 'none';
       this.toggleImg2Img();
     }
 
@@ -663,7 +627,9 @@ export default class Txt2Img extends Tab {
 
   retrieveImg2Img(imageData) {
     this.img2imgCheckbox.checked = true;
+    this.inpaintCanvas.style.display = this.inpaintBox.isInpainting ? '' : 'none';
     this.img2imgInputImage.imageData = imageData;
+    this.inpaintBox.show();
     this.toggleImg2Img();
   }
 
@@ -692,16 +658,6 @@ export default class Txt2Img extends Tab {
     if (this.img2imgCheckbox.checked) {
       this.hiresCheckbox.checked = false;
       this.hiresOptions.style.display = 'none';
-    }
-  }
-
-  toggleInpaint() {
-    if (this.inpaintCheckbox.checked) {
-      this.img2img.querySelectorAll('.inpaint-options').forEach((el) => (el.style.display = ''));
-    } else {
-      this.img2img
-        .querySelectorAll('.inpaint-options')
-        .forEach((el) => (el.style.display = 'none'));
     }
   }
 
@@ -783,14 +739,19 @@ export default class Txt2Img extends Tab {
     let brushSize = 1;
 
     const onBegin = () => {
-      if (this.isLoading) return;
-
       isPainting = true;
-      brushSize = this.inpaintBrushSize.valueAsNumber;
-      states.push(this.inpaintCanvas.toDataURL());
+      brushSize = this.inpaintBox.brushSizeValue;
     };
     const onEnd = () => {
-      isPainting = false;
+      if (isPainting) {
+        isPainting = false;
+
+        if (this.inpaintCanvasStateIndex < states.length - 1) {
+          states.splice(this.inpaintCanvasStateIndex + 1);
+        }
+        states.push(this.inpaintCanvas.toDataURL());
+        ++this.inpaintCanvasStateIndex;
+      }
     };
     const onMove = (offsetX, offsetY) => {
       if (isPainting) {
@@ -804,6 +765,9 @@ export default class Txt2Img extends Tab {
     };
 
     this.inpaintCanvas.addEventListener('mousedown', (e) => {
+      if (this.isLoading) return;
+      if (!this.inpaintBox.isInpainting || !this.inpaintBox.isUsingBrush) return;
+
       if (e.button == 0) {
         e.preventDefault();
         onBegin();
@@ -817,6 +781,9 @@ export default class Txt2Img extends Tab {
 
     let rect;
     this.inpaintCanvas.addEventListener('touchstart', (e) => {
+      if (this.isLoading) return;
+      if (!this.inpaintBox.isInpainting || !this.inpaintBox.isUsingBrush) return;
+
       e.preventDefault();
       rect = this.inpaintCanvas.getBoundingClientRect();
       onBegin();
@@ -832,10 +799,10 @@ export default class Txt2Img extends Tab {
       }
     });
 
-    this.inpaintCanvasUndoButton.addEventListener('click', () => {
-      if (states.length > 0) {
+    this.inpaintBox.onRedo = () => {
+      if (this.inpaintCanvasStateIndex < states.length - 1) {
         const undoImage = new Image();
-        undoImage.src = states[states.length - 1];
+        undoImage.src = states[++this.inpaintCanvasStateIndex];
         undoImage.onload = () => {
           ctx.clearRect(0, 0, this.inpaintCanvas.width, this.inpaintCanvas.height);
           ctx.save();
@@ -843,9 +810,25 @@ export default class Txt2Img extends Tab {
           ctx.restore();
           undoImage.remove();
         };
-        states.pop();
       }
-    });
+    };
+
+    this.inpaintBox.onUndo = () => {
+      if (this.inpaintCanvasStateIndex > 0) {
+        const undoImage = new Image();
+        undoImage.src = states[--this.inpaintCanvasStateIndex];
+        undoImage.onload = () => {
+          ctx.clearRect(0, 0, this.inpaintCanvas.width, this.inpaintCanvas.height);
+          ctx.save();
+          ctx.drawImage(undoImage, 0, 0);
+          ctx.restore();
+          undoImage.remove();
+        };
+      } else {
+        this.inpaintCanvasStateIndex = -1;
+        ctx.clearRect(0, 0, this.inpaintCanvas.width, this.inpaintCanvas.height);
+      }
+    };
   }
 
   getInpaintMask() {
@@ -864,6 +847,7 @@ export default class Txt2Img extends Tab {
 
   clearInpaintCanvas() {
     this.inpaintCanvasStates.splice(0);
+    this.inpaintCanvasStateIndex = -1;
     const ctx = this.inpaintCanvas.getContext('2d');
     ctx.save();
     ctx.clearRect(0, 0, this.inpaintCanvas.width, this.inpaintCanvas.height);
@@ -933,10 +917,10 @@ export default class Txt2Img extends Tab {
         parameters.script_name = scriptName;
         parameters.script_args = scriptArgs;
       }
-      if (this.inpaintCheckbox.checked) {
+      if (this.inpaintBox.isInpainting) {
         parameters.mask = this.getInpaintMask();
         parameters.mask_blur = 4;
-        parameters.inpainting_mask_invert = this.inpaintMaskInvertSelector.currentValue;
+        parameters.inpainting_mask_invert = !this.inpaintBox.isInpaintingInvert;
         parameters.inpainting_fill = 1;
         parameters.inpaint_full_res = true;
         parameters.inpaint_full_res_padding = 32;
@@ -1003,10 +987,7 @@ export default class Txt2Img extends Tab {
     this.denoisingStrength.disabled = isLoading;
     this.resizeModeSelector.disabled = isLoading;
     this.img2imgInputImage.disabled = isLoading;
-    this.inpaintCheckbox.disabled = isLoading;
-    this.inpaintBrushSize.disabled = isLoading;
-    this.inpaintCanvasUndoButton.disabled = isLoading;
-    this.inpaintMaskInvertSelector.disabled = isLoading;
+    this.inpaintBox.disabled = isLoading;
     this.scriptName.disabled = isLoading;
     this.scriptArgs.disabled = isLoading;
 

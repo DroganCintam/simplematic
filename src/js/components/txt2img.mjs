@@ -517,13 +517,12 @@ export default class Txt2Img extends Tab {
 
     this.inpaintBox = new InpaintBox(this.img2imgInputImage.root);
     this.inpaintBox.onInpaintingChanged = (inpainting) => {
-      this.inpaintCanvas.style.display = inpainting ? '' : 'none';
+      this.showOrHideInpaintCanvas();
     };
 
     this.img2imgInputImage.addEventListener('imageData', () => {
       if (this.img2imgInputImage.hasImage) {
         this.inpaintBox.show();
-        this.inpaintCanvas.style.display = this.inpaintBox.isInpainting ? '' : 'none';
         setTimeout(() => {
           const width = this.img2imgInputImage.image.width;
           const height = this.img2imgInputImage.image.height;
@@ -533,9 +532,9 @@ export default class Txt2Img extends Tab {
         }, 1);
       } else {
         this.inpaintBox.hide();
-        this.inpaintCanvas.style.display = 'none';
         this.clearInpaintCanvas();
       }
+      this.showOrHideInpaintCanvas();
     });
 
     this.scriptOptions = this.root.querySelector('.script');
@@ -566,8 +565,8 @@ export default class Txt2Img extends Tab {
     this.updateAspectRatioFromDimensions();
 
     this.initInpaintCanvas();
-    this.inpaintCanvas.style.display = 'none';
     this.inpaintBox.hide();
+    this.showOrHideInpaintCanvas();
   }
 
   retrieveInfo(/** @type {ImageInfo} */ imageInfo, /** @type {Boolean} */ alsoSeed) {
@@ -603,15 +602,14 @@ export default class Txt2Img extends Tab {
       this.img2imgCheckbox.checked = true;
       this.denoisingStrength.valueAsNumber = imageInfo.info.denoisingStrength;
       this.resizeModeSelector.currentValue = imageInfo.inputResizeMode;
-      this.inpaintCanvas.style.display = this.inpaintBox.isInpainting ? '' : 'none';
       this.img2imgInputImage.imageData = imageInfo.inputImage;
       this.inpaintBox.show();
       this.toggleImg2Img();
     } else {
       this.img2imgCheckbox.checked = false;
-      this.inpaintCanvas.style.display = 'none';
       this.toggleImg2Img();
     }
+    this.showOrHideInpaintCanvas();
 
     if (imageInfo.scriptName && imageInfo.scriptArgs) {
       this.scriptCheckbox.checked = true;
@@ -627,10 +625,10 @@ export default class Txt2Img extends Tab {
 
   retrieveImg2Img(imageData) {
     this.img2imgCheckbox.checked = true;
-    this.inpaintCanvas.style.display = this.inpaintBox.isInpainting ? '' : 'none';
     this.img2imgInputImage.imageData = imageData;
     this.inpaintBox.show();
     this.toggleImg2Img();
+    this.showOrHideInpaintCanvas();
   }
 
   /**
@@ -852,6 +850,18 @@ export default class Txt2Img extends Tab {
     ctx.save();
     ctx.clearRect(0, 0, this.inpaintCanvas.width, this.inpaintCanvas.height);
     ctx.restore();
+  }
+
+  showOrHideInpaintCanvas() {
+    if (
+      this.inpaintBox.isInpainting &&
+      this.inpaintBox.isUsingBrush &&
+      this.img2imgInputImage.hasImage
+    ) {
+      this.inpaintCanvas.style.display = '';
+    } else {
+      this.inpaintCanvas.style.display = 'none';
+    }
   }
 
   /**

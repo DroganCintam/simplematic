@@ -179,16 +179,11 @@ export default class InpaintBox extends Component {
     return this.brushToolRadio.checked;
   }
 
-  _disabled = false;
   set disabled(value) {
     this.checkbox.disabled = value;
-    this.handToolRadio.disabled = value;
-    this.brushToolRadio.disabled = value;
     this.redoButton.disabled = value;
     this.undoButton.disabled = value;
-    this.brushSize.disabled = value;
     this.invertCheckbox.disabled = value;
-    this._disabled = value;
   }
 
   /**
@@ -229,6 +224,13 @@ export default class InpaintBox extends Component {
       this.onInpaintingChanged(chk.checked);
     };
 
+    this.handToolRadio.addEventListener('change', () => {
+      this.onInpaintingChanged(this.checkbox.checked);
+    });
+    this.brushToolRadio.addEventListener('change', () => {
+      this.onInpaintingChanged(this.checkbox.checked);
+    });
+
     this.redoButton.addEventListener('click', () => {
       this.onRedo();
     });
@@ -268,8 +270,6 @@ export default class InpaintBox extends Component {
     let parentRect;
 
     const onBegin = (x, y) => {
-      if (this._disabled) return;
-
       isMoving = true;
       lastX = x;
       lastY = y;

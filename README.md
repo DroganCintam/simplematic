@@ -101,4 +101,7 @@ that are useful and don't make too many changes.
 My name's Cintam. I code to make a living and do arts to have a life.
 I made this app to learn AI and other coding stuffs.
 
-If you enjoy my work and would like to support me, [buying me a coffee](https://ko-fi.com/cintam) would be greatly appreciated!
+If you enjoy my work and would like to support me, buying me a coffee
+would be greatly appreciated!
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M6LNVZU)

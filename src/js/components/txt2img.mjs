@@ -9,6 +9,7 @@ import ImageUpload from './image-upload.mjs';
 import ConfirmDialog from './confirm-dialog.mjs';
 import Component from './component.mjs';
 import InpaintBox from './inpaint-box.mjs';
+import ExtraNetworksDialog from './extra-networks-dialog.mjs';
 
 const defaultParameters = {
   sampler: 'DPM++ 2M Karras v2',
@@ -22,12 +23,18 @@ const html = /*html*/ `
 <div id="txt2img-tab" class="app-tab">
   <div class="parameter-pane">
     <label class="heading" for="">Prompt:<span class="options">
+      <button class="icon-button btn-prompt-extra" title="Extra networks">
+        <img src="/img/rectangle-list-solid.svg"/>
+      </button>
       <button class="icon-button btn-clear-prompt" title="Erase">
         <img src="/img/eraser-solid.svg"/>
       </button>
     </span></label>
     <textarea class="txt-prompt" autocapitalize="off"></textarea>
     <label class="heading" for="">Negative prompt:<span class="options">
+      <button class="icon-button btn-negative-prompt-extra" title="Extra networks">
+        <img src="/img/rectangle-list-solid.svg"/>
+      </button>
       <button class="icon-button btn-clear-negative-prompt" title="Erase">
         <img src="/img/eraser-solid.svg"/>
       </button>
@@ -232,10 +239,14 @@ export default class Txt2Img extends Tab {
   prompt;
   /** @type {HTMLButtonElement} */
   clearPromptButton;
+  /** @type {HTMLButtonElement} */
+  promptExtraButton;
   /** @type {HTMLTextAreaElement} */
   negativePrompt;
   /** @type {HTMLButtonElement} */
   clearNegativePromptButton;
+  /** @type {HTMLButtonElement} */
+  negativePromptExtraButton;
   /** @type {HTMLInputElement} */
   widthInput;
   /** @type {HTMLInputElement} */
@@ -332,8 +343,10 @@ export default class Txt2Img extends Tab {
     super(parent, html, css);
     this.prompt = this.root.querySelector('.txt-prompt');
     this.clearPromptButton = this.root.querySelector('.btn-clear-prompt');
+    this.promptExtraButton = this.root.querySelector('.btn-prompt-extra');
     this.negativePrompt = this.root.querySelector('.txt-negative-prompt');
     this.clearNegativePromptButton = this.root.querySelector('.btn-clear-negative-prompt');
+    this.negativePromptExtraButton = this.root.querySelector('.btn-negative-prompt-extra');
     this.seed = this.root.querySelector('.txt-seed');
     this.clearSeedButton = this.root.querySelector('.btn-clear-seed');
 
@@ -544,16 +557,63 @@ export default class Txt2Img extends Tab {
     this.scriptName.value = localStorage.getItem('script_name') ?? '';
     this.scriptArgs.value = localStorage.getItem('script_args') ?? '';
 
+    /**
+     * @param {HTMLInputElement} input
+     * @param {string|null} lora
+     * @param {string|null} ti
+     */
+    const addExtraToPrompt = (input, lora, ti) => {
+      let value = input.value;
+      if (lora) {
+        if (value.length == 0) {
+          value = lora;
+        } else if (value.endsWith(' ')) {
+          value += `<lora:${lora}:1>`;
+        } else {
+          value += ` <lora:${lora}:1>`;
+        }
+      }
+      if (ti) {
+        if (value.length == 0) {
+          value = ti;
+        } else {
+          value += `, ${ti}`;
+        }
+      }
+      input.value = value;
+      this.resizePromptBoxes();
+    };
+
     this.clearPromptButton.addEventListener('click', () => {
       ConfirmDialog.instance.show('The whole prompt will be cleared.\nAre you sure?', () => {
         this.prompt.value = '';
       });
+    });
+    this.promptExtraButton.addEventListener('click', () => {
+      ExtraNetworksDialog.instance.show(
+        (lora) => {
+          addExtraToPrompt(this.prompt, lora, null);
+        },
+        (ti) => {
+          addExtraToPrompt(this.prompt, null, ti);
+        }
+      );
     });
 
     this.clearNegativePromptButton.addEventListener('click', () => {
       ConfirmDialog.instance.show('The whole prompt will be cleared.\nAre you sure?', () => {
         this.negativePrompt.value = '';
       });
+    });
+    this.negativePromptExtraButton.addEventListener('click', () => {
+      ExtraNetworksDialog.instance.show(
+        (lora) => {
+          addExtraToPrompt(this.negativePrompt, lora, null);
+        },
+        (ti) => {
+          addExtraToPrompt(this.negativePrompt, null, ti);
+        }
+      );
     });
 
     this.clearSeedButton.addEventListener('click', () => {

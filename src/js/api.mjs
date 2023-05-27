@@ -141,12 +141,60 @@ export default class Api {
         })
       ).json();
 
+      const loras = await (
+        await fetch(url + 'loras', {
+          method: 'GET',
+          headers,
+        })
+      ).json();
+
+      const tis = await (
+        await fetch(url + 'embeddings', {
+          method: 'GET',
+          headers,
+        })
+      ).json();
+
       AppConfig.instance.setApiUrl(apiUrl, username, password);
-      AppConfig.instance.readOptions(options, samplers, upscalers, models);
+      AppConfig.instance.readOptions(options, samplers, upscalers, models, loras, tis);
       this.baseUrl = apiUrl;
       return null;
     } catch (err) {
       return err;
+    }
+  }
+
+  async refreshLORAs() {
+    try {
+      const headers = this.prepareHeaders(true);
+      const loras = await (
+        await fetch(this.baseUrl + 'sdapi/v1/loras', {
+          method: 'GET',
+          headers,
+        })
+      ).json();
+      AppConfig.instance.refreshLORAs(loras);
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  }
+
+  async refreshTIs() {
+    try {
+      const headers = this.prepareHeaders(true);
+      const tis = await (
+        await fetch(this.baseUrl + 'sdapi/v1/embeddings', {
+          method: 'GET',
+          headers,
+        })
+      ).json();
+      AppConfig.instance.refreshTIs(tis);
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
     }
   }
 

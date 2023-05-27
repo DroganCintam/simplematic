@@ -267,13 +267,16 @@ class App {
 
     this.confirmDialog = new ConfirmDialog(this.root.querySelector('.confirm-dialog'));
     new ExtraNetworksDialog(this.root.querySelector('[data-extra-networks-dialog]'));
-    ExtraNetworksDialog.instance.show();
 
     if (this.settingsTab.url == '') {
       this.switchTab(this.settingsTab);
     }
 
     document.addEventListener('keydown', (event) => {
+      if (ConfirmDialog.instance.isShowing || ExtraNetworksDialog.instance.isShowing) {
+        return;
+      }
+
       if (this.currentTab === this.resultTab && !this.isLoading) {
         if (event.key === 'ArrowLeft' && this.resultTab.goPrev) {
           this.resultTab.goPrev();

@@ -26,6 +26,11 @@ export default class AppConfig {
   /** @type {Model[]} */
   modelList = [];
 
+  /** @type {string[]} */
+  loraList = [];
+  /** @type {string[]} */
+  tiList = [];
+
   selectedSampler = '';
   selectedModel = '';
 
@@ -41,6 +46,8 @@ export default class AppConfig {
     this.upscalerList = JSON.parse(localStorage.getItem('upscalers') ?? '[]');
     this.modelDict = JSON.parse(localStorage.getItem('modelDict') ?? '{}');
     this.modelList = JSON.parse(localStorage.getItem('modelList') ?? '[]');
+    this.loraList = JSON.parse(localStorage.getItem('loras') ?? '[]');
+    this.tiList = JSON.parse(localStorage.getItem('tis') ?? '[]');
     this.selectedSampler = localStorage.getItem('selectedSampler') ?? '';
   }
 
@@ -58,8 +65,10 @@ export default class AppConfig {
    * @param {Array<{ name: string }>} samplers
    * @param {Array<{ name: string }>} upscalers
    * @param {Array<{ title: string, model_name: string, hash: string }>} models
+   * @param {Array<{ name: string }>} loras
+   * @param {{ loaded: Object<string, any> }} tis
    */
-  readOptions(options, samplers, upscalers, models) {
+  readOptions(options, samplers, upscalers, models, loras, tis) {
     this.samplerList = samplers
       .map((s) => s.name)
       .filter((s) => options.hide_samplers.indexOf(s) < 0);
@@ -86,10 +95,18 @@ export default class AppConfig {
     const sdModelCheckpoint = options.sd_model_checkpoint;
     this.trySelectModel(sdModelCheckpoint);
 
+    this.loraList = loras.map((l) => l.name);
+    this.loraList.sort((a, b) => a.localeCompare(b));
+
+    this.tiList = Object.keys(tis.loaded);
+    this.tiList.sort((a, b) => a.localeCompare(b));
+
     localStorage.setItem('samplers', JSON.stringify(this.samplerList));
     localStorage.setItem('upscalers', JSON.stringify(this.upscalerList));
     localStorage.setItem('modelDict', JSON.stringify(this.modelDict));
     localStorage.setItem('modelList', JSON.stringify(this.modelList));
+    localStorage.setItem('loras', JSON.stringify(this.loraList));
+    localStorage.setItem('tis', JSON.stringify(this.tiList));
     localStorage.setItem('selectedSampler', this.selectedSampler);
   }
 
@@ -111,5 +128,23 @@ export default class AppConfig {
 
   selectModel(/** @type {Model} */ model) {
     this.selectedModel = model.hash;
+  }
+
+  /**
+   * @param {Array<{ name: string }>} loras
+   */
+  refreshLORAs(loras) {
+    this.loraList = loras.map((l) => l.name);
+    this.loraList.sort((a, b) => a.localeCompare(b));
+    localStorage.setItem('loras', JSON.stringify(this.loraList));
+  }
+
+  /**
+   * @param {{ loaded: Object<string, any> }} tis
+   */
+  refreshTIs(tis) {
+    this.tiList = Object.keys(tis.loaded);
+    this.tiList.sort((a, b) => a.localeCompare(b));
+    localStorage.setItem('tis', JSON.stringify(this.tiList));
   }
 }

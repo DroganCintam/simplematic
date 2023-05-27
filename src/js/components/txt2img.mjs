@@ -853,11 +853,7 @@ export default class Txt2Img extends Tab {
   }
 
   showOrHideInpaintCanvas() {
-    if (
-      this.inpaintBox.isInpainting &&
-      this.inpaintBox.isUsingBrush &&
-      this.img2imgInputImage.hasImage
-    ) {
+    if (this.inpaintBox.isInpainting && this.img2imgInputImage.hasImage) {
       this.inpaintCanvas.style.display = '';
     } else {
       this.inpaintCanvas.style.display = 'none';

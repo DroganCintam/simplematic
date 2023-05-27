@@ -43,6 +43,29 @@ The app is served at https://simplematic.web.app
 
 # Setup
 
+## Front-end
+
+You can use the stable version of the app at https://simplematic.web.app
+
+Alternatively, to manually host the app, please clone this repository
+and run a static server at the `src` directory. Check-out the `main`
+branch for stability, or `dev` branch for newest, unstable, features.
+
+```bash
+git clone https://github.com/DroganCintam/simplematic.git
+cd simplematic
+
+# For the latest (also unfinished, buggy) features
+git checkout dev
+
+# Run static server using NodeJS
+npx http-server src -p 8080
+# or using Python3
+python3 -m http.server --directory src 8080
+```
+
+## Back-end
+
 This app requires a running instance of AUTOMATIC1111's Web UI.
 The following command line arguments are necessary:
 
@@ -50,6 +73,11 @@ The following command line arguments are necessary:
 - `--share`: to create a Gradio public URL.
 - OR `--ngrok your_ngrok_token`: to establish a tunnel using [ngrok](https://ngrok.com) service. (Not sponsored.)
 - `--cors-allow-origins=https://simplematic.web.app`: to allow requests from this app.
+
+If you manually host the app, you may want to add your localhost URL to the
+CORS origins list. For example:
+
+- `--cors-allow-origins=https://simplematic.web.app,http://localhost:8000`
 
 You might want to add `--ngrok-region` to optimize connection speed.
 See their [docs](https://ngrok.com/docs/platform/pops/) for more details.
@@ -72,3 +100,5 @@ that are useful and don't make too many changes.
 
 My name's Cintam. I code to make a living and do arts to have a life.
 I made this app to learn AI and other coding stuffs.
+
+If you enjoy my work and would like to support me, [buying me a coffee](https://ko-fi.com/cintam) would be greatly appreciated!

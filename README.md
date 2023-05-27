@@ -56,12 +56,12 @@ git clone https://github.com/DroganCintam/simplematic.git
 cd simplematic
 
 # For the latest (also unfinished, buggy) features
-git checkout dev
+#git checkout dev
 
 # Run static server using NodeJS
 npx http-server src -p 8080
 # or using Python3
-python3 -m http.server --directory src 8080
+#python3 -m http.server --directory src 8080
 ```
 
 ## Back-end

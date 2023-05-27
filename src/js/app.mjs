@@ -15,6 +15,7 @@ import ConfirmDialog from './components/confirm-dialog.mjs';
 import BackgroundLoader from './background-loader.mjs';
 import TopBar from './components/top-bar.mjs';
 import Changelog from './components/changelog.mjs';
+import ExtraNetworksDialog from './components/extra-networks-dialog.mjs';
 
 class App {
   /** @type {HTMLElement} */
@@ -265,6 +266,8 @@ class App {
     };
 
     this.confirmDialog = new ConfirmDialog(this.root.querySelector('.confirm-dialog'));
+    new ExtraNetworksDialog(this.root.querySelector('[data-extra-networks-dialog]'));
+    ExtraNetworksDialog.instance.show();
 
     if (this.settingsTab.url == '') {
       this.switchTab(this.settingsTab);

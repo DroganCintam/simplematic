@@ -105,6 +105,10 @@ const html = /*html*/ `
         <label class="heading">Script arguments:</label>
         <input type="text" class="result-script-args" readonly />
       </div>
+      <div class="vertical w100p result-timestamp">
+        <label>Timestamp:</label>
+        <input type="text" readonly />
+      </div>
     </div>
   </div>
 </div>
@@ -411,6 +415,9 @@ export default class ResultDialog extends Tab {
   /** @type {HTMLButtonElement} */
   deleteButton;
 
+  /** @type {HTMLElement} */
+  timestamp;
+
   /** @type {HTMLTextAreaElement} */
   prompt;
   /** @type {HTMLTextAreaElement} */
@@ -462,6 +469,7 @@ export default class ResultDialog extends Tab {
   constructor(/** @type {HTMLElement} */ parent) {
     super(parent, html, css);
     this.image = this.root.querySelector('.image');
+    this.timestamp = this.root.querySelector('.result-timestamp');
     this.prompt = this.root.querySelector('.result-prompt');
     this.negativePrompt = this.root.querySelector('.result-negative-prompt');
     this.width = this.root.querySelector('.result-width');
@@ -652,6 +660,8 @@ export default class ResultDialog extends Tab {
     this.updateScript();
 
     this.fromGeneration = true;
+
+    this.timestamp.style.display = 'none';
   }
 
   /**
@@ -702,6 +712,7 @@ export default class ResultDialog extends Tab {
     this.updateScript();
 
     this.fromGeneration = false;
+    this.timestamp.style.display = 'none';
   }
 
   /**
@@ -785,6 +796,8 @@ export default class ResultDialog extends Tab {
     this.updateScript();
 
     this.fromGeneration = false;
+    this.timestamp.style.display = 'flex';
+    this.timestamp.querySelector('input').value = row.timestamp.toLocaleString();
   }
 
   resizePromptBoxes() {

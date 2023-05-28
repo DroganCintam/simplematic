@@ -16,6 +16,7 @@ import BackgroundLoader from './background-loader.mjs';
 import TopBar from './components/top-bar.mjs';
 import Changelog from './components/changelog.mjs';
 import ExtraNetworksDialog from './components/extra-networks-dialog.mjs';
+import ScriptListDialog from './components/script-list-dialog.mjs';
 
 class App {
   /** @type {HTMLElement} */
@@ -264,18 +265,25 @@ class App {
 
     new ConfirmDialog(this.root.querySelector('[data-confirm-dialog]'));
     new ExtraNetworksDialog(this.root.querySelector('[data-extra-networks-dialog]'));
+    new ScriptListDialog(this.root.querySelector('[data-script-list-dialog]'));
 
     if (this.settingsTab.url == '') {
       this.switchTab(this.settingsTab);
     }
 
     document.addEventListener('keydown', (event) => {
-      if (ConfirmDialog.instance.isShowing || ExtraNetworksDialog.instance.isShowing) {
+      if (
+        ConfirmDialog.instance.isShowing ||
+        ExtraNetworksDialog.instance.isShowing ||
+        ScriptListDialog.instance.isShowing
+      ) {
         if (event.key === 'Escape') {
           if (ConfirmDialog.instance.isShowing) {
             ConfirmDialog.instance.noButton.click();
           } else if (ExtraNetworksDialog.instance.isShowing) {
             ExtraNetworksDialog.instance.hide();
+          } else if (ScriptListDialog.instance.isShowing) {
+            ScriptListDialog.instance.hide();
           }
         }
         return;

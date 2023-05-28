@@ -155,8 +155,15 @@ export default class Api {
         })
       ).json();
 
+      const scripts = await (
+        await fetch(url + 'scripts', {
+          method: 'GET',
+          headers,
+        })
+      ).json();
+
       AppConfig.instance.setApiUrl(apiUrl, username, password);
-      AppConfig.instance.readOptions(options, samplers, upscalers, models, loras, tis);
+      AppConfig.instance.readOptions(options, samplers, upscalers, models, loras, tis, scripts);
       this.baseUrl = apiUrl;
       return null;
     } catch (err) {
@@ -191,6 +198,23 @@ export default class Api {
         })
       ).json();
       AppConfig.instance.refreshTIs(tis);
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  }
+
+  async refreshScripts() {
+    try {
+      const headers = this.prepareHeaders(true);
+      const scripts = await (
+        await fetch(this.baseUrl + 'sdapi/v1/scripts', {
+          method: 'GET',
+          headers,
+        })
+      ).json();
+      AppConfig.instance.refreshScripts(scripts);
       return true;
     } catch (err) {
       console.error(err);

@@ -31,6 +31,11 @@ export default class AppConfig {
   /** @type {string[]} */
   tiList = [];
 
+  /** @type {string[]} */
+  txt2imgScriptList = [];
+  /** @type {string[]} */
+  img2imgScriptList = [];
+
   selectedSampler = '';
   selectedModel = '';
 
@@ -48,6 +53,8 @@ export default class AppConfig {
     this.modelList = JSON.parse(localStorage.getItem('modelList') ?? '[]');
     this.loraList = JSON.parse(localStorage.getItem('loras') ?? '[]');
     this.tiList = JSON.parse(localStorage.getItem('tis') ?? '[]');
+    this.txt2imgScriptList = JSON.parse(localStorage.getItem('txt2imgScripts') ?? '[]');
+    this.img2imgScriptList = JSON.parse(localStorage.getItem('img2imgScripts') ?? '[]');
     this.selectedSampler = localStorage.getItem('selectedSampler') ?? '';
   }
 
@@ -67,8 +74,9 @@ export default class AppConfig {
    * @param {Array<{ title: string, model_name: string, hash: string }>} models
    * @param {Array<{ name: string }>} loras
    * @param {{ loaded: Object<string, any> }} tis
+   * @param {{ txt2img: string[], img2img: string[] }} scripts
    */
-  readOptions(options, samplers, upscalers, models, loras, tis) {
+  readOptions(options, samplers, upscalers, models, loras, tis, scripts) {
     this.samplerList = samplers
       .map((s) => s.name)
       .filter((s) => options.hide_samplers.indexOf(s) < 0);
@@ -101,12 +109,20 @@ export default class AppConfig {
     this.tiList = Object.keys(tis.loaded);
     this.tiList.sort((a, b) => a.localeCompare(b));
 
+    this.txt2imgScriptList = Array.from(scripts.txt2img);
+    this.txt2imgScriptList.sort((a, b) => a.localeCompare(b));
+
+    this.img2imgScriptList = Array.from(scripts.img2img);
+    this.img2imgScriptList.sort((a, b) => a.localeCompare(b));
+
     localStorage.setItem('samplers', JSON.stringify(this.samplerList));
     localStorage.setItem('upscalers', JSON.stringify(this.upscalerList));
     localStorage.setItem('modelDict', JSON.stringify(this.modelDict));
     localStorage.setItem('modelList', JSON.stringify(this.modelList));
     localStorage.setItem('loras', JSON.stringify(this.loraList));
     localStorage.setItem('tis', JSON.stringify(this.tiList));
+    localStorage.setItem('txt2imgScripts', JSON.stringify(this.txt2imgScriptList));
+    localStorage.setItem('img2imgScripts', JSON.stringify(this.img2imgScriptList));
     localStorage.setItem('selectedSampler', this.selectedSampler);
   }
 
@@ -146,5 +162,19 @@ export default class AppConfig {
     this.tiList = Object.keys(tis.loaded);
     this.tiList.sort((a, b) => a.localeCompare(b));
     localStorage.setItem('tis', JSON.stringify(this.tiList));
+  }
+
+  /**
+   * @param {{ txt2img: string[], img2img: string[] }} scripts
+   */
+  refreshScripts(scripts) {
+    this.txt2imgScriptList = Array.from(scripts.txt2img);
+    this.txt2imgScriptList.sort((a, b) => a.localeCompare(b));
+
+    this.img2imgScriptList = Array.from(scripts.img2img);
+    this.img2imgScriptList.sort((a, b) => a.localeCompare(b));
+
+    localStorage.setItem('txt2imgScripts', JSON.stringify(this.txt2imgScriptList));
+    localStorage.setItem('img2imgScripts', JSON.stringify(this.img2imgScriptList));
   }
 }

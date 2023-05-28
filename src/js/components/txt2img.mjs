@@ -10,6 +10,7 @@ import ConfirmDialog from './confirm-dialog.mjs';
 import Component from './component.mjs';
 import InpaintBox from './inpaint-box.mjs';
 import ExtraNetworksDialog from './extra-networks-dialog.mjs';
+import ScriptListDialog from './script-list-dialog.mjs';
 
 const defaultParameters = {
   sampler: 'DPM++ 2M Karras v2',
@@ -98,6 +99,9 @@ const html = /*html*/ `
         <input type="text" class="txt-script-name">
         <label>Arguments (as a JSON array):</label>
         <input type="text" class="txt-script-args" placeholder="[]" spellcheck="false">
+        <button class="icon-button btn-select-script" title="Select script">
+          <img src="/img/rectangle-list-solid.svg"/>
+        </button>
       </div>
     </div>
   </div>
@@ -178,6 +182,7 @@ const css = /*css*/ `
   justify-content: stretch;
   align-items: center;
   gap: 1rem;
+  position: relative;
 }
 
 #txt2img-tab .advanced-box .options .option {
@@ -195,6 +200,12 @@ const css = /*css*/ `
 
 #txt2img-tab .advanced-box .options .option input {
   flex-grow: 1;
+}
+
+#txt2img-tab .advanced-box.script .options .btn-select-script {
+  position: absolute;
+  right: 0rem;
+  top: -2.5rem;
 }
 
 #txt2img-tab .img2img .options .txt-denoising-strength {
@@ -303,6 +314,8 @@ export default class Txt2Img extends Tab {
   scriptName;
   /** @type {HTMLInputElement} */
   scriptArgs;
+  /** @type {HTMLButtonElement} */
+  selectScriptButton;
 
   isLoading = false;
 
@@ -553,6 +566,7 @@ export default class Txt2Img extends Tab {
     this.scriptOptions = this.root.querySelector('.script');
     this.scriptName = this.scriptOptions.querySelector('.txt-script-name');
     this.scriptArgs = this.scriptOptions.querySelector('.txt-script-args');
+    this.selectScriptButton = this.scriptOptions.querySelector('.btn-select-script');
 
     this.scriptName.value = localStorage.getItem('script_name') ?? '';
     this.scriptArgs.value = localStorage.getItem('script_args') ?? '';
@@ -618,6 +632,18 @@ export default class Txt2Img extends Tab {
 
     this.clearSeedButton.addEventListener('click', () => {
       this.seed.value = '-1';
+    });
+
+    this.selectScriptButton.addEventListener('click', () => {
+      ScriptListDialog.instance.show(
+        this.img2imgCheckbox.checked,
+        (scriptName) => {
+          this.scriptName.value = scriptName;
+        },
+        (scriptName) => {
+          this.scriptName.value = scriptName;
+        }
+      );
     });
 
     this.widthInput.value = localStorage.getItem('width') ?? '512';
@@ -1042,6 +1068,8 @@ export default class Txt2Img extends Tab {
     this.seed.disabled = isLoading;
     this.clearPromptButton.disabled = isLoading;
     this.clearNegativePromptButton.disabled = isLoading;
+    this.promptExtraButton.disabled = isLoading;
+    this.negativePromptExtraButton.disabled = isLoading;
     this.clearSeedButton.disabled = isLoading;
     this.restoreFacesCheckbox.disabled = isLoading;
     this.hiresCheckbox.disabled = isLoading;
@@ -1056,6 +1084,7 @@ export default class Txt2Img extends Tab {
     this.inpaintBox.disabled = isLoading;
     this.scriptName.disabled = isLoading;
     this.scriptArgs.disabled = isLoading;
+    this.selectScriptButton.disabled = isLoading;
 
     this.isLoading = isLoading;
   }

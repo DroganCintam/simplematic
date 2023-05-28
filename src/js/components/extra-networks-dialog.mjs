@@ -1,12 +1,10 @@
 import Api from '../api.mjs';
 import AppConfig from '../types/app-config.mjs';
 import Component from './component.mjs';
-
-const overlayBgOff = 'hsla(0, 0%, 0%, 0)';
-const overlayBgOn = 'hsla(0, 0%, 0%, 0.7)';
+import Dialog from './dialog.mjs';
 
 const html = /*html*/ `
-<div class="extra-networks-dialog">
+<div class="extra-networks-dialog dialog-overlay">
   <div class="dialog">
     <div class="small-buttons">
       <button data-btn-refresh type="button" class="icon-button" title="Refresh lists">
@@ -41,36 +39,6 @@ const html = /*html*/ `
 `;
 
 const css = /*css*/ `
-.extra-networks-dialog {
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  align-items: center;
-  background-color: ${overlayBgOff};
-  z-index: 9999;
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-  transition: background-color 0.2s ease-out;
-}
-
-.extra-networks-dialog .dialog {
-  width: 40ch;
-  max-width: calc(100vw - 2rem);
-  background-color: hsla(0, 0%, 0%, 0.5);
-  color: hsl(0, 0%, 100%);
-  border: 1px solid hsla(0, 0%, 100%, 0.5);
-  border-radius: 0.5rem;
-  display: flex;
-  flex-flow: column nowrap;
-  transition: opacity 0.2s ease-out;
-  position: relative;
-}
-
 .extra-networks-dialog .small-buttons {
   position: absolute;
   right: 0;
@@ -152,6 +120,11 @@ const css = /*css*/ `
   gap: 0.5rem;
 }
 
+.extra-networks-dialog .tab-page .list::after {
+  content: '';
+  flex-grow: 999;
+}
+
 .extra-networks-dialog .tab-page .list .item {
   border: 1px solid hsla(0, 0%, 100%, 0.5);
   border-radius: 0.5rem;
@@ -159,6 +132,7 @@ const css = /*css*/ `
   color: hsl(0, 0%, 100%);
   padding: 0.5rem;
   cursor: pointer;
+  flex-grow: 1;
 }
 
 @supports not (-webkit-touch-callout: none) {
@@ -178,19 +152,13 @@ const css = /*css*/ `
 }
 `;
 
-export default class ExtraNetworksDialog extends Component {
+export default class ExtraNetworksDialog extends Dialog {
   /** @type {ExtraNetworksDialog} */
   static _instance;
 
   static get instance() {
     return ExtraNetworksDialog._instance;
   }
-
-  /** @type {HTMLElement} */
-  overlay;
-
-  /** @type {HTMLElement} */
-  dialog;
 
   /** @type {HTMLButtonElement} */
   closeButton;
@@ -203,17 +171,13 @@ export default class ExtraNetworksDialog extends Component {
   /** @type {HTMLDivElement} */
   tiList;
 
-  /** @type {number | null} */
-  hidingTimeoutId = null;
-
-  hasFilledLists = false;
-  isShowing = false;
-  isLoading = false;
+  _hasFilledLists = false;
+  _isLoading = false;
 
   /** @type {(lora: string) => void} */
-  onSelectLORA;
+  _onSelectLORA;
   /** @type {(ti: string) => void} */
-  onSelectTI;
+  _onSelectTI;
 
   /**
    * @param {HTMLElement} parent
@@ -222,26 +186,17 @@ export default class ExtraNetworksDialog extends Component {
     super(parent, html, css, true);
     ExtraNetworksDialog._instance = this;
 
-    this.overlay = this.root;
-    this.dialog = this.root.querySelector('.dialog');
     this.closeButton = this.root.querySelector('[data-btn-close]');
     this.refreshButton = this.root.querySelector('[data-btn-refresh]');
 
     this.loraList = this.root.querySelector('[data-lora-list]');
     this.tiList = this.root.querySelector('[data-ti-list]');
 
-    this.overlay.style.display = 'none';
-    this.overlay.style.backgroundColor = overlayBgOff;
-    this.dialog.style.opacity = '0';
-
-    this.overlay.addEventListener('click', (e) => {
-      if (e.target !== this.overlay) return;
-      this.hide();
-    });
-
     this.closeButton.addEventListener('click', () => {
       this.hide();
     });
+
+    this._onOverlayClick = this.hide.bind(this);
 
     this.refreshButton.addEventListener('click', async () => {
       this.setLoading(true);
@@ -265,43 +220,27 @@ export default class ExtraNetworksDialog extends Component {
    * @param {(ti: string) => void} onSelectTI
    */
   show(onSelectLORA, onSelectTI) {
-    if (this.hidingTimeoutId) {
-      clearTimeout(this.hidingTimeoutId);
-      this.hidingTimeoutId = null;
-    }
+    this._show();
 
-    this.overlay.style.display = '';
-    this.overlay.style.backgroundColor = overlayBgOn;
-    this.dialog.style.opacity = '1';
+    this._onSelectLORA = onSelectLORA;
+    this._onSelectTI = onSelectTI;
 
-    this.isShowing = true;
-
-    this.onSelectLORA = onSelectLORA;
-    this.onSelectTI = onSelectTI;
-
-    if (!this.hasFilledLists) {
+    if (!this._hasFilledLists) {
       this._refillLORAs();
       this._refillTIs();
-      this.hasFilledLists = true;
+      this._hasFilledLists = true;
     }
   }
 
   hide() {
-    if (this.isLoading) return;
-
-    this.overlay.style.backgroundColor = overlayBgOff;
-    this.dialog.style.opacity = '0';
-    this.hidingTimeoutId = setTimeout(() => {
-      this.overlay.style.display = 'none';
-    }, 200);
-
-    this.isShowing = false;
+    if (this._isLoading) return;
+    this._hide();
   }
 
   setLoading(isLoading) {
     this.refreshButton.disabled = isLoading;
     this.closeButton.disabled = isLoading;
-    this.isLoading = isLoading;
+    this._isLoading = isLoading;
   }
 
   _refillLORAs() {
@@ -313,8 +252,8 @@ export default class ExtraNetworksDialog extends Component {
       item.innerText = lora;
       container.appendChild(item);
       item.addEventListener('click', () => {
-        if (this.isLoading) return;
-        this.onSelectLORA(lora);
+        if (this._isLoading) return;
+        this._onSelectLORA(lora);
         this.hide();
       });
     });
@@ -329,8 +268,8 @@ export default class ExtraNetworksDialog extends Component {
       item.innerText = ti;
       container.appendChild(item);
       item.addEventListener('click', () => {
-        if (this.isLoading) return;
-        this.onSelectTI(ti);
+        if (this._isLoading) return;
+        this._onSelectTI(ti);
         this.hide();
       });
     });

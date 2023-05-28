@@ -24,9 +24,6 @@ class App {
   /** @type {Menu} */
   menu;
 
-  /** @type {ConfirmDialog} */
-  confirmDialog;
-
   /** @type {TopBar} */
   topBar;
   /** @type {HTMLElement} */
@@ -265,7 +262,7 @@ class App {
       this.switchTab(this.resultTab);
     };
 
-    this.confirmDialog = new ConfirmDialog(this.root.querySelector('.confirm-dialog'));
+    new ConfirmDialog(this.root.querySelector('[data-confirm-dialog]'));
     new ExtraNetworksDialog(this.root.querySelector('[data-extra-networks-dialog]'));
 
     if (this.settingsTab.url == '') {
@@ -274,6 +271,13 @@ class App {
 
     document.addEventListener('keydown', (event) => {
       if (ConfirmDialog.instance.isShowing || ExtraNetworksDialog.instance.isShowing) {
+        if (event.key === 'Escape') {
+          if (ConfirmDialog.instance.isShowing) {
+            ConfirmDialog.instance.noButton.click();
+          } else if (ExtraNetworksDialog.instance.isShowing) {
+            ExtraNetworksDialog.instance.hide();
+          }
+        }
         return;
       }
 
@@ -318,10 +322,7 @@ class App {
       }
 
       if (event.key === 'Escape') {
-        if (ConfirmDialog.instance.isShowing) {
-          ConfirmDialog.instance.noButton.click();
-          event.preventDefault();
-        } else if (!this.backButton.disabled) {
+        if (!this.backButton.disabled) {
           this.backButton.click();
         } else if (this.showingMenu && !this.menu.isLoading) {
           this.hideMenu();

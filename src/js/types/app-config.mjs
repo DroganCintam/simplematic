@@ -39,6 +39,11 @@ export default class AppConfig {
   selectedSampler = '';
   selectedModel = '';
 
+  /** @type {string[]} */
+  promptClipboard = [];
+  /** @type {string[]} */
+  negativePromptClipboard = [];
+
   get hasUrl() {
     return this.apiUrl && this.apiUrl != '';
   }
@@ -56,6 +61,10 @@ export default class AppConfig {
     this.txt2imgScriptList = JSON.parse(localStorage.getItem('txt2imgScripts') ?? '[]');
     this.img2imgScriptList = JSON.parse(localStorage.getItem('img2imgScripts') ?? '[]');
     this.selectedSampler = localStorage.getItem('selectedSampler') ?? '';
+    this.promptClipboard = JSON.parse(localStorage.getItem('promptClipboard') ?? '[]');
+    this.negativePromptClipboard = JSON.parse(
+      localStorage.getItem('negativePromptClipboard') ?? '[]'
+    );
   }
 
   setApiUrl(url, username, password) {
@@ -176,5 +185,39 @@ export default class AppConfig {
 
     localStorage.setItem('txt2imgScripts', JSON.stringify(this.txt2imgScriptList));
     localStorage.setItem('img2imgScripts', JSON.stringify(this.img2imgScriptList));
+  }
+
+  /**
+   * @param {number} index
+   * @param {string | null} value
+   */
+  updatePromptClipboard(index, value) {
+    if (index >= this.promptClipboard.length) {
+      this.promptClipboard.push(value);
+    } else {
+      if (typeof value === 'string') {
+        this.promptClipboard[index] = value;
+      } else {
+        this.promptClipboard.splice(index, 1);
+      }
+    }
+    localStorage.setItem('promptClipboard', JSON.stringify(this.promptClipboard));
+  }
+
+  /**
+   * @param {number} index
+   * @param {string | null} value
+   */
+  updateNegativePromptClipboard(index, value) {
+    if (index >= this.negativePromptClipboard.length) {
+      this.negativePromptClipboard.push(value);
+    } else {
+      if (typeof value === 'string') {
+        this.negativePromptClipboard[index] = value;
+      } else {
+        this.negativePromptClipboard.splice(index, 1);
+      }
+    }
+    localStorage.setItem('negativePromptClipboard', JSON.stringify(this.negativePromptClipboard));
   }
 }

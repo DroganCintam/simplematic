@@ -17,6 +17,7 @@ import TopBar from './components/top-bar.mjs';
 import Changelog from './components/changelog.mjs';
 import ExtraNetworksDialog from './components/extra-networks-dialog.mjs';
 import ScriptListDialog from './components/script-list-dialog.mjs';
+import PromptClipboardDialog from './components/prompt-clipboard-dialog.mjs';
 
 class App {
   /** @type {HTMLElement} */
@@ -266,6 +267,7 @@ class App {
     new ConfirmDialog(this.root.querySelector('[data-confirm-dialog]'));
     new ExtraNetworksDialog(this.root.querySelector('[data-extra-networks-dialog]'));
     new ScriptListDialog(this.root.querySelector('[data-script-list-dialog]'));
+    new PromptClipboardDialog(this.root.querySelector('[data-prompt-clipboard-dialog]'));
 
     if (this.settingsTab.url == '') {
       this.switchTab(this.settingsTab);

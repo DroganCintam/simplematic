@@ -11,6 +11,7 @@ import Component from './component.mjs';
 import InpaintBox from './inpaint-box.mjs';
 import ExtraNetworksDialog from './extra-networks-dialog.mjs';
 import ScriptListDialog from './script-list-dialog.mjs';
+import PromptClipboardDialog from './prompt-clipboard-dialog.mjs';
 
 const defaultParameters = {
   sampler: 'DPM++ 2M Karras v2',
@@ -24,6 +25,9 @@ const html = /*html*/ `
 <div id="txt2img-tab" class="app-tab">
   <div class="parameter-pane">
     <label class="heading" for="">Prompt:<span class="options">
+      <button class="icon-button btn-prompt-clipboard" title="Clipboard">
+        <img src="/img/clipboard-list-solid.svg"/>
+      </button>
       <button class="icon-button btn-prompt-extra" title="Extra networks">
         <img src="/img/rectangle-list-solid.svg"/>
       </button>
@@ -33,6 +37,9 @@ const html = /*html*/ `
     </span></label>
     <textarea class="txt-prompt" autocapitalize="off"></textarea>
     <label class="heading" for="">Negative prompt:<span class="options">
+      <button class="icon-button btn-negative-prompt-clipboard" title="Clipboard">
+        <img src="/img/clipboard-list-solid.svg"/>
+      </button>
       <button class="icon-button btn-negative-prompt-extra" title="Extra networks">
         <img src="/img/rectangle-list-solid.svg"/>
       </button>
@@ -252,12 +259,16 @@ export default class Txt2Img extends Tab {
   clearPromptButton;
   /** @type {HTMLButtonElement} */
   promptExtraButton;
+  /** @type {HTMLButtonElement} */
+  promptClipboardButton;
   /** @type {HTMLTextAreaElement} */
   negativePrompt;
   /** @type {HTMLButtonElement} */
   clearNegativePromptButton;
   /** @type {HTMLButtonElement} */
   negativePromptExtraButton;
+  /** @type {HTMLButtonElement} */
+  negativePromptClipboardButton;
   /** @type {HTMLInputElement} */
   widthInput;
   /** @type {HTMLInputElement} */
@@ -354,12 +365,17 @@ export default class Txt2Img extends Tab {
 
   constructor(/** @type {HTMLElement} */ parent) {
     super(parent, html, css);
+
     this.prompt = this.root.querySelector('.txt-prompt');
     this.clearPromptButton = this.root.querySelector('.btn-clear-prompt');
     this.promptExtraButton = this.root.querySelector('.btn-prompt-extra');
+    this.promptClipboardButton = this.root.querySelector('.btn-prompt-clipboard');
+
     this.negativePrompt = this.root.querySelector('.txt-negative-prompt');
     this.clearNegativePromptButton = this.root.querySelector('.btn-clear-negative-prompt');
     this.negativePromptExtraButton = this.root.querySelector('.btn-negative-prompt-extra');
+    this.negativePromptClipboardButton = this.root.querySelector('.btn-negative-prompt-clipboard');
+
     this.seed = this.root.querySelector('.txt-seed');
     this.clearSeedButton = this.root.querySelector('.btn-clear-seed');
 
@@ -613,6 +629,11 @@ export default class Txt2Img extends Tab {
         }
       );
     });
+    this.promptClipboardButton.addEventListener('click', () => {
+      PromptClipboardDialog.instance.show(false, this.prompt.value, (value) => {
+        this.prompt.value = value;
+      });
+    });
 
     this.clearNegativePromptButton.addEventListener('click', () => {
       ConfirmDialog.instance.show('The whole prompt will be cleared.\nAre you sure?', () => {
@@ -628,6 +649,11 @@ export default class Txt2Img extends Tab {
           addExtraToPrompt(this.negativePrompt, null, ti);
         }
       );
+    });
+    this.negativePromptClipboardButton.addEventListener('click', () => {
+      PromptClipboardDialog.instance.show(true, this.negativePrompt.value, (value) => {
+        this.negativePrompt.value = value;
+      });
     });
 
     this.clearSeedButton.addEventListener('click', () => {
@@ -1066,10 +1092,14 @@ export default class Txt2Img extends Tab {
     this.stepsSelector.disabled = isLoading;
     this.cfgSelector.disabled = isLoading;
     this.seed.disabled = isLoading;
+
     this.clearPromptButton.disabled = isLoading;
     this.clearNegativePromptButton.disabled = isLoading;
     this.promptExtraButton.disabled = isLoading;
     this.negativePromptExtraButton.disabled = isLoading;
+    this.promptClipboardButton.disabled = isLoading;
+    this.negativePromptClipboardButton.disabled = isLoading;
+
     this.clearSeedButton.disabled = isLoading;
     this.restoreFacesCheckbox.disabled = isLoading;
     this.hiresCheckbox.disabled = isLoading;

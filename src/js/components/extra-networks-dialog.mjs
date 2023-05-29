@@ -213,6 +213,11 @@ export default class ExtraNetworksDialog extends Dialog {
         this.setLoading(false);
       }
     });
+
+    // trigger the checked/not-checked CSS rules
+    setTimeout(() => {
+      this.root.querySelector('input[data-chk-lora]').checked = true;
+    }, 10);
   }
 
   /**

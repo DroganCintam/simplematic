@@ -15,7 +15,7 @@ const html = /*html*/ `
     </div>
     <div class="slots">
     </div>
-    <button data-btn-add-current>
+    <button data-btn-add-current title="Add current prompt to clipboard">
       <img src="/img/floppy-disk-solid.svg">
       ADD CURRENT
     </button>
@@ -91,7 +91,7 @@ const css = /*css*/ `
 }
 
 .prompt-clipboard-dialog [data-btn-add-current] {
-  margin: 0.5rem;
+  margin: 0rem auto 0.5rem auto;
 }
 `;
 

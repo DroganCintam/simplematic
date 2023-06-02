@@ -1042,6 +1042,7 @@ export default class Txt2Img extends Tab {
         parameters.inpainting_fill = 1;
         parameters.inpaint_full_res = true;
         parameters.inpaint_full_res_padding = 32;
+        this.inpaintBox.switchToHandTool();
       }
       Api.instance
         .img2img(parameters)

@@ -254,6 +254,10 @@ export default class InpaintBox extends Component {
       .forEach((el) => (el.style.display = visible ? '' : 'none'));
   }
 
+  switchToHandTool() {
+    this.handToolRadio.checked = true;
+  }
+
   initMover() {
     const mover = this.root.querySelector('[data-mover]');
 

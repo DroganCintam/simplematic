@@ -274,6 +274,10 @@ class App {
     }
 
     document.addEventListener('keydown', (event) => {
+      if (this.isLoading) {
+        return;
+      }
+
       if (
         ConfirmDialog.instance.isShowing ||
         ExtraNetworksDialog.instance.isShowing ||
@@ -291,7 +295,7 @@ class App {
         return;
       }
 
-      if (this.currentTab === this.resultTab && !this.isLoading) {
+      if (this.currentTab === this.resultTab) {
         if (event.key === 'ArrowLeft' && this.resultTab.goPrev) {
           this.resultTab.goPrev();
           event.stopPropagation();
@@ -311,7 +315,7 @@ class App {
           event.stopPropagation();
           event.preventDefault();
         }
-      } else if (this.currentTab === this.txt2imgTab && !this.isLoading && !this.showingMenu) {
+      } else if (this.currentTab === this.txt2imgTab && !this.showingMenu) {
         if (event.key === ',' && event.ctrlKey) {
           this.switchTab(this.settingsTab);
           event.stopPropagation();

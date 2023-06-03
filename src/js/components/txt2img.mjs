@@ -566,8 +566,8 @@ export default class Txt2Img extends Tab {
       if (this.img2imgInputImage.hasImage) {
         this.inpaintBox.show();
         setTimeout(() => {
-          const width = this.img2imgInputImage.image.width;
-          const height = this.img2imgInputImage.image.height;
+          const width = this.img2imgInputImage.image.naturalWidth;
+          const height = this.img2imgInputImage.image.naturalHeight;
           this.inpaintCanvas.width = width;
           this.inpaintCanvas.height = height;
           this.clearInpaintCanvas();
@@ -848,9 +848,11 @@ export default class Txt2Img extends Tab {
     let isPainting = false;
     let brushSize = 1;
 
+    let scaleFactor = 1;
     const onBegin = () => {
       isPainting = true;
       brushSize = this.inpaintBox.brushSizeValue;
+      scaleFactor = this.img2imgInputImage.image.naturalWidth / this.img2imgInputImage.image.width;
     };
     const onEnd = () => {
       if (isPainting) {
@@ -867,7 +869,7 @@ export default class Txt2Img extends Tab {
       if (isPainting) {
         ctx.save();
         ctx.beginPath();
-        ctx.arc(offsetX, offsetY, brushSize, 0, Math.PI * 2);
+        ctx.arc(offsetX * scaleFactor, offsetY * scaleFactor, brushSize, 0, Math.PI * 2);
         ctx.closePath();
         ctx.fill();
         ctx.restore();
@@ -916,7 +918,7 @@ export default class Txt2Img extends Tab {
         undoImage.onload = () => {
           ctx.clearRect(0, 0, this.inpaintCanvas.width, this.inpaintCanvas.height);
           ctx.save();
-          ctx.drawImage(undoImage, 0, 0);
+          ctx.drawImage(undoImage, 0, 0, this.inpaintCanvas.width, this.inpaintCanvas.height);
           ctx.restore();
           undoImage.remove();
         };
@@ -930,7 +932,7 @@ export default class Txt2Img extends Tab {
         undoImage.onload = () => {
           ctx.clearRect(0, 0, this.inpaintCanvas.width, this.inpaintCanvas.height);
           ctx.save();
-          ctx.drawImage(undoImage, 0, 0);
+          ctx.drawImage(undoImage, 0, 0, this.inpaintCanvas.width, this.inpaintCanvas.height);
           ctx.restore();
           undoImage.remove();
         };

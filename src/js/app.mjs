@@ -18,6 +18,7 @@ import Changelog from './components/changelog.mjs';
 import ExtraNetworksDialog from './components/extra-networks-dialog.mjs';
 import ScriptListDialog from './components/script-list-dialog.mjs';
 import PromptClipboardDialog from './components/prompt-clipboard-dialog.mjs';
+import Footer from './components/footer.mjs';
 
 class App {
   /** @type {HTMLElement} */
@@ -129,6 +130,8 @@ class App {
         topBar.root.classList.remove('opaque');
       }
     });
+
+    new Footer(this.root.querySelector('footer'));
 
     this.menuButton = topBar.menuButton;
     this.menuButton.addEventListener('click', () => {
@@ -274,7 +277,7 @@ class App {
     }
 
     document.addEventListener('keydown', (event) => {
-      if (this.isLoading) {
+      if (this.isLoading && !this.showingMenu) {
         return;
       }
 

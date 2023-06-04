@@ -15,9 +15,12 @@ The app is served at https://simplematic.web.app
   - Prompt, negative prompt, steps, CFG scale, seed, sampler (in side menu).
   - Face restoration.
   - HiRes upscaling (Latent).
+  - Prompt clipboard to save prompts for later uses.
+  - LORA, Textual Inversion and Script auto-fill lists.
 - Image-to-Image
   - Upload an image or send from txt2img.
   - Supports denoising strength and 3 resize modes.
+  - Inpainting.
 - Gallery
   - Save images along with parameters, including img2img's source image.
   - Hashtags filtering.
@@ -33,9 +36,9 @@ The app is served at https://simplematic.web.app
 <p align="left">
   <img src="screenshots/txt2img.jpeg" width="200" alt="Text to Image"/>
   <img src="screenshots/img2img.jpeg" width="200" alt="Image to Image"/>
+  <img src="screenshots/clipboard.jpeg" width="200" alt="Text to Image Result"/>
   <img src="screenshots/result-1.jpeg" width="200" alt="Image to Image Result"/>
   <img src="screenshots/result-2.jpeg" width="200" alt="Text to Image Result"/>
-  <img src="screenshots/result-3.jpeg" width="200" alt="Text to Image Result"/>
   <img src="screenshots/upscale.jpeg" width="200" alt="Upscaling Image"/>
   <img src="screenshots/gallery.jpeg" width="200" alt="Image Gallery"/>
   <img src="screenshots/import.jpeg" width="200" alt="Import Parameters"/>

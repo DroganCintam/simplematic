@@ -15,6 +15,10 @@ import ConfirmDialog from './components/confirm-dialog.mjs';
 import BackgroundLoader from './background-loader.mjs';
 import TopBar from './components/top-bar.mjs';
 import Changelog from './components/changelog.mjs';
+import ExtraNetworksDialog from './components/extra-networks-dialog.mjs';
+import ScriptListDialog from './components/script-list-dialog.mjs';
+import PromptClipboardDialog from './components/prompt-clipboard-dialog.mjs';
+import Footer from './components/footer.mjs';
 
 class App {
   /** @type {HTMLElement} */
@@ -22,9 +26,6 @@ class App {
 
   /** @type {Menu} */
   menu;
-
-  /** @type {ConfirmDialog} */
-  confirmDialog;
 
   /** @type {TopBar} */
   topBar;
@@ -130,6 +131,8 @@ class App {
       }
     });
 
+    new Footer(this.root.querySelector('footer'));
+
     this.menuButton = topBar.menuButton;
     this.menuButton.addEventListener('click', () => {
       if (this.showingMenu) this.hideMenu();
@@ -195,9 +198,13 @@ class App {
       this.switchTab(this.aboutTab);
     };
 
-    this.resultTab.onRerun = (imageInfo, progress) => {
+    this.resultTab.onRerun = (imageInfo, progress, fromSameWork) => {
       const action = () => {
-        this.txt2imgTab.retrieveInfo(imageInfo, false);
+        if (fromSameWork) {
+          this.txt2imgTab.seed.valueAsNumber = -1;
+        } else {
+          this.txt2imgTab.retrieveInfo(imageInfo, false);
+        }
         this.generate(progress);
       };
       if (
@@ -209,9 +216,13 @@ class App {
       }
     };
 
-    this.resultTab.onRemix = (imageInfo) => {
+    this.resultTab.onRemix = (imageInfo, fromSameWork) => {
       const action = () => {
-        this.txt2imgTab.retrieveInfo(imageInfo, true);
+        if (fromSameWork) {
+          this.txt2imgTab.seed.valueAsNumber = imageInfo.info.seed;
+        } else {
+          this.txt2imgTab.retrieveInfo(imageInfo, true);
+        }
         this.switchTab(this.txt2imgTab);
       };
       if (
@@ -256,14 +267,38 @@ class App {
       this.switchTab(this.resultTab);
     };
 
-    this.confirmDialog = new ConfirmDialog(this.root.querySelector('.confirm-dialog'));
+    new ConfirmDialog(this.root.querySelector('[data-confirm-dialog]'));
+    new ExtraNetworksDialog(this.root.querySelector('[data-extra-networks-dialog]'));
+    new ScriptListDialog(this.root.querySelector('[data-script-list-dialog]'));
+    new PromptClipboardDialog(this.root.querySelector('[data-prompt-clipboard-dialog]'));
 
     if (this.settingsTab.url == '') {
       this.switchTab(this.settingsTab);
     }
 
     document.addEventListener('keydown', (event) => {
-      if (this.currentTab === this.resultTab && !this.isLoading) {
+      if (this.isLoading && !this.showingMenu) {
+        return;
+      }
+
+      if (
+        ConfirmDialog.instance.isShowing ||
+        ExtraNetworksDialog.instance.isShowing ||
+        ScriptListDialog.instance.isShowing
+      ) {
+        if (event.key === 'Escape') {
+          if (ConfirmDialog.instance.isShowing) {
+            ConfirmDialog.instance.noButton.click();
+          } else if (ExtraNetworksDialog.instance.isShowing) {
+            ExtraNetworksDialog.instance.hide();
+          } else if (ScriptListDialog.instance.isShowing) {
+            ScriptListDialog.instance.hide();
+          }
+        }
+        return;
+      }
+
+      if (this.currentTab === this.resultTab) {
         if (event.key === 'ArrowLeft' && this.resultTab.goPrev) {
           this.resultTab.goPrev();
           event.stopPropagation();
@@ -283,7 +318,7 @@ class App {
           event.stopPropagation();
           event.preventDefault();
         }
-      } else if (this.currentTab === this.txt2imgTab && !this.isLoading && !this.showingMenu) {
+      } else if (this.currentTab === this.txt2imgTab && !this.showingMenu) {
         if (event.key === ',' && event.ctrlKey) {
           this.switchTab(this.settingsTab);
           event.stopPropagation();
@@ -304,10 +339,7 @@ class App {
       }
 
       if (event.key === 'Escape') {
-        if (ConfirmDialog.instance.isShowing) {
-          ConfirmDialog.instance.noButton.click();
-          event.preventDefault();
-        } else if (!this.backButton.disabled) {
+        if (!this.backButton.disabled) {
           this.backButton.click();
         } else if (this.showingMenu && !this.menu.isLoading) {
           this.hideMenu();

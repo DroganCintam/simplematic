@@ -7,6 +7,11 @@ import AppConfig from '../types/app-config.mjs';
 import Checkbox from './checkbox.mjs';
 import ImageUpload from './image-upload.mjs';
 import ConfirmDialog from './confirm-dialog.mjs';
+import Component from './component.mjs';
+import InpaintBox from './inpaint-box.mjs';
+import ExtraNetworksDialog from './extra-networks-dialog.mjs';
+import ScriptListDialog from './script-list-dialog.mjs';
+import PromptClipboardDialog from './prompt-clipboard-dialog.mjs';
 
 const defaultParameters = {
   sampler: 'DPM++ 2M Karras v2',
@@ -20,12 +25,24 @@ const html = /*html*/ `
 <div id="txt2img-tab" class="app-tab">
   <div class="parameter-pane">
     <label class="heading" for="">Prompt:<span class="options">
+      <button class="icon-button btn-prompt-clipboard" title="Clipboard">
+        <img src="/img/clipboard-list-solid.svg"/>
+      </button>
+      <button class="icon-button btn-prompt-extra" title="Extra networks">
+        <img src="/img/rectangle-list-solid.svg"/>
+      </button>
       <button class="icon-button btn-clear-prompt" title="Erase">
         <img src="/img/eraser-solid.svg"/>
       </button>
     </span></label>
     <textarea class="txt-prompt" autocapitalize="off"></textarea>
     <label class="heading" for="">Negative prompt:<span class="options">
+      <button class="icon-button btn-negative-prompt-clipboard" title="Clipboard">
+        <img src="/img/clipboard-list-solid.svg"/>
+      </button>
+      <button class="icon-button btn-negative-prompt-extra" title="Extra networks">
+        <img src="/img/rectangle-list-solid.svg"/>
+      </button>
       <button class="icon-button btn-clear-negative-prompt" title="Erase">
         <img src="/img/eraser-solid.svg"/>
       </button>
@@ -89,6 +106,9 @@ const html = /*html*/ `
         <input type="text" class="txt-script-name">
         <label>Arguments (as a JSON array):</label>
         <input type="text" class="txt-script-args" placeholder="[]" spellcheck="false">
+        <button class="icon-button btn-select-script" title="Select script">
+          <img src="/img/rectangle-list-solid.svg"/>
+        </button>
       </div>
     </div>
   </div>
@@ -169,6 +189,7 @@ const css = /*css*/ `
   justify-content: stretch;
   align-items: center;
   gap: 1rem;
+  position: relative;
 }
 
 #txt2img-tab .advanced-box .options .option {
@@ -188,13 +209,18 @@ const css = /*css*/ `
   flex-grow: 1;
 }
 
+#txt2img-tab .advanced-box.script .options .btn-select-script {
+  position: absolute;
+  right: 0rem;
+  top: -2.5rem;
+}
+
 #txt2img-tab .img2img .options .txt-denoising-strength {
   min-width: 16ch;
 }
 
 #txt2img-tab .img2img .options .image-upload {
   width: 100%;
-  max-height: 512px;
 }
 
 #txt2img-tab .img2img .options .image-upload img {
@@ -206,6 +232,24 @@ const css = /*css*/ `
   font-family: monospace;
   font-size: 0.9rem;
 }
+
+#txt2img-tab .img2img .inpaint-canvas {
+  width: 100%;
+  height: 100%;
+  border: 1px dashed hsla(0, 0%, 100%, 0.5);
+  border-radius: 0.5rem;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+#txt2img-tab .img2img .btn-inpaint-canvas-undo {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  z-index: 5;
+  visibility: hidden;
+}
 `;
 
 export default class Txt2Img extends Tab {
@@ -213,10 +257,18 @@ export default class Txt2Img extends Tab {
   prompt;
   /** @type {HTMLButtonElement} */
   clearPromptButton;
+  /** @type {HTMLButtonElement} */
+  promptExtraButton;
+  /** @type {HTMLButtonElement} */
+  promptClipboardButton;
   /** @type {HTMLTextAreaElement} */
   negativePrompt;
   /** @type {HTMLButtonElement} */
   clearNegativePromptButton;
+  /** @type {HTMLButtonElement} */
+  negativePromptExtraButton;
+  /** @type {HTMLButtonElement} */
+  negativePromptClipboardButton;
   /** @type {HTMLInputElement} */
   widthInput;
   /** @type {HTMLInputElement} */
@@ -259,12 +311,24 @@ export default class Txt2Img extends Tab {
   /** @type {ImageUpload} */
   img2imgInputImage;
 
+  /** @type {HTMLCanvasElement} */
+  inpaintCanvas;
+  /** @type {InpaintBox} */
+  inpaintBox;
+
+  inpaintCanvasStates = [];
+  inpaintCanvasStateIndex = -1;
+
   /** @type {HTMLElement} */
   scriptOptions;
   /** @type {HTMLInputElement} */
   scriptName;
   /** @type {HTMLInputElement} */
   scriptArgs;
+  /** @type {HTMLButtonElement} */
+  selectScriptButton;
+
+  isLoading = false;
 
   /** @type {()=>void} */
   onSubmit;
@@ -301,10 +365,17 @@ export default class Txt2Img extends Tab {
 
   constructor(/** @type {HTMLElement} */ parent) {
     super(parent, html, css);
+
     this.prompt = this.root.querySelector('.txt-prompt');
     this.clearPromptButton = this.root.querySelector('.btn-clear-prompt');
+    this.promptExtraButton = this.root.querySelector('.btn-prompt-extra');
+    this.promptClipboardButton = this.root.querySelector('.btn-prompt-clipboard');
+
     this.negativePrompt = this.root.querySelector('.txt-negative-prompt');
     this.clearNegativePromptButton = this.root.querySelector('.btn-clear-negative-prompt');
+    this.negativePromptExtraButton = this.root.querySelector('.btn-negative-prompt-extra');
+    this.negativePromptClipboardButton = this.root.querySelector('.btn-negative-prompt-clipboard');
+
     this.seed = this.root.querySelector('.txt-seed');
     this.clearSeedButton = this.root.querySelector('.btn-clear-seed');
 
@@ -479,17 +550,88 @@ export default class Txt2Img extends Tab {
       {},
       true
     );
+    this.img2imgInputImage.lockedClickToChange = true;
+
+    this.inpaintCanvas = Component.fromHTML(/*html*/ `
+      <canvas class="inpaint-options inpaint-canvas"/>
+    `);
+    this.img2imgInputImage.root.appendChild(this.inpaintCanvas);
+
+    this.inpaintBox = new InpaintBox(this.img2imgInputImage.root);
+    this.inpaintBox.onInpaintingChanged = (inpainting) => {
+      this.showOrHideInpaintCanvas();
+    };
+
+    this.img2imgInputImage.addEventListener('imageData', () => {
+      if (this.img2imgInputImage.hasImage) {
+        this.inpaintBox.show();
+        setTimeout(() => {
+          const width = this.img2imgInputImage.image.naturalWidth;
+          const height = this.img2imgInputImage.image.naturalHeight;
+          this.inpaintCanvas.width = width;
+          this.inpaintCanvas.height = height;
+          this.clearInpaintCanvas();
+        }, 1);
+      } else {
+        this.inpaintBox.hide();
+        this.clearInpaintCanvas();
+      }
+      this.showOrHideInpaintCanvas();
+    });
 
     this.scriptOptions = this.root.querySelector('.script');
     this.scriptName = this.scriptOptions.querySelector('.txt-script-name');
     this.scriptArgs = this.scriptOptions.querySelector('.txt-script-args');
+    this.selectScriptButton = this.scriptOptions.querySelector('.btn-select-script');
 
     this.scriptName.value = localStorage.getItem('script_name') ?? '';
     this.scriptArgs.value = localStorage.getItem('script_args') ?? '';
 
+    /**
+     * @param {HTMLInputElement} input
+     * @param {string|null} lora
+     * @param {string|null} ti
+     */
+    const addExtraToPrompt = (input, lora, ti) => {
+      let value = input.value;
+      if (lora) {
+        if (value.length == 0) {
+          value = lora;
+        } else if (value.endsWith(' ')) {
+          value += `<lora:${lora}:1>`;
+        } else {
+          value += ` <lora:${lora}:1>`;
+        }
+      }
+      if (ti) {
+        if (value.length == 0) {
+          value = ti;
+        } else {
+          value += `, ${ti}`;
+        }
+      }
+      input.value = value;
+      this.resizePromptBoxes();
+    };
+
     this.clearPromptButton.addEventListener('click', () => {
       ConfirmDialog.instance.show('The whole prompt will be cleared.\nAre you sure?', () => {
         this.prompt.value = '';
+      });
+    });
+    this.promptExtraButton.addEventListener('click', () => {
+      ExtraNetworksDialog.instance.show(
+        (lora) => {
+          addExtraToPrompt(this.prompt, lora, null);
+        },
+        (ti) => {
+          addExtraToPrompt(this.prompt, null, ti);
+        }
+      );
+    });
+    this.promptClipboardButton.addEventListener('click', () => {
+      PromptClipboardDialog.instance.show(false, this.prompt.value, (value) => {
+        this.prompt.value = value;
       });
     });
 
@@ -498,14 +640,45 @@ export default class Txt2Img extends Tab {
         this.negativePrompt.value = '';
       });
     });
+    this.negativePromptExtraButton.addEventListener('click', () => {
+      ExtraNetworksDialog.instance.show(
+        (lora) => {
+          addExtraToPrompt(this.negativePrompt, lora, null);
+        },
+        (ti) => {
+          addExtraToPrompt(this.negativePrompt, null, ti);
+        }
+      );
+    });
+    this.negativePromptClipboardButton.addEventListener('click', () => {
+      PromptClipboardDialog.instance.show(true, this.negativePrompt.value, (value) => {
+        this.negativePrompt.value = value;
+      });
+    });
 
     this.clearSeedButton.addEventListener('click', () => {
       this.seed.value = '-1';
     });
 
+    this.selectScriptButton.addEventListener('click', () => {
+      ScriptListDialog.instance.show(
+        this.img2imgCheckbox.checked,
+        (scriptName) => {
+          this.scriptName.value = scriptName;
+        },
+        (scriptName) => {
+          this.scriptName.value = scriptName;
+        }
+      );
+    });
+
     this.widthInput.value = localStorage.getItem('width') ?? '512';
     this.heightInput.value = localStorage.getItem('height') ?? '512';
     this.updateAspectRatioFromDimensions();
+
+    this.initInpaintCanvas();
+    this.inpaintBox.hide();
+    this.showOrHideInpaintCanvas();
   }
 
   retrieveInfo(/** @type {ImageInfo} */ imageInfo, /** @type {Boolean} */ alsoSeed) {
@@ -542,11 +715,13 @@ export default class Txt2Img extends Tab {
       this.denoisingStrength.valueAsNumber = imageInfo.info.denoisingStrength;
       this.resizeModeSelector.currentValue = imageInfo.inputResizeMode;
       this.img2imgInputImage.imageData = imageInfo.inputImage;
+      this.inpaintBox.show();
       this.toggleImg2Img();
     } else {
       this.img2imgCheckbox.checked = false;
       this.toggleImg2Img();
     }
+    this.showOrHideInpaintCanvas();
 
     if (imageInfo.scriptName && imageInfo.scriptArgs) {
       this.scriptCheckbox.checked = true;
@@ -563,7 +738,9 @@ export default class Txt2Img extends Tab {
   retrieveImg2Img(imageData) {
     this.img2imgCheckbox.checked = true;
     this.img2imgInputImage.imageData = imageData;
+    this.inpaintBox.show();
     this.toggleImg2Img();
+    this.showOrHideInpaintCanvas();
   }
 
   /**
@@ -663,6 +840,140 @@ export default class Txt2Img extends Tab {
     }
   }
 
+  initInpaintCanvas() {
+    const ctx = this.inpaintCanvas.getContext('2d');
+    ctx.fillStyle = '#000000';
+
+    const states = this.inpaintCanvasStates;
+    let isPainting = false;
+    let brushSize = 1;
+
+    let scaleFactor = 1;
+    const onBegin = () => {
+      isPainting = true;
+      brushSize = this.inpaintBox.brushSizeValue;
+      scaleFactor = this.img2imgInputImage.image.naturalWidth / this.img2imgInputImage.image.width;
+    };
+    const onEnd = () => {
+      if (isPainting) {
+        isPainting = false;
+
+        if (this.inpaintCanvasStateIndex < states.length - 1) {
+          states.splice(this.inpaintCanvasStateIndex + 1);
+        }
+        states.push(this.inpaintCanvas.toDataURL());
+        ++this.inpaintCanvasStateIndex;
+      }
+    };
+    const onMove = (offsetX, offsetY) => {
+      if (isPainting) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(offsetX * scaleFactor, offsetY * scaleFactor, brushSize, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+    };
+
+    this.inpaintCanvas.addEventListener('mousedown', (e) => {
+      if (this.isLoading) return;
+      if (!this.inpaintBox.isInpainting || !this.inpaintBox.isUsingBrush) return;
+
+      if (e.button == 0) {
+        e.preventDefault();
+        onBegin();
+      }
+    });
+    this.inpaintCanvas.addEventListener('mouseleave', onEnd);
+    this.inpaintCanvas.addEventListener('mouseup', onEnd);
+    this.inpaintCanvas.addEventListener('mousemove', (e) => {
+      onMove(e.offsetX, e.offsetY);
+    });
+
+    let rect;
+    this.inpaintCanvas.addEventListener('touchstart', (e) => {
+      if (this.isLoading) return;
+      if (!this.inpaintBox.isInpainting || !this.inpaintBox.isUsingBrush) return;
+
+      e.preventDefault();
+      rect = this.inpaintCanvas.getBoundingClientRect();
+      onBegin();
+    });
+    this.inpaintCanvas.addEventListener('touchend', onEnd);
+    this.inpaintCanvas.addEventListener('touchcancel', onEnd);
+    this.inpaintCanvas.addEventListener('touchmove', (e) => {
+      if (isPainting) {
+        const touch = e.changedTouches[0];
+        const offsetX = touch.clientX - rect.left;
+        const offsetY = touch.clientY - rect.top;
+        onMove(offsetX, offsetY);
+      }
+    });
+
+    this.inpaintBox.onRedo = () => {
+      if (this.inpaintCanvasStateIndex < states.length - 1) {
+        const undoImage = new Image();
+        undoImage.src = states[++this.inpaintCanvasStateIndex];
+        undoImage.onload = () => {
+          ctx.clearRect(0, 0, this.inpaintCanvas.width, this.inpaintCanvas.height);
+          ctx.save();
+          ctx.drawImage(undoImage, 0, 0, this.inpaintCanvas.width, this.inpaintCanvas.height);
+          ctx.restore();
+          undoImage.remove();
+        };
+      }
+    };
+
+    this.inpaintBox.onUndo = () => {
+      if (this.inpaintCanvasStateIndex > 0) {
+        const undoImage = new Image();
+        undoImage.src = states[--this.inpaintCanvasStateIndex];
+        undoImage.onload = () => {
+          ctx.clearRect(0, 0, this.inpaintCanvas.width, this.inpaintCanvas.height);
+          ctx.save();
+          ctx.drawImage(undoImage, 0, 0, this.inpaintCanvas.width, this.inpaintCanvas.height);
+          ctx.restore();
+          undoImage.remove();
+        };
+      } else {
+        this.inpaintCanvasStateIndex = -1;
+        ctx.clearRect(0, 0, this.inpaintCanvas.width, this.inpaintCanvas.height);
+      }
+    };
+  }
+
+  getInpaintMask() {
+    const canvas = document.createElement('canvas');
+    canvas.width = this.img2imgInputImage.image.naturalWidth;
+    canvas.height = this.img2imgInputImage.image.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(this.inpaintCanvas, 0, 0, canvas.width, canvas.height);
+
+    const result = canvas.toDataURL();
+    canvas.remove();
+    return result;
+  }
+
+  clearInpaintCanvas() {
+    this.inpaintCanvasStates.splice(0);
+    this.inpaintCanvasStateIndex = -1;
+    const ctx = this.inpaintCanvas.getContext('2d');
+    ctx.save();
+    ctx.clearRect(0, 0, this.inpaintCanvas.width, this.inpaintCanvas.height);
+    ctx.restore();
+  }
+
+  showOrHideInpaintCanvas() {
+    if (this.inpaintBox.isInpainting && this.img2imgInputImage.hasImage) {
+      this.inpaintCanvas.style.display = '';
+    } else {
+      this.inpaintCanvas.style.display = 'none';
+    }
+  }
+
   /**
    *
    * @param {() => void} onStart
@@ -726,6 +1037,15 @@ export default class Txt2Img extends Tab {
         parameters.script_name = scriptName;
         parameters.script_args = scriptArgs;
       }
+      if (this.inpaintBox.isInpainting) {
+        parameters.mask = this.getInpaintMask();
+        parameters.mask_blur = 4;
+        parameters.inpainting_mask_invert = !this.inpaintBox.isInpaintingInvert;
+        parameters.inpainting_fill = 1;
+        parameters.inpaint_full_res = true;
+        parameters.inpaint_full_res_padding = 32;
+        this.inpaintBox.switchToHandTool();
+      }
       Api.instance
         .img2img(parameters)
         .then((json) => {
@@ -775,8 +1095,14 @@ export default class Txt2Img extends Tab {
     this.stepsSelector.disabled = isLoading;
     this.cfgSelector.disabled = isLoading;
     this.seed.disabled = isLoading;
+
     this.clearPromptButton.disabled = isLoading;
     this.clearNegativePromptButton.disabled = isLoading;
+    this.promptExtraButton.disabled = isLoading;
+    this.negativePromptExtraButton.disabled = isLoading;
+    this.promptClipboardButton.disabled = isLoading;
+    this.negativePromptClipboardButton.disabled = isLoading;
+
     this.clearSeedButton.disabled = isLoading;
     this.restoreFacesCheckbox.disabled = isLoading;
     this.hiresCheckbox.disabled = isLoading;
@@ -788,7 +1114,11 @@ export default class Txt2Img extends Tab {
     this.denoisingStrength.disabled = isLoading;
     this.resizeModeSelector.disabled = isLoading;
     this.img2imgInputImage.disabled = isLoading;
+    this.inpaintBox.disabled = isLoading;
     this.scriptName.disabled = isLoading;
     this.scriptArgs.disabled = isLoading;
+    this.selectScriptButton.disabled = isLoading;
+
+    this.isLoading = isLoading;
   }
 }

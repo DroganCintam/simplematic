@@ -23,18 +23,6 @@
   color: hsla(0, 0%, 100%, 0.75);
 }
 
-footer {
-  height: 3rem;
-  display: flex;
-  flex-flow: column nowrap;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 0.75rem;
-  color: hsla(0, 0%, 100%, 0.8);
-  border-top: 1px solid hsla(0, 0%, 100%, 0.25);
-}
-
 .main-view {
   transition: margin 0.2s ease-out;
   box-shadow: rgb(0, 0, 0) -5px 0px 20px -10px;

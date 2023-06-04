@@ -107,7 +107,7 @@ export default class Checkbox extends Component {
     super(parent, html.replace(/ASSIGNED_ID/g, options.assignedId), css, replacing);
 
     if (options.extraClasses) {
-      this.root.classList.add(options.extraClasses);
+      this.root.classList.add(...options.extraClasses);
     }
     this.root.querySelector('label').querySelector('.label-content').innerText = options.label;
 

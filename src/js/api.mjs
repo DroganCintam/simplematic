@@ -47,6 +47,14 @@ export class Img2ImgParameters {
 
   n_iter = 1;
   batch_size = 1;
+
+  /** @type {string | undefined} */
+  mask = undefined;
+  mask_blur = 4;
+  inpainting_mask_invert = 0;
+  inpainting_fill = 0;
+  inpaint_full_res = true;
+  inpaint_full_res_padding = 0;
 }
 
 export class UpscaleParameters {
@@ -133,12 +141,84 @@ export default class Api {
         })
       ).json();
 
+      const loras = await (
+        await fetch(url + 'loras', {
+          method: 'GET',
+          headers,
+        })
+      ).json();
+
+      const tis = await (
+        await fetch(url + 'embeddings', {
+          method: 'GET',
+          headers,
+        })
+      ).json();
+
+      const scripts = await (
+        await fetch(url + 'scripts', {
+          method: 'GET',
+          headers,
+        })
+      ).json();
+
       AppConfig.instance.setApiUrl(apiUrl, username, password);
-      AppConfig.instance.readOptions(options, samplers, upscalers, models);
+      AppConfig.instance.readOptions(options, samplers, upscalers, models, loras, tis, scripts);
       this.baseUrl = apiUrl;
       return null;
     } catch (err) {
       return err;
+    }
+  }
+
+  async refreshLORAs() {
+    try {
+      const headers = this.prepareHeaders(true);
+      const loras = await (
+        await fetch(this.baseUrl + 'sdapi/v1/loras', {
+          method: 'GET',
+          headers,
+        })
+      ).json();
+      AppConfig.instance.refreshLORAs(loras);
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  }
+
+  async refreshTIs() {
+    try {
+      const headers = this.prepareHeaders(true);
+      const tis = await (
+        await fetch(this.baseUrl + 'sdapi/v1/embeddings', {
+          method: 'GET',
+          headers,
+        })
+      ).json();
+      AppConfig.instance.refreshTIs(tis);
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  }
+
+  async refreshScripts() {
+    try {
+      const headers = this.prepareHeaders(true);
+      const scripts = await (
+        await fetch(this.baseUrl + 'sdapi/v1/scripts', {
+          method: 'GET',
+          headers,
+        })
+      ).json();
+      AppConfig.instance.refreshScripts(scripts);
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
     }
   }
 

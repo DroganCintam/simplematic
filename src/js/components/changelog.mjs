@@ -5,6 +5,13 @@ const html = /*html*/ `
 <div id="changelog-tab" class="app-tab" style="display:none">
   <div>
     <p>Current version: <code data-current-version></code></p>
+    <h1>Version 0.6.2</h1>
+    <ul>
+      <li>Inpainting</li>
+      <li>Prompt clipboard</li>
+      <li>LORA, Textual Inversion and Script auto-fill lists</li>
+      <li>Several bugfixes</li>
+    </ul>
     <h1>Version 0.6.1</h1>
     <ul>
       <li>Support for scripts</li>

@@ -105,6 +105,10 @@ const html = /*html*/ `
         <label class="heading">Script arguments:</label>
         <input type="text" class="result-script-args" readonly />
       </div>
+      <div class="vertical w100p result-timestamp">
+        <label>Timestamp:</label>
+        <input type="text" readonly />
+      </div>
     </div>
   </div>
 </div>
@@ -176,24 +180,10 @@ const css = /*css*/ `
 
 #result-tab .image {
   width: 100%;
+  height: auto;
   border: 1px solid hsla(0, 0%, 100%, 0.5);
   border-radius: 0.5rem;
   position: relative;
-}
-
-#result-tab .image.square {
-  max-width: 512px;
-  max-height: 512px;
-}
-
-#result-tab .image.portrait {
-  max-width: 512px;
-  max-height: 768px;
-}
-
-#result-tab .image.landscape {
-  max-width: 768px;
-  max-height: 512px;
 }
 
 #result-tab .input-image-wrapper {
@@ -425,6 +415,9 @@ export default class ResultDialog extends Tab {
   /** @type {HTMLButtonElement} */
   deleteButton;
 
+  /** @type {HTMLElement} */
+  timestamp;
+
   /** @type {HTMLTextAreaElement} */
   prompt;
   /** @type {HTMLTextAreaElement} */
@@ -456,11 +449,12 @@ export default class ResultDialog extends Tab {
   /** @type {ImageInfo} */
   imageInfo;
 
+  fromGeneration = false;
   fromGallery = false;
 
-  /** @type {(info: ImageInfo, progress: Progress) => void} */
+  /** @type {(info: ImageInfo, progress: Progress, fromSameWork: boolean) => void} */
   onRerun;
-  /** @type {(info: ImageInfo) => void} */
+  /** @type {(info: ImageInfo, fromSameWork: boolean) => void} */
   onRemix;
   /** @type {(info: ImageInfo) => void} */
   onUpscale;
@@ -475,6 +469,7 @@ export default class ResultDialog extends Tab {
   constructor(/** @type {HTMLElement} */ parent) {
     super(parent, html, css);
     this.image = this.root.querySelector('.image');
+    this.timestamp = this.root.querySelector('.result-timestamp');
     this.prompt = this.root.querySelector('.result-prompt');
     this.negativePrompt = this.root.querySelector('.result-negative-prompt');
     this.width = this.root.querySelector('.result-width');
@@ -508,12 +503,12 @@ export default class ResultDialog extends Tab {
 
     this.remixButton = this.root.querySelector('.btn-remix');
     this.remixButton.addEventListener('click', () => {
-      this.onRemix(this.imageInfo);
+      this.onRemix(this.imageInfo, this.fromGeneration);
     });
 
     this.rerunButton = this.root.querySelector('.btn-rerun');
     this.rerunButton.addEventListener('click', () => {
-      this.onRerun(this.imageInfo, this.rerunProgress);
+      this.onRerun(this.imageInfo, this.rerunProgress, this.fromGeneration);
     });
     this.rerunProgress = new Progress(this.rerunButton.querySelector('p'), true);
 
@@ -600,6 +595,13 @@ export default class ResultDialog extends Tab {
     this.addTagButton.addEventListener('click', () => {
       this.addTag();
     });
+
+    this.image.addEventListener('load', () => {
+      const width = this.image.naturalWidth;
+      const height = this.image.naturalHeight;
+      this.width.value = width;
+      this.height.value = height;
+    });
   }
 
   /**
@@ -626,8 +628,6 @@ export default class ResultDialog extends Tab {
       friendlyModelNames[this.imageInfo.info.modelHash] ?? this.imageInfo.info.modelName;
     this.modelHash.value = this.imageInfo.info.modelHash;
     this.parameters.value = infoText;
-
-    this.setImageAspectRatio();
 
     this.title = 'RESULT';
     this.fromGallery = false;
@@ -658,6 +658,10 @@ export default class ResultDialog extends Tab {
     this.imageInfo.scriptName = scriptName;
     this.imageInfo.scriptArgs = scriptArgs;
     this.updateScript();
+
+    this.fromGeneration = true;
+
+    this.timestamp.style.display = 'none';
   }
 
   /**
@@ -681,8 +685,6 @@ export default class ResultDialog extends Tab {
       friendlyModelNames[this.imageInfo.info.modelHash] ?? this.imageInfo.info.modelName;
     this.modelHash.value = this.imageInfo.info.modelHash;
     this.parameters.value = infoText;
-
-    this.setImageAspectRatio();
 
     this.title = 'IMPORTED RESULT';
     this.fromGallery = false;
@@ -708,6 +710,9 @@ export default class ResultDialog extends Tab {
     this.toggleInputImage(false);
 
     this.updateScript();
+
+    this.fromGeneration = false;
+    this.timestamp.style.display = 'none';
   }
 
   /**
@@ -743,8 +748,6 @@ export default class ResultDialog extends Tab {
       friendlyModelNames[this.imageInfo.info.modelHash] ?? this.imageInfo.info.modelName;
     this.modelHash.value = this.imageInfo.info.modelHash;
     this.parameters.value = extractPngText(row.data.substring('data:image/png;base64,'.length));
-
-    this.setImageAspectRatio();
 
     this.title = 'SAVED IMAGE';
     this.fromGallery = true;
@@ -791,28 +794,16 @@ export default class ResultDialog extends Tab {
     this.imageInfo.scriptName = row.scriptName;
     this.imageInfo.scriptArgs = row.scriptArgs;
     this.updateScript();
+
+    this.fromGeneration = false;
+    this.timestamp.style.display = 'flex';
+    this.timestamp.querySelector('input').value = row.timestamp.toLocaleString();
   }
 
   resizePromptBoxes() {
     autoResize(this.prompt);
     autoResize(this.negativePrompt);
     autoResize(this.parameters);
-  }
-
-  setImageAspectRatio() {
-    if (this.imageInfo.info.width > this.imageInfo.info.height) {
-      this.image.classList.remove('square');
-      this.image.classList.remove('portrait');
-      this.image.classList.add('landscape');
-    } else if (this.imageInfo.info.height > this.imageInfo.info.width) {
-      this.image.classList.remove('landscape');
-      this.image.classList.remove('square');
-      this.image.classList.add('portrait');
-    } else {
-      this.image.classList.remove('landscape');
-      this.image.classList.remove('portrait');
-      this.image.classList.add('square');
-    }
   }
 
   toggleInputImage(isShowing) {

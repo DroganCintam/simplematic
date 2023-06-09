@@ -3,12 +3,12 @@ import Component from './component.mjs';
 const html = /*html*/ `
 <div class="top-bar">
   <div style="display: flex; flex-flow: row nowrap; column-gap: 0.25rem">
-    <button type="button" class="icon-button btn-menu" title="Menu">
+    <button type="button" class="icon-button" data-btn-menu title="Menu">
       <img src="img/bars-solid.svg" />
     </button>
     <button
       type="button"
-      class="icon-button btn-back"
+      class="icon-button" data-btn-back
       title="Go back"
       style="display: none"
     >
@@ -16,26 +16,26 @@ const html = /*html*/ `
     </button>
     <button
       type="button"
-      class="icon-button btn-result"
+      class="icon-button" data-btn-result
       style="display: none"
       title="Result image (Ctrl+I)"
     >
       <img src="img/image-solid.svg" />
     </button>
-    <button type="button" class="icon-button btn-png-import" title="Import PNG">
+    <button type="button" class="icon-button" data-btn-png-import title="Import PNG">
       <img src="img/file-import-solid.svg" />
     </button>
     <button
       type="button"
-      class="icon-button btn-gallery"
+      class="icon-button" data-btn-gallery
       title="Gallery"
       style="display: none"
     >
       <img src="img/grip-solid.svg" />
     </button>
   </div>
-  <span class="tab-title"></span>
-  <button type="button" class="btn-generate">
+  <span data-tab-title></span>
+  <button type="button" data-btn-generate>
     <p></p>
     <img src="/img/wand-magic-sparkles-solid.svg" />
     <span>GENERATE</span>
@@ -86,12 +86,12 @@ export default class TopBar extends Component {
   constructor(/** @type {HTMLElement} */ parent) {
     super(parent, html, css, true);
 
-    this.menuButton = this.root.querySelector('.btn-menu');
-    this.backButton = this.root.querySelector('.btn-back');
-    this.resultButton = this.root.querySelector('.btn-result');
-    this.importButton = this.root.querySelector('.btn-png-import');
-    this.galleryButton = this.root.querySelector('.btn-gallery');
-    this.generateButton = this.root.querySelector('.btn-generate');
-    this.tabTitle = this.root.querySelector('.tab-title');
+    this.menuButton = this.root.querySelector('[data-btn-menu]');
+    this.backButton = this.root.querySelector('[data-btn-back]');
+    this.resultButton = this.root.querySelector('[data-btn-result]');
+    this.importButton = this.root.querySelector('[data-btn-png-import]');
+    this.galleryButton = this.root.querySelector('[data-btn-gallery]');
+    this.generateButton = this.root.querySelector('[data-btn-generate]');
+    this.tabTitle = this.root.querySelector('[data-tab-title]');
   }
 }

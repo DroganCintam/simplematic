@@ -4,7 +4,7 @@ const html = /*html*/ `
 <div class="image-upload">
   <input type="file" accept="image/png">
   <img alt="Input image" style="display: none">
-  <button type="button" class="icon-button btn-clear" title="Clear" style="display: none">
+  <button type="button" data-btn-clear class="icon-button" title="Clear" style="display: none">
     <img src="/img/xmark-solid.svg"/>
   </button>
 </div>
@@ -53,7 +53,7 @@ const css = /*css*/ `
   cursor: default;
 }
 
-.image-upload .btn-clear {
+.image-upload [data-btn-clear] {
   position: absolute;
   right: 0.5rem;
   top: 0.5rem;
@@ -108,7 +108,7 @@ export default class ImageUpload extends Component {
     }
     this.fileInput = this.root.querySelector('input');
     this.image = this.root.querySelector('img');
-    this.clearButton = this.root.querySelector('.btn-clear');
+    this.clearButton = this.root.querySelector('[data-btn-clear]');
 
     this.fileInput.addEventListener('change', () => {
       if (this.fileInput.files.length == 0) return;

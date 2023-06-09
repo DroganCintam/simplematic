@@ -1,22 +1,19 @@
 import Dialog from './dialog.mjs';
 
-const overlayBgOff = 'hsla(0, 0%, 0%, 0)';
-const overlayBgOn = 'hsla(0, 0%, 0%, 0.7)';
-
 const html = /*html*/ `
 <div class="confirm-dialog dialog-overlay">
   <div class="dialog">
-    <span class="message">The whole prompt will be clear. Are you sure?</span>
+    <span data-span-message>The whole prompt will be clear. Are you sure?</span>
     <div class="buttons">
-      <button type="button" class="btn-yes">YES</button>
-      <button type="button" class="btn-no">NO</button>
+      <button type="button" data-btn-yes>YES</button>
+      <button type="button" data-btn-no>NO</button>
     </div>
   </div>
 </div>
 `;
 
 const css = /*css*/ `
-.confirm-dialog .message {
+.confirm-dialog [data-span-message] {
   padding: 1rem;
   text-align: center;
 }
@@ -76,9 +73,9 @@ export default class ConfirmDialog extends Dialog {
     super(root, html, css, true);
     ConfirmDialog._instance = this;
 
-    this.message = this.root.querySelector('.message');
-    this.yesButton = this.root.querySelector('.btn-yes');
-    this.noButton = this.root.querySelector('.btn-no');
+    this.message = this.root.querySelector('[data-span-message]');
+    this.yesButton = this.root.querySelector('[data-btn-yes]');
+    this.noButton = this.root.querySelector('[data-btn-no]');
 
     this.yesButton.addEventListener('click', () => {
       if (this._onYes) this._onYes();

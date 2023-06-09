@@ -25,65 +25,65 @@ const html = /*html*/ `
 <div id="txt2img-tab" class="app-tab">
   <div class="parameter-pane">
     <label class="heading" for="">Prompt:<span class="options">
-      <button class="icon-button btn-prompt-clipboard" title="Clipboard">
+      <button class="icon-button" data-btn-prompt-clipboard title="Clipboard">
         <img src="/img/clipboard-list-solid.svg"/>
       </button>
-      <button class="icon-button btn-prompt-extra" title="Extra networks">
+      <button class="icon-button" data-btn-prompt-extra title="Extra networks">
         <img src="/img/rectangle-list-solid.svg"/>
       </button>
-      <button class="icon-button btn-clear-prompt" title="Erase">
+      <button class="icon-button" data-btn-clear-prompt title="Erase">
         <img src="/img/eraser-solid.svg"/>
       </button>
     </span></label>
-    <textarea class="txt-prompt" autocapitalize="off"></textarea>
+    <textarea data-txt-prompt autocapitalize="off"></textarea>
     <label class="heading" for="">Negative prompt:<span class="options">
-      <button class="icon-button btn-negative-prompt-clipboard" title="Clipboard">
+      <button class="icon-button" data-btn-negative-prompt-clipboard title="Clipboard">
         <img src="/img/clipboard-list-solid.svg"/>
       </button>
-      <button class="icon-button btn-negative-prompt-extra" title="Extra networks">
+      <button class="icon-button" data-btn-negative-prompt-extra title="Extra networks">
         <img src="/img/rectangle-list-solid.svg"/>
       </button>
-      <button class="icon-button btn-clear-negative-prompt" title="Erase">
+      <button class="icon-button" data-btn-clear-negative-prompt title="Erase">
         <img src="/img/eraser-solid.svg"/>
       </button>
     </span></label>
-    <textarea class="txt-negative-prompt" autocapitalize="off"></textarea>
+    <textarea data-txt-negative-prompt autocapitalize="off"></textarea>
     <label class="heading">Dimensions:</label>
-    <input type="number" class="custom txt-width" value="512" min="32" max="4096" step="32" onchange="validateInputRange(this)"/>
-    <input type="number" class="custom txt-height" value="512" min="32" max="4096" step="32" onchange="validateInputRange(this)"/>
-    <span class="sel-aspectRatio"></span>
+    <input type="number" class="custom" data-txt-width value="512" min="32" max="4096" step="32" onchange="validateInputRange(this)"/>
+    <input type="number" class="custom" data-txt-height value="512" min="32" max="4096" step="32" onchange="validateInputRange(this)"/>
+    <span data-sel-aspect-ratio></span>
     <label class="heading">Steps:</label>
-    <span class="sel-steps"></span>
+    <span data-sel-steps></span>
     <label class="heading">CFG scale:</label>
-    <span class="sel-cfg"></span>
+    <span data-sel-cfg></span>
     <label class="heading">Seed:</label>
     <div class="flexbox row justify-start align-center w100p" style="column-gap: 0.25rem">
-      <input type="number" class="txt-seed" value="-1" min="-1" onchange="validateInputRange(this)"/>
-      <button type="button" class="icon-button btn-clear-seed" title="Erase">
+      <input type="number" data-txt-seed value="-1" min="-1" onchange="validateInputRange(this)"/>
+      <button type="button" class="icon-button" data-btn-clear-seed title="Erase">
         <img src="img/eraser-solid.svg"/>
       </button>
     </div>
     <label class="heading">Advanced:</label>
     <div class="advanced-parameters">
-      <span class="chk-restore-faces"></span>
-      <span class="chk-hires"></span>
-      <span class="chk-img2img"></span>
-      <span class="chk-script"></span>
+      <span data-chk-restore-faces></span>
+      <span data-chk-hires></span>
+      <span data-chk-img2img></span>
+      <span data-chk-script></span>
     </div>
     <div class="advanced-box hires" style="display: none">
       <div class="title">HiRes options</div>
       <div class="options">
         <div class="option">
           <label>Denoising strength:</label>
-          <input type="number" class="txt-hires-denoising-strength" value="0.5" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
+          <input type="number" data-txt-hires-denoising-strength value="0.5" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
         </div>
         <div class="option">
           <label>Scale:</label>
-          <input type="number" class="txt-hires-scale" value="2" min="1" max="4" step="0.5" onchange="validateInputRange(this)">
+          <input type="number" data-txt-hires-scale value="2" min="1" max="4" step="0.5" onchange="validateInputRange(this)">
         </div>
         <div class="option">
           <label>Custom steps:</label>
-          <input type="number" class="txt-hires-steps" value="0" min="0" max="150" onchange="validateInputRange(this)">
+          <input type="number" data-txt-hires-steps value="0" min="0" max="150" onchange="validateInputRange(this)">
         </div>
       </div>
     </div>
@@ -91,11 +91,11 @@ const html = /*html*/ `
       <div class="title">Image-to-Image</div>
       <div class="options">
         <label class="heading">Denoising strength:</label>
-        <input type="number" class="txt-denoising-strength" value="0.5" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
+        <input type="number" data-txt-denoising-strength value="0.5" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
         <label class="heading">Resize mode:</label>
-        <span class="sel-resize-mode"></span>
+        <span data-sel-resize-mode></span>
         <label class="heading">Input image:</label>
-        <div class="img2img-input-image"></div>
+        <div data-img2img-input-image></div>
       </div>
     </div>
     <div class="advanced-box script" style="display: none">
@@ -103,10 +103,10 @@ const html = /*html*/ `
       <div class="options">
         <span class="w100p">Run extension script. Make sure you know what you are doing.</span>
         <label>Name:</label>
-        <input type="text" class="txt-script-name">
+        <input type="text" data-txt-script-name>
         <label>Arguments (as a JSON array):</label>
-        <input type="text" class="txt-script-args" placeholder="[]" spellcheck="false">
-        <button class="icon-button btn-select-script" title="Select script">
+        <input type="text" data-txt-script-args placeholder="[]" spellcheck="false">
+        <button class="icon-button" data-btn-select-script title="Select script">
           <img src="/img/rectangle-list-solid.svg"/>
         </button>
       </div>
@@ -126,15 +126,15 @@ const css = /*css*/ `
   max-width: 720px;
 }
 
-#txt2img-tab .txt-prompt,
-#txt2img-tab .txt-negative-prompt {
+#txt2img-tab [data-txt-prompt],
+#txt2img-tab [data-txt-negative-prompt] {
   width: 100%;
   min-height: 4rem;
   margin-bottom: 0.5rem;
   resize: none;
 }
 
-#txt2img-tab .txt-seed {
+#txt2img-tab [data-txt-seed] {
   max-width: 16ch;
 }
 
@@ -209,13 +209,13 @@ const css = /*css*/ `
   flex-grow: 1;
 }
 
-#txt2img-tab .advanced-box.script .options .btn-select-script {
+#txt2img-tab .advanced-box.script .options [data-btn-select-script] {
   position: absolute;
   right: 0rem;
   top: -2.5rem;
 }
 
-#txt2img-tab .img2img .options .txt-denoising-strength {
+#txt2img-tab .img2img .options [data-txt-denoising-strength] {
   min-width: 16ch;
 }
 
@@ -366,18 +366,20 @@ export default class Txt2Img extends Tab {
   constructor(/** @type {HTMLElement} */ parent) {
     super(parent, html, css);
 
-    this.prompt = this.root.querySelector('.txt-prompt');
-    this.clearPromptButton = this.root.querySelector('.btn-clear-prompt');
-    this.promptExtraButton = this.root.querySelector('.btn-prompt-extra');
-    this.promptClipboardButton = this.root.querySelector('.btn-prompt-clipboard');
+    this.prompt = this.root.querySelector('[data-txt-prompt]');
+    this.clearPromptButton = this.root.querySelector('[data-btn-clear-prompt]');
+    this.promptExtraButton = this.root.querySelector('[data-btn-prompt-extra]');
+    this.promptClipboardButton = this.root.querySelector('[data-btn-prompt-clipboard]');
 
-    this.negativePrompt = this.root.querySelector('.txt-negative-prompt');
-    this.clearNegativePromptButton = this.root.querySelector('.btn-clear-negative-prompt');
-    this.negativePromptExtraButton = this.root.querySelector('.btn-negative-prompt-extra');
-    this.negativePromptClipboardButton = this.root.querySelector('.btn-negative-prompt-clipboard');
+    this.negativePrompt = this.root.querySelector('[data-txt-negative-prompt]');
+    this.clearNegativePromptButton = this.root.querySelector('[data-btn-clear-negative-prompt]');
+    this.negativePromptExtraButton = this.root.querySelector('[data-btn-negative-prompt-extra]');
+    this.negativePromptClipboardButton = this.root.querySelector(
+      '[data-btn-negative-prompt-clipboard]'
+    );
 
-    this.seed = this.root.querySelector('.txt-seed');
-    this.clearSeedButton = this.root.querySelector('.btn-clear-seed');
+    this.seed = this.root.querySelector('[data-txt-seed]');
+    this.clearSeedButton = this.root.querySelector('[data-btn-clear-seed]');
 
     const resizeOnInput = function () {
       autoResize(this);
@@ -401,11 +403,11 @@ export default class Txt2Img extends Tab {
     this.negativePrompt.value = localStorage.getItem('negativePrompt') ?? '';
     autoResize(this.negativePrompt);
 
-    this.widthInput = this.root.querySelector('.txt-width');
-    this.heightInput = this.root.querySelector('.txt-height');
+    this.widthInput = this.root.querySelector('[data-txt-width]');
+    this.heightInput = this.root.querySelector('[data-txt-height]');
 
     this.aspectRatioSelector = new ValueSelector(
-      this.root.querySelector('.sel-aspectRatio'),
+      this.root.querySelector('[data-sel-aspect-ratio]'),
       {
         assignedId: 'aspectRatio',
         defaultValue: parseInt(localStorage.getItem('aspectRatio') ?? '1'),
@@ -438,7 +440,7 @@ export default class Txt2Img extends Tab {
     );
 
     this.stepsSelector = new ValueSelector(
-      this.root.querySelector('.sel-steps'),
+      this.root.querySelector('[data-sel-steps]'),
       {
         assignedId: 'steps',
         defaultValue: parseInt(localStorage.getItem('steps') ?? defaultParameters.steps.toString()),
@@ -458,7 +460,7 @@ export default class Txt2Img extends Tab {
     );
 
     this.cfgSelector = new ValueSelector(
-      this.root.querySelector('.sel-cfg'),
+      this.root.querySelector('[data-sel-cfg]'),
       {
         assignedId: 'cfg',
         defaultValue: parseFloat(localStorage.getItem('cfg') ?? defaultParameters.cfg.toString()),
@@ -476,7 +478,7 @@ export default class Txt2Img extends Tab {
       true
     );
 
-    this.resizeModeSelector = new ValueSelector(this.root.querySelector('.sel-resize-mode'), {
+    this.resizeModeSelector = new ValueSelector(this.root.querySelector('[data-sel-resize-mode]'), {
       assignedId: 'resizeMode',
       defaultValue: 0,
       minValue: 0,
@@ -491,7 +493,7 @@ export default class Txt2Img extends Tab {
     });
 
     this.restoreFacesCheckbox = new Checkbox(
-      this.root.querySelector('.chk-restore-faces'),
+      this.root.querySelector('[data-chk-restore-faces]'),
       {
         assignedId: 'chk-restore-faces',
         label: 'Restore faces',
@@ -500,7 +502,7 @@ export default class Txt2Img extends Tab {
     );
 
     this.hiresCheckbox = new Checkbox(
-      this.root.querySelector('.chk-hires'),
+      this.root.querySelector('[data-chk-hires]'),
       {
         assignedId: 'chk-hires',
         label: 'HiRes',
@@ -509,7 +511,7 @@ export default class Txt2Img extends Tab {
     );
 
     this.img2imgCheckbox = new Checkbox(
-      this.root.querySelector('.chk-img2img'),
+      this.root.querySelector('[data-chk-img2img]'),
       {
         assignedId: 'chk-img2img',
         label: 'Img2Img',
@@ -518,7 +520,7 @@ export default class Txt2Img extends Tab {
     );
 
     this.scriptCheckbox = new Checkbox(
-      this.root.querySelector('.chk-script'),
+      this.root.querySelector('[data-chk-script]'),
       {
         assignedId: 'chk-script',
         label: 'Script',
@@ -539,14 +541,16 @@ export default class Txt2Img extends Tab {
     };
 
     this.hiresOptions = this.root.querySelector('.hires');
-    this.hiresDenoisingStrength = this.hiresOptions.querySelector('.txt-hires-denoising-strength');
-    this.hiresScale = this.hiresOptions.querySelector('.txt-hires-scale');
-    this.hiresSteps = this.hiresOptions.querySelector('.txt-hires-steps');
+    this.hiresDenoisingStrength = this.hiresOptions.querySelector(
+      '[data-txt-hires-denoising-strength]'
+    );
+    this.hiresScale = this.hiresOptions.querySelector('[data-txt-hires-scale]');
+    this.hiresSteps = this.hiresOptions.querySelector('[data-txt-hires-steps]');
 
     this.img2img = this.root.querySelector('.img2img');
-    this.denoisingStrength = this.img2img.querySelector('.txt-denoising-strength');
+    this.denoisingStrength = this.img2img.querySelector('[data-txt-denoising-strength]');
     this.img2imgInputImage = new ImageUpload(
-      this.img2img.querySelector('.img2img-input-image'),
+      this.img2img.querySelector('[data-img2img-input-image]'),
       {},
       true
     );
@@ -580,9 +584,9 @@ export default class Txt2Img extends Tab {
     });
 
     this.scriptOptions = this.root.querySelector('.script');
-    this.scriptName = this.scriptOptions.querySelector('.txt-script-name');
-    this.scriptArgs = this.scriptOptions.querySelector('.txt-script-args');
-    this.selectScriptButton = this.scriptOptions.querySelector('.btn-select-script');
+    this.scriptName = this.scriptOptions.querySelector('[data-txt-script-name]');
+    this.scriptArgs = this.scriptOptions.querySelector('[data-txt-script-args]');
+    this.selectScriptButton = this.scriptOptions.querySelector('[data-btn-select-script]');
 
     this.scriptName.value = localStorage.getItem('script_name') ?? '';
     this.scriptArgs.value = localStorage.getItem('script_args') ?? '';

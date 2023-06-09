@@ -8,69 +8,69 @@ const html = /*html*/ `
   <div class="panes">
     <div class="pane input-pane">
       <div class="input-wrapper w100p">
-        <input class="input-image-file" type="file" accept="image/png">
-        <img class="input-image" alt="Input image" style="display: none">
+        <input data-input-image-file type="file" accept="image/png">
+        <img data-input-image alt="Input image" style="display: none">
       </div>
     </div>
     <div class="pane config-pane">
       <div class="option w100p">
-        <button type="button" class="btn-upscale" title="Upscale the input image">
+        <button type="button" data-btn-upscale title="Upscale the input image">
           <img src="/img/up-right-and-down-left-from-center-solid-black.svg">
           UPSCALE
         </button>
       </div>
       <div class="option w50p">
-        <span class="chk-scale-by"></span>
+        <span data-chk-scale-by></span>
       </div>
       <div class="option w50p">
         <label class="heading">Scale by</label>
-        <input type="number" class="txt-scale-by" value="4" min="1" max="8" step="0.5" onchange="validateInputRange(this)">
+        <input type="number" data-txt-scale-by value="4" min="1" max="8" step="0.5" onchange="validateInputRange(this)">
       </div>
       <div class="option w50p">
         <label class="heading">Width</label>
-        <input type="number" class="txt-scale-width" value="512" min="1" step="32" onchange="validateInputRange(this)">
+        <input type="number" data-txt-scale-width value="512" min="1" step="32" onchange="validateInputRange(this)">
       </div>
       <div class="option w50p">
         <label class="heading">Height</label>
-        <input type="number" class="txt-scale-height" value="512" min="1" step="32" onchange="validateInputRange(this)">
+        <input type="number" data-txt-scale-height value="512" min="1" step="32" onchange="validateInputRange(this)">
       </div>
       <div class="option w100p">
         <label class="heading">Upscaler</label>
-        <select class="sel-upscaler"></select>
+        <select data-sel-upscaler></select>
       </div>
       <div class="option w50p">
-        <span class="chk-upscaler-2"></span>
+        <span data-chk-upscaler-2></span>
       </div>
       <div class="option w50p">
         <label class="heading">Visibility</label>
-        <input type="number" class="txt-upscaler-2-visibility" value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
+        <input type="number" data-txt-upscaler-2-visibility value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
       </div>
       <div class="option w100p">
         <label class="heading">Upscaler 2</label>
-        <select class="sel-upscaler-2"></select>
+        <select data-sel-upscaler-2></select>
       </div>
       <div class="option w50p">
         <label class="heading">CodeFormer Visibility</label>
-        <input type="number" class="txt-codeformer-visibility" value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
+        <input type="number" data-txt-codeformer-visibility value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
       </div>
       <div class="option w50p">
         <label class="heading">CodeFormer Weight</label>
-        <input type="number" class="txt-codeformer-weight" value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
+        <input type="number" data-txt-codeformer-weight value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
       </div>
       <div class="option w50p">
-        <span class="chk-upscale-first"></span>
+        <span data-chk-upscale-first></span>
       </div>
       <div class="option w50p">
         <label class="heading">GFPGAN Visibility</label>
-        <input type="number" class="txt-gfpgan-visibility" value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
+        <input type="number" data-txt-gfpgan-visibility value="0" min="0" max="1" step="0.1" onchange="validateInputRange(this)">
       </div>
       <div class="option w100p">
-        <button type="button" class="btn-show-result" title="Show result image"><span>SHOW RESULT</span></button>
+        <button type="button" data-btn-show-result title="Show result image"><span>SHOW RESULT</span></button>
       </div>
     </div>
   </div>
-  <div class="output-wrapper w100p" style="display: none">
-    <img class="output-image" alt="Upscaled image">
+  <div class="w100p" data-output-wrapper style="display: none">
+    <img data-output-image alt="Upscaled image">
   </div>
 </div>
 `;
@@ -116,7 +116,7 @@ const css = /*css*/ `
   padding: 0.5rem;
 }
 
-#upscale-tab .input-image-file {
+#upscale-tab [data-input-image-file] {
   color: transparent;
   width: 100%;
   padding: 1rem;
@@ -124,7 +124,7 @@ const css = /*css*/ `
   border-radius: 0.5rem;
 }
 
-#upscale-tab .input-image-file::before {
+#upscale-tab [data-input-image-file]::before {
   display: block;
   width: 100%;
   height: 0;
@@ -136,11 +136,11 @@ const css = /*css*/ `
   color: #ffffff;
 }
 
-#upscale-tab .input-image-file::-webkit-file-upload-button {
+#upscale-tab [data-input-image-file]::-webkit-file-upload-button {
   visibility: hidden;
 }
 
-#upscale-tab .input-image {
+#upscale-tab [data-input-image] {
   width: 100%;
   border-radius: 0.5rem;
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -159,8 +159,8 @@ const css = /*css*/ `
   font-size: 0.9rem;
 }
 
-#upscale-tab .btn-upscale,
-#upscale-tab .btn-show-result {
+#upscale-tab [data-btn-upscale],
+#upscale-tab [data-btn-show-result] {
   width: 100%;
 }
 
@@ -177,7 +177,7 @@ const css = /*css*/ `
   color: hsla(0, 0%, 100%, 0.3);
 }
 
-#upscale-tab .output-wrapper {
+#upscale-tab [data-output-wrapper] {
   position: fixed;
   left: 0;
   top: 0;
@@ -190,7 +190,7 @@ const css = /*css*/ `
   align-items: center;
 }
 
-#upscale-tab .output-image {
+#upscale-tab [data-output-image] {
   max-width: min(512px, calc(100vw - 3rem));
   max-height: min(512px, 80vh);
   border-radius: 0.5rem;
@@ -242,7 +242,7 @@ export default class Upscale extends Tab {
     super(parent, html, css);
     this.title = 'UPSCALE';
 
-    this.inputImageFile = this.root.querySelector('.input-image-file');
+    this.inputImageFile = this.root.querySelector('[data-input-image-file]');
     this.inputImageFile.addEventListener('change', () => {
       if (this.inputImageFile.files.length == 0) return;
       const file = this.inputImageFile.files[0];
@@ -256,15 +256,15 @@ export default class Upscale extends Tab {
       });
       reader.readAsDataURL(file);
     });
-    this.inputImage = this.root.querySelector('.input-image');
+    this.inputImage = this.root.querySelector('[data-input-image]');
     this.scaleByCheckbox = new Checkbox(
-      this.root.querySelector('.chk-scale-by'),
+      this.root.querySelector('[data-chk-scale-by]'),
       { assignedId: 'chk-scale-by', label: 'Scale By', extraClasses: ['w100p'] },
       true
     );
-    this.scaleBy = this.root.querySelector('.txt-scale-by');
-    this.scaleWidth = this.root.querySelector('.txt-scale-width');
-    this.scaleHeight = this.root.querySelector('.txt-scale-height');
+    this.scaleBy = this.root.querySelector('[data-txt-scale-by]');
+    this.scaleWidth = this.root.querySelector('[data-txt-scale-width]');
+    this.scaleHeight = this.root.querySelector('[data-txt-scale-height]');
 
     this.scaleByCheckbox.onChange = (chk) => {
       this.scaleBy.disabled = !chk.checked;
@@ -276,14 +276,14 @@ export default class Upscale extends Tab {
     this.scaleWidth.disabled = true;
     this.scaleHeight.disabled = true;
 
-    this.upscaler = this.root.querySelector('.sel-upscaler');
+    this.upscaler = this.root.querySelector('[data-sel-upscaler]');
     this.upscaler2Checkbox = new Checkbox(
-      this.root.querySelector('.chk-upscaler-2'),
+      this.root.querySelector('[data-chk-upscaler-2]'),
       { assignedId: 'chk-upscaler-2', label: 'Upscaler 2', extraClasses: ['w100p'] },
       true
     );
-    this.upscaler2Visibility = this.root.querySelector('.txt-upscaler-2-visibility');
-    this.upscaler2 = this.root.querySelector('.sel-upscaler-2');
+    this.upscaler2Visibility = this.root.querySelector('[data-txt-upscaler-2-visibility]');
+    this.upscaler2 = this.root.querySelector('[data-sel-upscaler-2]');
 
     this.upscaler2Checkbox.onChange = (chk) => {
       this.upscaler2Visibility.disabled = !chk.checked;
@@ -293,25 +293,25 @@ export default class Upscale extends Tab {
     this.upscaler2Visibility.disabled = true;
     this.upscaler2.disabled = true;
 
-    this.codeFormerVisibility = this.root.querySelector('.txt-codeformer-visibility');
-    this.codeFormerWeight = this.root.querySelector('.txt-codeformer-weight');
+    this.codeFormerVisibility = this.root.querySelector('[data-txt-codeformer-visibility]');
+    this.codeFormerWeight = this.root.querySelector('[data-txt-codeformer-weight]');
     this.upscaleFirst = new Checkbox(
-      this.root.querySelector('.chk-upscale-first'),
+      this.root.querySelector('[data-chk-upscale-first]'),
       { assignedId: 'chk-upscale-first', label: 'Upscale First', extraClasses: ['w100p'] },
       true
     );
-    this.gfpganVisibility = this.root.querySelector('.txt-gfpgan-visibility');
+    this.gfpganVisibility = this.root.querySelector('[data-txt-gfpgan-visibility]');
 
-    this.upscaleButton = this.root.querySelector('.btn-upscale');
+    this.upscaleButton = this.root.querySelector('[data-btn-upscale]');
 
-    this.outputWrapper = this.root.querySelector('.output-wrapper');
-    this.outputImage = this.root.querySelector('.output-image');
+    this.outputWrapper = this.root.querySelector('[data-output-wrapper]');
+    this.outputImage = this.root.querySelector('[data-output-image]');
 
     this.upscaleButton.addEventListener('click', () => {
       this.upscale();
     });
 
-    this.showResultButton = this.root.querySelector('.btn-show-result');
+    this.showResultButton = this.root.querySelector('[data-btn-show-result]');
     this.showResultButton.parentElement.style.display = 'none';
     this.showResultButton.addEventListener('click', () => {
       this.outputWrapper.style.display = '';

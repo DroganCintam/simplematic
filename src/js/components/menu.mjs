@@ -9,35 +9,35 @@ const html = /*html*/ `
   <div>
     <div class="top">
       <span>SIMPLEMATIC</span>
-      <button type="button" class="icon-button btn-hide"><img src="/img/xmark-solid.svg" alt="hide menu"></button>
+      <button type="button" class="icon-button" data-btn-hide><img src="/img/xmark-solid.svg" alt="hide menu"></button>
     </div>
     <div class="option with-padding">
       <label><img src="/img/square-poll-horizontal-solid.svg" title="Settings"/>Sampler:</label>
-      <select class="sel-samplers"></select>
+      <select data-sel-sampler></select>
     </div>
     <div class="option with-padding">
       <label><img src="/img/cube-solid.svg" title="Settings"/>Model:</label>
-      <select class="sel-model"></select>
+      <select data-sel-model></select>
     </div>
     <div class="option">
-      <button type="button" class="btn-reload-config"><img src="/img/rotate-solid.svg" alt="Reload config">Reload config</button>
+      <button type="button" data-btn-reload-config><img src="/img/rotate-solid.svg" alt="Reload config">Reload config</button>
     </div>
     <div class="divider"></div>
     <div class="option">
-      <button type="button" class="btn-upscale" title="Upscale image (Ctrl+U)"><img src="/img/up-right-and-down-left-from-center-solid.svg">Upscale</button>
+      <button type="button" data-btn-upscale title="Upscale image (Ctrl+U)"><img src="/img/up-right-and-down-left-from-center-solid.svg">Upscale</button>
     </div>
     <div class="option">
-      <button type="button" class="btn-gallery" title="Open gallery (Ctrl+G)"><img src="/img/grip-solid.svg">Gallery</button>
+      <button type="button" data-btn-gallery title="Open gallery (Ctrl+G)"><img src="/img/grip-solid.svg">Gallery</button>
     </div>
     <div class="bottom-bar">
-      <button type="button" class="icon-button btn-settings" title="Settings (Ctrl+,)"><img src="/img/gear-solid.svg"/></button>
-      <button type="button" class="icon-button btn-about" title="About"><img src="/img/circle-info-solid.svg"/></button>
-      <button type="button" class="icon-button btn-changelog" title="Changelog"><img src="/img/file-lines-solid.svg"/></button>
+      <button type="button" class="icon-button" data-btn-settings title="Settings (Ctrl+,)"><img src="/img/gear-solid.svg"/></button>
+      <button type="button" class="icon-button" data-btn-about title="About"><img src="/img/circle-info-solid.svg"/></button>
+      <button type="button" class="icon-button" data-btn-changelog title="Changelog"><img src="/img/file-lines-solid.svg"/></button>
       <a href="https://github.com/DroganCintam/simplematic" target="_blank"><img src="/img/github.svg" title="Github repository"/></a>
-      <span class="version"></span>
+      <span data-version></span>
     </div>
   </div>
-  <div class="loader" style="display:none">
+  <div data-loader style="display:none">
     <span class="spinning"></span>
     <span>Loading...</span>
   </div>
@@ -187,7 +187,7 @@ const css = /*css*/ `
   color: hsla(0, 0%, 100%, 0.7);
 }
 
-#menu .loader {
+#menu [data-loader] {
   position: absolute;
   left: 0;
   bottom: 10rem;
@@ -200,7 +200,7 @@ const css = /*css*/ `
   font-size: 0.75rem;
 }
 
-#menu .loader .spinning {
+#menu [data-loader] .spinning {
   border: 0.5rem solid #f3f3f3;
   border-top: 0.5rem solid #3498db;
   border-radius: 50%;
@@ -261,47 +261,47 @@ export default class Menu extends Component {
   constructor(/** @type {HTMLElement} */ root) {
     super(root, html, css, true);
 
-    this.hideMenuButton = this.root.querySelector('.btn-hide');
+    this.hideMenuButton = this.root.querySelector('[data-btn-hide]');
     this.hideMenuButton.addEventListener('click', () => {
       this.onHide();
     });
 
-    this.upscaleButton = this.root.querySelector('.btn-upscale');
+    this.upscaleButton = this.root.querySelector('[data-btn-upscale]');
     this.upscaleButton.addEventListener('click', () => {
       this.onHide();
       this.onOpenUpscaler();
     });
 
-    this.galleryButton = this.root.querySelector('.btn-gallery');
+    this.galleryButton = this.root.querySelector('[data-btn-gallery]');
     this.galleryButton.addEventListener('click', () => {
       this.onHide();
       this.onOpenGallery();
     });
 
-    this.settingsButton = this.root.querySelector('.btn-settings');
+    this.settingsButton = this.root.querySelector('[data-btn-settings]');
     this.settingsButton.addEventListener('click', () => {
       this.onHide();
       this.onSettings();
     });
 
-    this.aboutButton = this.root.querySelector('.btn-about');
+    this.aboutButton = this.root.querySelector('[data-btn-about]');
     this.aboutButton.addEventListener('click', () => {
       this.onHide();
       this.onAbout();
     });
 
-    this.changelogButton = this.root.querySelector('.btn-changelog');
+    this.changelogButton = this.root.querySelector('[data-btn-changelog]');
     this.changelogButton.addEventListener('click', () => {
       this.onHide();
       this.onChangelog();
     });
 
-    this.samplers = this.root.querySelector('.sel-samplers');
+    this.samplers = this.root.querySelector('[data-sel-sampler]');
     this.samplers.addEventListener('change', () => {
       AppConfig.instance.selectSampler(this.samplers.value);
     });
 
-    this.models = this.root.querySelector('.sel-model');
+    this.models = this.root.querySelector('[data-sel-model]');
     this.models.addEventListener('change', async () => {
       const model = AppConfig.instance.modelDict[this.models.value];
       this.setLoading(true);
@@ -312,7 +312,7 @@ export default class Menu extends Component {
       }
     });
 
-    this.reloadConfigButton = this.root.querySelector('.btn-reload-config');
+    this.reloadConfigButton = this.root.querySelector('[data-btn-reload-config]');
     this.reloadConfigButton.addEventListener('click', async () => {
       this.setLoading(true);
       await Api.instance.reloadConfig();
@@ -320,7 +320,7 @@ export default class Menu extends Component {
       this.refreshOptions();
     });
 
-    this.loader = this.root.querySelector('.loader');
+    this.loader = this.root.querySelector('[data-loader]');
 
     this.refreshOptions();
 
@@ -332,15 +332,13 @@ export default class Menu extends Component {
       });
     }
 
-    this.root.querySelector('.version').innerText = `v${version.version}`;
+    this.root.querySelector('[data-version]').innerText = `v${version.version}`;
   }
 
   refreshOptions() {
     this.samplers.innerHTML = '';
     AppConfig.instance.samplerList.forEach((s) => {
-      const opt = document.createElement('option');
-      opt.value = s;
-      opt.innerText = s;
+      const opt = Component.fromHTML(`<option value="${s}">${s}</option>`);
       this.samplers.appendChild(opt);
       if (s == AppConfig.instance.selectedSampler) {
         opt.selected = true;
@@ -349,9 +347,9 @@ export default class Menu extends Component {
 
     this.models.innerHTML = '';
     AppConfig.instance.modelList.forEach((m) => {
-      const opt = document.createElement('option');
-      opt.value = m.hash;
-      opt.innerText = friendlyModelNames[m.hash] ?? m.name;
+      const opt = Component.fromHTML(
+        `<option value="${m.hash}">${friendlyModelNames[m.hash] ?? m.name}</option>`
+      );
       this.models.appendChild(opt);
       if (m.hash == AppConfig.instance.selectedModel) {
         opt.selected = true;

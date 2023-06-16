@@ -566,6 +566,19 @@ export default class Txt2Img extends Tab {
       this.showOrHideInpaintCanvas();
     };
 
+    const checkViewportWidthToToggleInpaintCanvas = () => {
+      if (window.innerWidth < 480) {
+        Component.changeParent(this.inpaintBox.root, this.img2imgInputImage.root.parentElement);
+        this.inpaintBox.toggleInsideCanvas(false);
+      } else {
+        Component.changeParent(this.inpaintBox.root, this.img2imgInputImage.root);
+        this.inpaintBox.toggleInsideCanvas(true);
+      }
+    };
+
+    window.addEventListener('resize', checkViewportWidthToToggleInpaintCanvas);
+    checkViewportWidthToToggleInpaintCanvas();
+
     this.img2imgInputImage.addEventListener('imageData', () => {
       if (this.img2imgInputImage.hasImage) {
         this.inpaintBox.show();

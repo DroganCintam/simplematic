@@ -39,10 +39,6 @@ const html = /*html*/ `
 
 const css = /*css*/ `
 [data-inpaint-box] {
-  position: absolute;
-  left: 1rem;
-  top: 1rem;
-  width: 16rem;
   height: auto;
   background-color: hsla(0, 0%, 100%, 0.2);
   border: 1px solid hsla(0, 0%, 100%, 0.5);
@@ -52,6 +48,18 @@ const css = /*css*/ `
   flex-flow: column nowrap;
   align-items: center;
   gap: 0.25rem;
+}
+
+[data-inpaint-box].inside-canvas {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  width: 16rem;
+}
+
+[data-inpaint-box].outside-canvas {
+  position: relative;
+  width: 100%;
 }
 
 [data-inpaint-box] [data-mover] {
@@ -256,6 +264,12 @@ export default class InpaintBox extends Component {
 
   switchToHandTool() {
     this.handToolRadio.checked = true;
+  }
+
+  toggleInsideCanvas(isInside) {
+    this.root.classList.toggle('inside-canvas', isInside);
+    this.root.classList.toggle('outside-canvas', !isInside);
+    this.root.querySelector('[data-mover]').style.display = isInside ? '' : 'none';
   }
 
   initMover() {

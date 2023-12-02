@@ -876,9 +876,8 @@ export default class ResultDialog extends Tab {
     const name = Object.assign(document.createElement('span'), {
       innerText: '#' + tag,
     });
-    const button = Object.assign(document.createElement('span'), {
-      className: 'btn-remove-tag',
-    });
+    const button = Object.assign(document.createElement('span'));
+    button.setAttribute('data-btn-remove-tag', '');
     button.addEventListener('click', () => {
       if (this.addTagButton.disabled == false) {
         this.removeTag(el, tag);

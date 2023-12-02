@@ -357,6 +357,7 @@ class App {
   }
 
   generate(/** @type {Progress} */ progress) {
+    let wakeLockInstance = null;
     this.txt2imgTab.generate(
       () => {
         this.setLoading(true);
@@ -364,10 +365,29 @@ class App {
           this.hideMenu();
         }
         progress.runWithApi();
+
+        if ('wakeLock' in navigator) {
+          navigator.wakeLock
+            .request('screen')
+            .then((inst) => {
+              wakeLockInstance = inst;
+              console.log('Wake Lock is active');
+            })
+            .catch((err) => {
+              wakeLockInstance = null;
+              console.error(`${err.name}, ${err.message}`);
+            });
+        }
       },
       () => {
         this.setLoading(false);
         progress.hide();
+
+        if ('wakeLock' in navigator && wakeLockInstance) {
+          wakeLockInstance.release().then(() => {
+            console.log('Wake Lock is released');
+          });
+        }
       },
       (json, scriptName, scriptArgs) => {
         this.hasResult = true;

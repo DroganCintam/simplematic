@@ -588,7 +588,7 @@ export default class Txt2Img extends Tab {
           this.inpaintCanvas.width = width;
           this.inpaintCanvas.height = height;
           this.clearInpaintCanvas();
-        }, 1);
+        }, 100);
       } else {
         this.inpaintBox.hide();
         this.clearInpaintCanvas();

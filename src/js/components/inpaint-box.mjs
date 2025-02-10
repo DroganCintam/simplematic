@@ -39,10 +39,6 @@ const html = /*html*/ `
 
 const css = /*css*/ `
 [data-inpaint-box] {
-  position: absolute;
-  left: 1rem;
-  top: 1rem;
-  width: 16rem;
   height: auto;
   background-color: hsla(0, 0%, 100%, 0.2);
   border: 1px solid hsla(0, 0%, 100%, 0.5);
@@ -52,6 +48,18 @@ const css = /*css*/ `
   flex-flow: column nowrap;
   align-items: center;
   gap: 0.25rem;
+}
+
+[data-inpaint-box].inside-canvas {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  width: 16rem;
+}
+
+[data-inpaint-box].outside-canvas {
+  position: relative;
+  width: 100%;
 }
 
 [data-inpaint-box] [data-mover] {
@@ -163,6 +171,8 @@ export default class InpaintBox extends Component {
   /** @type {() => void} */
   onUndo;
 
+  insideCanvas = false;
+
   get isInpainting() {
     return this.checkbox.checked;
   }
@@ -258,6 +268,13 @@ export default class InpaintBox extends Component {
     this.handToolRadio.checked = true;
   }
 
+  toggleInsideCanvas(isInside) {
+    this.root.classList.toggle('inside-canvas', isInside);
+    this.root.classList.toggle('outside-canvas', !isInside);
+    this.root.querySelector('[data-mover]').style.display = isInside ? '' : 'none';
+    this.insideCanvas = isInside;
+  }
+
   initMover() {
     const mover = this.root.querySelector('[data-mover]');
 
@@ -274,6 +291,8 @@ export default class InpaintBox extends Component {
     let parentRect;
 
     const onBegin = (x, y) => {
+      if (!this.insideCanvas) return;
+
       isMoving = true;
       lastX = x;
       lastY = y;

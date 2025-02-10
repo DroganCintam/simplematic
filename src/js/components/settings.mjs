@@ -12,24 +12,24 @@ const html = /*html*/ `
     <div class="section">
       <span class="title">Backend URL</span>
       <span>Enter your backend URL and press SAVE to start using the app:</span>
-      <input type="url" class="w100p txt-url" />
-      <input type="text" class="w50p txt-username" placeholder="username" />
-      <input type="password" class="w50p txt-password" placeholder="password" />
-      <button type="button" class="w100p btn-save">SAVE</button>
-      <span class="clickable-text btn-instructions">Instructions</span>
+      <input type="url" class="w100p" data-txt-url />
+      <input type="text" class="w50p" data-txt-username placeholder="username" />
+      <input type="password" class="w50p" data-txt-password placeholder="password" />
+      <button type="button" class="w100p" data-btn-save>SAVE</button>
+      <span class="clickable-text" data-btn-instructions>Instructions</span>
     </div>
     <div class="section bg">
       <span class="title">Background image</span>
-      <span class="chk-use-default-bg"></span>
-      <span class="chk-use-custom-bg"></span>
-      <span class="chk-dimmed-bg"></span>
-      <span class="custom-bg-upload"></span>
-      <button type="button" class="w100p btn-save-custom-bg">SAVE BACKGROUND</button>
+      <span data-chk-use-default-bg></span>
+      <span data-chk-use-custom-bg></span>
+      <span data-chk-dimmed-bg></span>
+      <span data-custom-bg-upload></span>
+      <button type="button" class="w100p" data-btn-save-custom-bg>SAVE BACKGROUND</button>
     </div>
     <div class="section">
       <span class="title">Reload</span>
       <span>Reload the entire app to fetch updates:</span>
-      <button type="button" class="w100p btn-reload">RELOAD APP</button>
+      <button type="button" class="w100p" data-btn-reload>RELOAD APP</button>
     </div>
   </div>
 </div>
@@ -74,12 +74,12 @@ const css = /*css*/ `
   align-items: center;
 }
 
-#settings-tab .txt-username {
+#settings-tab [data-txt-username] {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
 
-#settings-tab .txt-password {
+#settings-tab [data-txt-password]] {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
@@ -137,15 +137,15 @@ export default class Settings extends Tab {
   constructor(/** @type {HTMLElement} */ parent) {
     super(parent, html, css);
     this.title = 'SETTINGS';
-    this.urlInput = this.root.querySelector('.txt-url');
-    this.usernameInput = this.root.querySelector('.txt-username');
-    this.passwordInput = this.root.querySelector('.txt-password');
+    this.urlInput = this.root.querySelector('[data-txt-url]');
+    this.usernameInput = this.root.querySelector('[data-txt-username]');
+    this.passwordInput = this.root.querySelector('[data-txt-password]');
     this.urlInput.value = AppConfig.instance.apiUrl;
     this.usernameInput.value = AppConfig.instance.username;
     this.passwordInput.value = AppConfig.instance.password;
 
     this.useDefaultBgCheckbox = new Checkbox(
-      this.root.querySelector('.chk-use-default-bg'),
+      this.root.querySelector('[data-chk-use-default-bg]'),
       {
         assignedId: 'chk-use-default-bg',
         label: 'Use Default Background',
@@ -153,7 +153,7 @@ export default class Settings extends Tab {
       true
     );
     this.useCustomBgCheckbox = new Checkbox(
-      this.root.querySelector('.chk-use-custom-bg'),
+      this.root.querySelector('[data-chk-use-custom-bg]'),
       {
         assignedId: 'chk-use-custom-bg',
         label: 'Use Custom Background',
@@ -161,7 +161,7 @@ export default class Settings extends Tab {
       true
     );
     this.dimmedBgCheckbox = new Checkbox(
-      this.root.querySelector('.chk-dimmed-bg'),
+      this.root.querySelector('[data-chk-dimmed-bg]'),
       {
         assignedId: 'chk-dimmed-bg',
         label: 'Dimmed Background',
@@ -169,17 +169,17 @@ export default class Settings extends Tab {
       true
     );
     this.customBgUpload = new ImageUpload(
-      this.root.querySelector('.custom-bg-upload'),
+      this.root.querySelector('[data-custom-bg-upload]'),
       {
         extraClasses: ['w100p'],
       },
       true
     );
     this.customBgUpload.acceptedTypes = 'image/png,image/jpeg';
-    this.saveBgButton = this.root.querySelector('.btn-save-custom-bg');
+    this.saveBgButton = this.root.querySelector('[data-btn-save-custom-bg]');
 
     /** @type {HTMLButtonElement} */
-    this.saveButton = this.root.querySelector('.btn-save');
+    this.saveButton = this.root.querySelector('[data-btn-save]');
     this.saveButton.addEventListener('click', async () => {
       this.setLoading(true);
       const err = await Api.instance.connect(
@@ -195,7 +195,7 @@ export default class Settings extends Tab {
       }
     });
 
-    this.root.querySelector('.btn-instructions').addEventListener('click', () => {
+    this.root.querySelector('[data-btn-instructions]').addEventListener('click', () => {
       this.onRequestInstructions();
     });
 
@@ -230,7 +230,7 @@ export default class Settings extends Tab {
     });
 
     /** @type {HTMLButtonElement} */
-    this.reloadButton = this.root.querySelector('.btn-reload');
+    this.reloadButton = this.root.querySelector('[data-btn-reload]');
     this.reloadButton.addEventListener('click', () => {
       window.location.reload();
     });

@@ -51,11 +51,12 @@ const css = /*css*/ `
 .value-selector .value-list .preset label {
   flex-grow: 1;
   background-color: hsla(0, 0%, 0%, 0.5);
-  color: hsl(0, 0%, 100%);
+  color: hsla(0, 0%, 100%, 0.8);
   text-align: center;
   padding: 0.5rem;
   min-width: 10ch;
   font-size: 0.75rem;
+  font-weight: 500;
   cursor: pointer;
   border-radius: 0.5rem;
 }
@@ -63,14 +64,16 @@ const css = /*css*/ `
 .value-selector .value-list .preset input:checked+label {
   background-color: hsl(45, 100%, 50%);
   color: hsl(0, 0%, 0%);
+  font-weight: 600;
 }
 
 .value-selector .value-list .preset input:disabled+label {
-  color: hsl(0, 0%, 100%, 0.8);
+  color: hsl(0, 0%, 100%, 0.5);
 }
 
 .value-selector .value-list .preset input:disabled:checked+label {
   background-color: hsla(45, 100%, 50%, 0.8);
+  color: hsla(0, 0%, 0%, 0.5);
 }
 `;
 

@@ -8,20 +8,20 @@ const html = /*html*/ `
   <div>
     <div>
       <label class="heading">Import as file:</label>
-      <input class="file-input" type="file" accept="image/png">
-      <span class="invalid-file-message" style="display:none">The provided file does not contain parameters data.</span>
+      <input data-file-input type="file" accept="image/png">
+      <span data-msg-invalid-file style="display:none">The provided file does not contain parameters data.</span>
     </div>
     <div>
       <label class="heading">Import as parameters:<span class="options">
-      <button class="icon-button btn-clear-parameters" title="Erase">
+      <button class="icon-button" data-btn-clear-parameters title="Erase">
         <img src="/img/eraser-solid.svg"/>
       </button>
     </span></label>
-      <textarea class="parameters-input"></textarea>
-      <span class="invalid-parameters-message" style="display:none">The provided parameters are invalid.</span>
+      <textarea data-parameters-input></textarea>
+      <span data-msg-invalid-parameters style="display:none">The provided parameters are invalid.</span>
     </div>
     <div>
-      <button class="btn-import-parameters"><img src="/img/file-import-solid-black.svg">IMPORT PARAMETERS</button>
+      <button data-btn-import-parameters><img src="/img/file-import-solid-black.svg">IMPORT PARAMETERS</button>
     </div>
   </div>
 </div>
@@ -48,7 +48,7 @@ const css = /*css*/ `
   row-gap: 0.5rem;
 }
 
-#png-import-tab .file-input {
+#png-import-tab [data-file-input] {
   color: transparent;
   width: 100%;
   padding: 1rem;
@@ -56,7 +56,7 @@ const css = /*css*/ `
   border-radius: 0.5rem;
 }
 
-#png-import-tab .file-input::before {
+#png-import-tab [data-file-input]::before {
   display: block;
   width: 100%;
   height: 100%;
@@ -68,11 +68,11 @@ const css = /*css*/ `
   color: #ffffff;
 }
 
-#png-import-tab .file-input::-webkit-file-upload-button {
+#png-import-tab [data-file-input]::-webkit-file-upload-button {
   visibility: hidden;
 }
 
-#png-import-tab .parameters-input {
+#png-import-tab [data-parameters-input] {
   padding: 0.5rem;
   background-color: rgba(0, 0, 0, 0.5);
   color: hsl(0, 0%, 100%);
@@ -85,7 +85,7 @@ const css = /*css*/ `
   width: 100%;
 }
 
-#png-import-tab .btn-import-parameters {
+#png-import-tab [data-btn-import-parameters] {
   width: 100%;
 }
 
@@ -130,12 +130,12 @@ export default class PngImport extends Tab {
     super(parent, html, css);
     this.title = 'IMPORT PNG';
 
-    this.pngFile = this.root.querySelector('.file-input');
-    this.invalidPngError = this.root.querySelector('.invalid-file-message');
-    this.parametersInput = this.root.querySelector('.parameters-input');
-    this.clearParametersButton = this.root.querySelector('.btn-clear-parameters');
-    this.invalidParametersError = this.root.querySelector('.invalid-parameters-message');
-    this.importParametersButton = this.root.querySelector('.btn-import-parameters');
+    this.pngFile = this.root.querySelector('[data-file-input]');
+    this.invalidPngError = this.root.querySelector('[data-msg-invalid-file]');
+    this.parametersInput = this.root.querySelector('[data-parameters-input]');
+    this.clearParametersButton = this.root.querySelector('[data-btn-clear-parameters]');
+    this.invalidParametersError = this.root.querySelector('[data-msg-invalid-parameters]');
+    this.importParametersButton = this.root.querySelector('[data-btn-import-parameters]');
 
     this.pngFile.addEventListener('change', (e) => {
       if (this.pngFile.files.length == 0) return;

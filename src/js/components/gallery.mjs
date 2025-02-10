@@ -3,27 +3,28 @@ import Tab from './tab.mjs';
 import waitPromise from '../utils/waitPromise.mjs';
 import ImageInfo from '../types/image-info.mjs';
 import CancelToken from '../types/cancel-token.mjs';
+import Component from './component.mjs';
 
 const html = /*html*/ `
 <div id="gallery-tab" class="app-tab" style="display: none">
   <div>
-    <div class="options">
-      <div class="tags"></div>
+    <div data-options>
+      <div data-tags></div>
     </div>
-    <div class="pagination">
-      <button type="button" class="btn-prev" title="Previous page">
+    <div data-pagination>
+      <button type="button" data-btn-prev title="Previous page">
         <img src="/img/chevron-left-solid.svg"/>
       </button>
-      <div class="pages">
-        <span class="current-page">1</span>
+      <div data-pages>
+        <span data-current-page>1</span>
         <span>/</span>
-        <span class="page-count">1</span>
+        <span data-page-count>1</span>
       </div>
-      <button type="button" class="btn-next" title="Next page">
+      <button type="button" data-btn-next title="Next page">
         <img src="/img/chevron-right-solid.svg"/>
       </button>
     </div>
-    <ul class="grid">
+    <ul data-grid>
     </ul>
   </div>
   
@@ -41,7 +42,7 @@ const css = /*css*/ `
   gap: 1rem;
 }
 
-#gallery-tab .options {
+#gallery-tab [data-options] {
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-start;
@@ -49,7 +50,7 @@ const css = /*css*/ `
   width: 100%;
 }
 
-#gallery-tab .tags {
+#gallery-tab [data-tags] {
   display: flex;
   flex-flow: row wrap;
   justify-content: flex-start;
@@ -57,7 +58,7 @@ const css = /*css*/ `
   gap: 0.5rem;
 }
 
-#gallery-tab .tags .tag {
+#gallery-tab [data-tags] .tag {
   padding: 0.5rem;
   border: 1px solid hsla(0, 0%, 100%, 0.5);
   border-radius: 0.25rem;
@@ -66,19 +67,19 @@ const css = /*css*/ `
   cursor: pointer;
 }
 
-#gallery-tab .tags .tag:hover {
+#gallery-tab [data-tags] .tag:hover {
   border-color: hsl(0, 0%, 100%);
   color: hsl(0, 0%, 100%);
 }
 
-#gallery-tab .tags .tag.selected,
-#gallery-tab .tags .tag.selected:hover {
+#gallery-tab [data-tags] .tag.selected,
+#gallery-tab [data-tags] .tag.selected:hover {
   border: none;
   background-color: hsl(45, 100%, 50%);
   color: hsl(0, 0%, 0%);
 }
 
-#gallery-tab .pagination {
+#gallery-tab [data-pagination] {
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
@@ -87,7 +88,7 @@ const css = /*css*/ `
   gap: 0.5rem;
 }
 
-#gallery-tab .pagination button {
+#gallery-tab [data-pagination] button {
   background: none;
   border: 0;
   font-size: 0.75rem;
@@ -101,31 +102,31 @@ const css = /*css*/ `
 }
 
 @supports not (-webkit-touch-callout: none) {
-  #gallery-tab .pagination button:hover {
+  #gallery-tab [data-pagination] button:hover {
     background-color: hsla(0, 0%, 100%, 0.5);
   }
 }
 
-#gallery-tab .pagination button:disabled {
+#gallery-tab [data-pagination] button:disabled {
   color: hsla(0, 0%, 100%, 0.5);
 }
 
-#gallery-tab .pagination button:disabled:hover {
+#gallery-tab [data-pagination] button:disabled:hover {
   background: none;
 }
 
-#gallery-tab .pagination button img {
+#gallery-tab [data-pagination] button img {
   width: 1rem;
   height: 1rem;
 }
 
-#gallery-tab .btn-prev,
-#gallery-tab .btn-next,
-#gallery-tab .pages {
+#gallery-tab [data-btn-prev],
+#gallery-tab [data-btn-next],
+#gallery-tab [data-pages] {
   flex-grow: 1;
 }
 
-#gallery-tab .pagination .pages {
+#gallery-tab [data-pagination] [data-pages] {
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
@@ -136,7 +137,7 @@ const css = /*css*/ `
   padding: 0.5rem;
 }
 
-#gallery-tab .grid {
+#gallery-tab [data-grid] {
   list-style: none;
   display: flex;
   flex-direction: row;
@@ -147,14 +148,14 @@ const css = /*css*/ `
   max-width: 1024px;
 }
 
-#gallery-tab .grid li {
+#gallery-tab [data-grid] li {
   flex: 1 1 auto;
   cursor: pointer;
   position: relative;
   height: 8rem;
 }
 
-#gallery-tab .grid li > img {
+#gallery-tab [data-grid] li > img {
   object-fit: cover;
   width: 100%;
   height: 100%;
@@ -163,19 +164,19 @@ const css = /*css*/ `
   border: 1px solid #ffffff;
 }
 
-#gallery-tab .grid li.landscape {
+#gallery-tab [data-grid] li.landscape {
   width: 12rem;
 }
 
-#gallery-tab .grid li.portrait {
+#gallery-tab [data-grid] li.portrait {
   width: 5rem;
 }
 
-#gallery-tab .grid li.square {
+#gallery-tab [data-grid] li.square {
   width: 8rem;
 }
 
-#gallery-tab .grid::after {
+#gallery-tab .[data-grid]::after {
   content: '';
   flex-grow: 999;
 }
@@ -224,12 +225,12 @@ export default class Gallery extends Tab {
   constructor(/** @type {HTMLElement} */ parent) {
     super(parent, html, css);
     this.title = 'GALLERY';
-    this.tags = this.root.querySelector('.tags');
-    this.grid = this.root.querySelector('.grid');
-    this.prevPageButton = this.root.querySelector('.btn-prev');
-    this.nextPageButton = this.root.querySelector('.btn-next');
-    this.currentPageSpan = this.root.querySelector('.current-page');
-    this.pageCountSpan = this.root.querySelector('.page-count');
+    this.tags = this.root.querySelector('[data-tags]');
+    this.grid = this.root.querySelector('[data-grid]');
+    this.prevPageButton = this.root.querySelector('[data-btn-prev]');
+    this.nextPageButton = this.root.querySelector('[data-btn-next]');
+    this.currentPageSpan = this.root.querySelector('[data-current-page]');
+    this.pageCountSpan = this.root.querySelector('[data-page-count]');
 
     this.prevPageButton.addEventListener('click', () => {
       this.goPrev();
@@ -264,9 +265,7 @@ export default class Gallery extends Tab {
     this.tags.innerHTML = '';
 
     ImageDB.instance.tags.forEach((tag) => {
-      const el = document.createElement('span');
-      el.className = 'tag';
-      el.innerText = '#' + tag;
+      const el = Component.fromHTML(`<span class="tag">#${tag}</span>`);
       el.addEventListener('click', () => {
         this.filterByTag(tag);
       });
@@ -279,18 +278,14 @@ export default class Gallery extends Tab {
       }
     });
 
-    const noneTagEl = document.createElement('span');
-    noneTagEl.classList.add('tag', 'none');
-    noneTagEl.innerText = '<none>';
+    const noneTagEl = Component.fromHTML(`<span class="tag none">&lt;none&gt;</span>`);
     noneTagEl.addEventListener('click', () => {
       this.filterByTag('<none>');
     });
     this.tags.appendChild(noneTagEl);
     this.tagElements['<none>'] = noneTagEl;
 
-    const allTagEl = document.createElement('span');
-    allTagEl.classList.add('tag', 'all');
-    allTagEl.innerText = '<all>';
+    const allTagEl = Component.fromHTML(`<span class="tag all">&lt;all&gt;</span>`);
     allTagEl.addEventListener('click', () => {
       this.filterByTag('<all>');
     });
@@ -437,13 +432,12 @@ export default class Gallery extends Tab {
       viewer = this.viewerPool.pop();
       img = viewer.querySelector('img');
     } else {
-      viewer = document.createElement('li');
-      img = document.createElement('img');
+      viewer = Component.fromHTML(`<li><img></li>`);
+      img = viewer.querySelector('img');
       img.addEventListener('click', () => {
         const uuid = img.getAttribute('data-uuid');
         this.onView(ImageDB.instance.get(uuid));
       });
-      viewer.appendChild(img);
     }
 
     if (row.width == 768) {

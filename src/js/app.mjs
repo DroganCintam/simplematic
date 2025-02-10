@@ -99,8 +99,8 @@ class App {
     await backgroundLoader.initialize();
 
     this.root = document.querySelector('#app');
-    this.mainView = this.root.querySelector('.main-view');
-    this.mainCurtain = this.root.querySelector('.main-curtain');
+    this.mainView = this.root.querySelector('[data-main-view]');
+    this.mainCurtain = this.root.querySelector('[data-main-curtain]');
 
     this.mainCurtain.addEventListener('click', () => {
       if (this.showingMenu && !this.menu.hideMenuButton.disabled) {
@@ -108,7 +108,7 @@ class App {
       }
     });
 
-    this.menu = new Menu(this.root.querySelector('.menu'));
+    this.menu = new Menu(this.root.querySelector('[data-menu]'));
     this.menu.onHide = this.hideMenu.bind(this);
     this.menu.onOpenUpscaler = () => this.switchTab(this.upscaleTab);
     this.menu.onOpenGallery = () => this.switchTab(this.galleryTab);
@@ -121,7 +121,7 @@ class App {
     this.menuWidthElement.style.display = 'none';
     this.root.appendChild(this.menuWidthElement);
 
-    const topBar = new TopBar(this.root.querySelector('.top-bar'));
+    const topBar = new TopBar(this.root.querySelector('[data-top-bar]'));
     this.topBar = topBar;
     document.addEventListener('scroll', () => {
       if (document.documentElement.scrollTop > 16) {
@@ -176,7 +176,7 @@ class App {
 
     this.generationProgress = new Progress(this.generateButton.querySelector('p'), true);
 
-    const tabs = this.root.querySelector('.tabs');
+    const tabs = this.root.querySelector('[data-tabs]');
 
     this.settingsTab = new Settings(tabs);
     this.aboutTab = new About(tabs);
@@ -357,6 +357,7 @@ class App {
   }
 
   generate(/** @type {Progress} */ progress) {
+    let wakeLockInstance = null;
     this.txt2imgTab.generate(
       () => {
         this.setLoading(true);
@@ -364,10 +365,29 @@ class App {
           this.hideMenu();
         }
         progress.runWithApi();
+
+        if ('wakeLock' in navigator) {
+          navigator.wakeLock
+            .request('screen')
+            .then((inst) => {
+              wakeLockInstance = inst;
+              console.log('Wake Lock is active');
+            })
+            .catch((err) => {
+              wakeLockInstance = null;
+              console.error(`${err.name}, ${err.message}`);
+            });
+        }
       },
       () => {
         this.setLoading(false);
         progress.hide();
+
+        if ('wakeLock' in navigator && wakeLockInstance) {
+          wakeLockInstance.release().then(() => {
+            console.log('Wake Lock is released');
+          });
+        }
       },
       (json, scriptName, scriptArgs) => {
         this.hasResult = true;

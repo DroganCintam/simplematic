@@ -3,7 +3,7 @@
   padding: 0;
 }
 
-.tabs {
+[data-tabs] {
   min-height: calc(100vh - 7rem);
   margin-top: 4rem;
 }
@@ -23,18 +23,18 @@
   color: hsla(0, 0%, 100%, 0.75);
 }
 
-.main-view {
+[data-main-view] {
   transition: margin 0.2s ease-out;
   box-shadow: rgb(0, 0, 0) -5px 0px 20px -10px;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
-.main-view::-webkit-scrollbar {
+[data-main-view]::-webkit-scrollbar {
   display: none;
 }
 
-.main-curtain {
+[data-main-curtain] {
   position: absolute;
   left: 0;
   top: 0;

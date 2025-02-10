@@ -13,99 +13,99 @@ const html = /*html*/ `
   <div class="panes">
     <div class="pane image-pane">
       <div class="vertical w100p no-gap" style="position: relative">
-        <div class="input-image-wrapper">
-          <img class="input-image"/>
+        <div data-input-image-wrapper>
+          <img data-input-image/>
           <span>INPUT IMAGE</span>
         </div>
-        <img class="image"/>
-        <button type="button" class="btn-input-image" style="display: none" title="Show/hide input image">
+        <img data-image/>
+        <button type="button" data-btn-input-image style="display: none" title="Show/hide input image">
           <img src="/img/images-solid.svg"/>
         </button>
       </div>
     </div>
     <div class="pane info-pane">
       <div class="image-navigation">
-        <button type="button" class="btn-prev" style="display: none" title="Previous image">
+        <button type="button" data-btn-prev style="display: none" title="Previous image">
           <img src="/img/chevron-left-solid.svg"/>
           PREV
         </button>
-        <button type="button" class="btn-next" style="display: none" title="Next image">
+        <button type="button" data-btn-next style="display: none" title="Next image">
           NEXT
           <img src="/img/chevron-right-solid.svg"/>
         </button>
       </div>
       <div class="horizontal w100p actions">
-        <button type="button" class="btn-remix" title="Copy all parameters"><img src="/img/flask-solid.svg">REMIX</button>
-        <button type="button" class="btn-rerun" title="Re-generate with a new seed"><p></p><img src="/img/wand-magic-sparkles-solid.svg"><span>NEW SEED</span></button>
-        <button type="button" class="btn-save" title="Save to gallery"><img src="/img/floppy-disk-solid.svg">SAVE</button>
-        <button type="button" class="btn-delete" title="Delete from gallery"><img src="/img/trash-solid.svg">DELETE</button>
-        <button type="button" class="btn-download" title="Download this image"><img src="/img/download-solid.svg">DOWNLOAD</button>
-        <button type="button" class="btn-upscale" title="Upscale this"><img src="/img/up-right-and-down-left-from-center-solid-black.svg">UPSCALE</button>
-        <button type="button" class="btn-img2img" title="Use this as img2img input"><img src="/img/images-solid.svg">IMG2IMG</button>
+        <button type="button" data-btn-remix title="Copy all parameters"><img src="/img/flask-solid.svg">REMIX</button>
+        <button type="button" data-btn-rerun title="Re-generate with a new seed"><p></p><img src="/img/wand-magic-sparkles-solid.svg"><span>NEW SEED</span></button>
+        <button type="button" data-btn-save title="Save to gallery"><img src="/img/floppy-disk-solid.svg">SAVE</button>
+        <button type="button" data-btn-delete title="Delete from gallery"><img src="/img/trash-solid.svg">DELETE</button>
+        <button type="button" data-btn-download title="Download this image"><img src="/img/download-solid.svg">DOWNLOAD</button>
+        <button type="button" data-btn-upscale title="Upscale this"><img src="/img/up-right-and-down-left-from-center-solid-black.svg">UPSCALE</button>
+        <button type="button" data-btn-img2img title="Use this as img2img input"><img src="/img/images-solid.svg">IMG2IMG</button>
       </div>
-      <div class="tagging">
+      <div data-tagging>
         <label class="heading">Tags:</label>
-        <div class="tags">
-          <div class="add-tag">
+        <div data-tags>
+          <div data-add-tag>
             <span class="hash">#</span>
-            <input type="text" class="txt-tag" autocapitalize="off">
-            <button type="button" class="btn-add-tag" title="Add tag"><img src="/img/plus-solid.svg"></button>
+            <input type="text" data-txt-tag autocapitalize="off">
+            <button type="button" data-btn-add-tag title="Add tag"><img src="/img/plus-solid.svg"></button>
           </div>
         </div>
       </div>
       <div class="vertical w100p">
         <label class="heading">Prompt:</label>
-        <textarea class="result-prompt" readonly></textarea>
+        <textarea data-result-prompt readonly></textarea>
       </div>
       <div class="vertical w100p">
         <label class="heading">Negative prompt:</label>
-        <textarea class="result-negative-prompt" readonly></textarea>
+        <textarea data-result-negative-prompt readonly></textarea>
       </div>
       <div class="vertical w50p">
         <label class="heading">Width:</label>
-        <input type="text" class="result-width" readonly />
+        <input type="text" data-result-width readonly />
       </div>
       <div class="vertical w50p">
         <label class="heading">Height:</label>
-        <input type="text" class="result-height" readonly />
+        <input type="text" data-result-height readonly />
       </div>
       <div class="vertical w50p">
         <label class="heading">Steps:</label>
-        <input type="text" class="result-steps" readonly />
+        <input type="text" data-result-steps readonly />
       </div>
       <div class="vertical w50p">
         <label class="heading">CFG:</label>
-        <input type="text" class="result-cfg" readonly />
+        <input type="text" data-result-cfg readonly />
       </div>
       <div class="vertical w50p">
         <label class="heading">Seed:</label>
-        <input type="text" class="result-seed" readonly />
+        <input type="text" data-result-seed readonly />
       </div>
       <div class="vertical w50p">
         <label class="heading">Sampler:</label>
-        <input type="text" class="result-sampler" readonly />
+        <input type="text" data-result-sampler readonly />
       </div>
       <div class="vertical w50p">
         <label class="heading">Model name:</label>
-        <input type="text" class="result-model-name" readonly />
+        <input type="text" data-result-model-name readonly />
       </div>
       <div class="vertical w50p">
         <label class="heading">Model hash:</label>
-        <input type="text" class="result-model-hash" readonly />
+        <input type="text" data-result-model-hash readonly />
       </div>
       <div class="vertical w100p">
         <label class="heading">Parameters:</label>
-        <textarea class="result-parameters" readonly></textarea>
+        <textarea data-result-parameters readonly></textarea>
       </div>
       <div class="vertical w100p" data-script-info>
         <label class="heading">Script name:</label>
-        <input type="text" class="result-script-name" readonly />
+        <input type="text" data-result-script-name readonly />
       </div>
       <div class="vertical w100p" data-script-info>
         <label class="heading">Script arguments:</label>
-        <input type="text" class="result-script-args" readonly />
+        <input type="text" data-result-script-args readonly />
       </div>
-      <div class="vertical w100p result-timestamp">
+      <div class="vertical w100p" data-result-timestamp>
         <label>Timestamp:</label>
         <input type="text" readonly />
       </div>
@@ -178,7 +178,7 @@ const css = /*css*/ `
   font-size: 0.75rem;
 }
 
-#result-tab .image {
+#result-tab [data-image] {
   width: 100%;
   height: auto;
   border: 1px solid hsla(0, 0%, 100%, 0.5);
@@ -186,7 +186,7 @@ const css = /*css*/ `
   position: relative;
 }
 
-#result-tab .input-image-wrapper {
+#result-tab [data-input-image-wrapper] {
   position: absolute;
   left: 0;
   top: 0;
@@ -195,7 +195,7 @@ const css = /*css*/ `
   padding: 0.5rem;
 }
 
-#result-tab .input-image {
+#result-tab [data-input-image] {
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -203,7 +203,7 @@ const css = /*css*/ `
   border-radius: 0.5rem;
 }
 
-#result-tab .input-image-wrapper span {
+#result-tab [data-input-image-wrapper] span {
   position: absolute;
   left: 0.5rem;
   right: 0.5rem;
@@ -215,7 +215,7 @@ const css = /*css*/ `
   padding: 0.5rem;
 }
 
-#result-tab .btn-input-image {
+#result-tab [data-btn-input-image] {
   position: absolute;
   right: 1rem;
   top: 1rem;
@@ -239,8 +239,8 @@ const css = /*css*/ `
   font-size: 0.8rem;
 }
 
-#result-tab .result-script-name,
-#result-tab .result-script-args {
+#result-tab [data-result-script-name],
+#result-tab [data-result-script-args] {
   font-family: monospace;
 }
 
@@ -280,12 +280,12 @@ const css = /*css*/ `
   height: 1rem;
 }
 
-#result-tab .btn-prev,
-#result-tab .btn-next {
+#result-tab [data-btn-prev],
+#result-tab [data-btn-next] {
   flex-grow: 1;
 }
 
-#result-tab .tagging {
+#result-tab [data-tagging] {
   width: 100%;
   display: flex;
   flex-flow: column nowrap;
@@ -294,7 +294,7 @@ const css = /*css*/ `
   gap: 0.5rem;
 }
 
-#result-tab .tagging .tags {
+#result-tab [data-tagging] [data-tags] {
   width: 100%;
   display: flex;
   flex-flow: row wrap;
@@ -303,7 +303,7 @@ const css = /*css*/ `
   gap: 0.5rem;
 }
 
-#result-tab .tagging .tags .tag {
+#result-tab [data-tagging] [data-tags] .tag {
   padding: 0.5rem;
   background-color: hsla(0, 0%, 0%, 0.5);
   color: hsla(0, 0%, 100%, 1);
@@ -311,7 +311,7 @@ const css = /*css*/ `
   font-size: 0.8rem;
 }
 
-#result-tab .tagging .tags .tag .btn-remove-tag {
+#result-tab [data-tagging] [data-tags] .tag [data-btn-remove-tag] {
   content: 'x';
   width: 1rem;
   height: 1rem;
@@ -325,18 +325,18 @@ const css = /*css*/ `
   opacity: 0.5;
 }
 
-#result-tab .tagging .tags .tag .btn-remove-tag:hover {
+#result-tab [data-tagging] [data-tags] .tag [data-btn-remove-tag]:hover {
   opacity: 1;
 }
 
-#result-tab .tagging .tags .add-tag {
+#result-tab [data-tagging] [data-tags] [data-add-tag] {
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-start;
   align-items: center;
 }
 
-#result-tab .tagging .tags .add-tag .hash {
+#result-tab [data-tagging] [data-tags] [data-add-tag] .hash {
   border: 1px solid hsla(0, 0%, 100%, 0.25);
   border-right: none;
   border-radius: 0.5rem 0 0 0.5rem;
@@ -349,7 +349,7 @@ const css = /*css*/ `
   color: hsla(0, 0%, 100%, 0.75);
 }
 
-#result-tab .tagging .tags .add-tag input {
+#result-tab [data-tagging] [data-tags] [data-add-tag] input {
   border: 1px solid hsla(0, 0%, 100%, 0.25);
   border-left: none;
   padding-left: 0.25rem;
@@ -358,14 +358,14 @@ const css = /*css*/ `
   height: 2rem;
 }
 
-#result-tab .tagging .tags .add-tag button {
+#result-tab [data-tagging] [data-tags] [data-add-tag] button {
   border: 1px solid hsla(0, 0%, 100%, 0.25);
   border-radius: 0 0.5rem 0.5rem 0;
   background-color: hsla(0, 0%, 0%, 1);
   height: 2rem;
 }
 
-#result-tab .tagging .tags .add-tag button:hover {
+#result-tab [data-tagging] [data-tags] [data-add-tag] button:hover {
   background-color: hsla(0, 0%, 30%, 1);
 }
 `;
@@ -468,66 +468,66 @@ export default class ResultDialog extends Tab {
 
   constructor(/** @type {HTMLElement} */ parent) {
     super(parent, html, css);
-    this.image = this.root.querySelector('.image');
-    this.timestamp = this.root.querySelector('.result-timestamp');
-    this.prompt = this.root.querySelector('.result-prompt');
-    this.negativePrompt = this.root.querySelector('.result-negative-prompt');
-    this.width = this.root.querySelector('.result-width');
-    this.height = this.root.querySelector('.result-height');
-    this.steps = this.root.querySelector('.result-steps');
-    this.cfg = this.root.querySelector('.result-cfg');
-    this.seed = this.root.querySelector('.result-seed');
-    this.samplerName = this.root.querySelector('.result-sampler');
-    this.modelName = this.root.querySelector('.result-model-name');
-    this.modelHash = this.root.querySelector('.result-model-hash');
-    this.parameters = this.root.querySelector('.result-parameters');
-    this.scriptName = this.root.querySelector('.result-script-name');
-    this.scriptArgs = this.root.querySelector('.result-script-args');
+    this.image = this.root.querySelector('[data-image]');
+    this.timestamp = this.root.querySelector('[data-result-timestamp]');
+    this.prompt = this.root.querySelector('[data-result-prompt]');
+    this.negativePrompt = this.root.querySelector('[data-result-negative-prompt]');
+    this.width = this.root.querySelector('[data-result-width]');
+    this.height = this.root.querySelector('[data-result-height]');
+    this.steps = this.root.querySelector('[data-result-steps]');
+    this.cfg = this.root.querySelector('[data-result-cfg]');
+    this.seed = this.root.querySelector('[data-result-seed]');
+    this.samplerName = this.root.querySelector('[data-result-sampler]');
+    this.modelName = this.root.querySelector('[data-result-model-name]');
+    this.modelHash = this.root.querySelector('[data-result-model-hash]');
+    this.parameters = this.root.querySelector('[data-result-parameters]');
+    this.scriptName = this.root.querySelector('[data-result-script-name]');
+    this.scriptArgs = this.root.querySelector('[data-result-script-args]');
 
-    this.prevImageButton = this.root.querySelector('.btn-prev');
+    this.prevImageButton = this.root.querySelector('[data-btn-prev]');
     this.prevImageButton.addEventListener('click', () => {
       if (this.goPrev) this.goPrev();
     });
 
-    this.nextImageButton = this.root.querySelector('.btn-next');
+    this.nextImageButton = this.root.querySelector('[data-btn-next]');
     this.nextImageButton.addEventListener('click', () => {
       if (this.goNext) this.goNext();
     });
 
-    this.inputImageWrapper = this.root.querySelector('.input-image-wrapper');
-    this.inputImage = this.root.querySelector('.input-image');
-    this.inputImageButton = this.root.querySelector('.btn-input-image');
+    this.inputImageWrapper = this.root.querySelector('[data-input-image-wrapper]');
+    this.inputImage = this.root.querySelector('[data-input-image]');
+    this.inputImageButton = this.root.querySelector('[data-btn-input-image]');
     this.inputImageButton.addEventListener('click', () => {
       this.toggleInputImage(this.inputImage.style.display === 'none');
     });
 
-    this.remixButton = this.root.querySelector('.btn-remix');
+    this.remixButton = this.root.querySelector('[data-btn-remix]');
     this.remixButton.addEventListener('click', () => {
       this.onRemix(this.imageInfo, this.fromGeneration);
     });
 
-    this.rerunButton = this.root.querySelector('.btn-rerun');
+    this.rerunButton = this.root.querySelector('[data-btn-rerun]');
     this.rerunButton.addEventListener('click', () => {
       this.onRerun(this.imageInfo, this.rerunProgress, this.fromGeneration);
     });
     this.rerunProgress = new Progress(this.rerunButton.querySelector('p'), true);
 
-    this.downloadButton = this.root.querySelector('.btn-download');
+    this.downloadButton = this.root.querySelector('[data-btn-download]');
     this.downloadButton.addEventListener('click', () => {
       this.downloadImage();
     });
 
-    this.upscaleButton = this.root.querySelector('.btn-upscale');
+    this.upscaleButton = this.root.querySelector('[data-btn-upscale]');
     this.upscaleButton.addEventListener('click', () => {
       this.onUpscale(this.imageInfo);
     });
 
-    this.img2imgButton = this.root.querySelector('.btn-img2img');
+    this.img2imgButton = this.root.querySelector('[data-btn-img2img]');
     this.img2imgButton.addEventListener('click', () => {
       this.onImg2Img(this.imageInfo);
     });
 
-    this.saveButton = this.root.querySelector('.btn-save');
+    this.saveButton = this.root.querySelector('[data-btn-save]');
     this.saveButton.addEventListener('click', () => {
       if (ImageDB.instance.has(this.imageInfo.uuid)) return;
       this.setLoading(true);
@@ -550,7 +550,7 @@ export default class ResultDialog extends Tab {
         });
     });
 
-    this.deleteButton = this.root.querySelector('.btn-delete');
+    this.deleteButton = this.root.querySelector('[data-btn-delete]');
     this.deleteButton.addEventListener('click', () => {
       if (!ImageDB.instance.has(this.imageInfo.uuid)) return;
       ConfirmDialog.instance.show(
@@ -577,11 +577,11 @@ export default class ResultDialog extends Tab {
       );
     });
 
-    this.tagging = this.root.querySelector('.tagging');
-    this.tags = this.tagging.querySelector('.tags');
+    this.tagging = this.root.querySelector('[data-tagging]');
+    this.tags = this.tagging.querySelector('[data-tags]');
     this.tagElements = [];
 
-    this.tagToAdd = this.tagging.querySelector('.txt-tag');
+    this.tagToAdd = this.tagging.querySelector('[data-txt-tag]');
     this.tagToAdd.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ',' || e.key === ' ') {
         e.preventDefault();
@@ -591,7 +591,7 @@ export default class ResultDialog extends Tab {
       }
     });
 
-    this.addTagButton = this.tagging.querySelector('.btn-add-tag');
+    this.addTagButton = this.tagging.querySelector('[data-btn-add-tag]');
     this.addTagButton.addEventListener('click', () => {
       this.addTag();
     });
@@ -876,9 +876,8 @@ export default class ResultDialog extends Tab {
     const name = Object.assign(document.createElement('span'), {
       innerText: '#' + tag,
     });
-    const button = Object.assign(document.createElement('span'), {
-      className: 'btn-remove-tag',
-    });
+    const button = Object.assign(document.createElement('span'));
+    button.setAttribute('data-btn-remove-tag', '');
     button.addEventListener('click', () => {
       if (this.addTagButton.disabled == false) {
         this.removeTag(el, tag);
@@ -886,7 +885,7 @@ export default class ResultDialog extends Tab {
     });
     el.appendChild(name);
     el.appendChild(button);
-    this.tags.insertBefore(el, this.tags.querySelector('.add-tag'));
+    this.tags.insertBefore(el, this.tags.querySelector('[data-add-tag]'));
   }
 
   addTag() {

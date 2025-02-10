@@ -2,7 +2,7 @@ import Component from './component.mjs';
 
 const html = /*html*/ `
 <div class="image-upload">
-  <input type="file" accept="image/png">
+  <input type="file" accept="image/*">
   <img alt="Input image" style="display: none">
   <button type="button" data-btn-clear class="icon-button" title="Clear" style="display: none">
     <img src="/img/xmark-solid.svg"/>

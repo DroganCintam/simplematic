@@ -868,8 +868,8 @@ export default class Txt2Img extends Tab {
     let scaleFactor = 1;
     const onBegin = () => {
       isPainting = true;
-      brushSize = this.inpaintBox.brushSizeValue;
       scaleFactor = this.img2imgInputImage.image.naturalWidth / this.img2imgInputImage.image.width;
+      brushSize = this.inpaintBox.brushSizeValue * scaleFactor;
     };
     const onEnd = () => {
       if (isPainting) {

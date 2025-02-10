@@ -171,6 +171,8 @@ export default class InpaintBox extends Component {
   /** @type {() => void} */
   onUndo;
 
+  insideCanvas = false;
+
   get isInpainting() {
     return this.checkbox.checked;
   }
@@ -270,6 +272,7 @@ export default class InpaintBox extends Component {
     this.root.classList.toggle('inside-canvas', isInside);
     this.root.classList.toggle('outside-canvas', !isInside);
     this.root.querySelector('[data-mover]').style.display = isInside ? '' : 'none';
+    this.insideCanvas = isInside;
   }
 
   initMover() {
@@ -288,6 +291,8 @@ export default class InpaintBox extends Component {
     let parentRect;
 
     const onBegin = (x, y) => {
+      if (!this.insideCanvas) return;
+
       isMoving = true;
       lastX = x;
       lastY = y;
